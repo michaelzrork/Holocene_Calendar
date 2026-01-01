@@ -555,6 +555,36 @@ footer p {
     letter-spacing: 1px;
 }
 
+/* ============ NAV BUTTONS ============ */
+.nav-buttons {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1001;
+}
+
+.nav-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 1px solid #1a1a1f;
+    color: var(--bone-dim);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 800px) {
     .event {

@@ -725,6 +725,7 @@ async function init() {
     // Setup controls
     setupScaleControl();
     setupYearInput();
+    setupNavButtons();
     
     // Setup scroll tracking
     updateYearDisplay();
@@ -732,6 +733,23 @@ async function init() {
     window.addEventListener('resize', updateYearDisplay);
     
     console.log('Timeline initialized');
+}
+
+function setupNavButtons() {
+    const jumpToTop = document.getElementById('jumpToTop');
+    const jumpToBottom = document.getElementById('jumpToBottom');
+    
+    if (jumpToTop) {
+        jumpToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+    
+    if (jumpToBottom) {
+        jumpToBottom.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);
