@@ -103,7 +103,7 @@ h1 span {
     color: var(--gold);
 }
 
-/* ============ SCROLL PROGRESS & YEAR DISPLAY ============ */
+/* ============ SCROLL PROGRESS & CONTROLS WRAPPER ============ */
 .scroll-progress {
     position: fixed;
     top: 0;
@@ -114,28 +114,33 @@ h1 span {
     width: 0%;
 }
 
-.year-display {
+.controls-wrapper {
     position: fixed;
     top: 20px;
     right: 20px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.year-display {
     padding: 15px 20px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     font-family: 'JetBrains Mono', monospace;
-    z-index: 1001;
-    min-width: 110px;
+    width: 150px;
     text-align: right;
 }
 
 .year-display .current-year {
-    font-size: 1.75rem;
+    font-size: 1.45rem;
     color: var(--gold);
     letter-spacing: 2px;
     background: transparent;
     border: none;
     font-family: 'JetBrains Mono', monospace;
     width: 100%;
-    max-width: 110px;
     text-align: right;
     outline: none;
     cursor: text;
@@ -164,12 +169,38 @@ h1 span {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #1a1a1f;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 5px;
 }
 
 .year-display .ce-year {
     font-size: 1rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
+    background: transparent;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    width: 100%;
+    text-align: right;
+    outline: none;
+    cursor: text;
+    padding: 0;
+}
+
+.year-display .ce-year:focus {
+    color: var(--bone);
+    border-bottom: 1px solid var(--bone-dim);
+}
+
+.year-display .ce-year:focus + .ce-label {
+    display: none;
+}
+
+.year-display .ce-year::selection {
+    background: var(--bone-dim);
+    color: var(--bg-dark);
 }
 
 .year-display .ce-label {
@@ -180,18 +211,14 @@ h1 span {
 
 /* ============ SCALE CONTROL ============ */
 .scale-control {
-    position: fixed;
-    top: 180px;
-    right: 20px;
-    padding: 15px 25px;
+    padding: 15px 20px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
-    z-index: 1001;
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: center;
-    min-width: 110px;
+    width: 150px;
 }
 
 .scale-control label {
@@ -452,9 +479,12 @@ footer p {
         width: 200px;
     }
     
-    .year-display {
+    .controls-wrapper {
         top: 10px;
         right: 10px;
+    }
+    
+    .year-display {
         padding: 10px 15px;
     }
     
@@ -463,8 +493,6 @@ footer p {
     }
     
     .scale-control {
-        top: 80px;
-        right: 10px;
         padding: 10px 15px;
     }
 }

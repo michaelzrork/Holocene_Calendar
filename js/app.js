@@ -120,6 +120,64 @@ function parseDateToHE(dateInput) {
     return NaN;
 }
 
+/**
+ * Parse a CE/BCE date string - assumes CE unless marked BCE/BC or negative
+ * Does NOT accept HE years - use parseDateToHE for that
+ * Supports: "2025", "2025 CE", "500 BCE", "44 BC", "-500" (as BCE)
+ * @param {string|number} dateInput 
+ * @returns {number} Year in Holocene Era
+ */
+function parseCEDateToHE(dateInput) {
+    if (typeof dateInput === 'number') {
+        return dateInput + 10000; // Assume CE
+    }
+    
+    const str = String(dateInput).trim().toUpperCase();
+    
+    // Check for BCE/BC - needs conversion
+    const bceMatch = str.match(/^(\d+)\s*(?:BCE|BC)$/);
+    if (bceMatch) {
+        const year = parseInt(bceMatch[1], 10);
+        if (year === 0 || year === 1) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'BCE');
+    }
+    
+    // Check for explicit CE/AD
+    const ceMatch = str.match(/^(\d+)\s*(?:CE|AD)$/);
+    if (ceMatch) {
+        const year = parseInt(ceMatch[1], 10);
+        if (year === 0) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'CE');
+    }
+    
+    // Check for negative number - treat as BCE
+    const negativeMatch = str.match(/^-(\d+)$/);
+    if (negativeMatch) {
+        const year = parseInt(negativeMatch[1], 10);
+        if (year === 0 || year === 1) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'BCE');
+    }
+    
+    // Plain number - assume CE
+    const plainMatch = str.match(/^(\d+)$/);
+    if (plainMatch) {
+        const year = parseInt(plainMatch[1], 10);
+        if (year === 0) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'CE');
+    }
+    
+    console.warn(`Could not parse CE date: "${dateInput}"`);
+    return NaN;
+}
+
 // ============ PIXEL/YEAR CONVERSION ============
 
 function yearToPixels(year) {
@@ -348,8 +406,8 @@ function getYearAtReference() {
 
 function updateYearDisplay() {
     const yearInput = document.getElementById('currentYear');
-    const yearInputCE = document.getElementById('currentYearCE')
-    const setBCE = document.getElementById('set-bce')
+    const yearInputCE = document.getElementById('currentYearCE');
+    const setBCE = document.getElementById('set-bce');
     const scrollProgress = document.getElementById('scrollProgress');
     
     if (!yearInput) return;
@@ -363,15 +421,10 @@ function updateYearDisplay() {
     
     yearInput.value = displayYear.toLocaleString();
     
-    if (displayYear - 10000 <= 0) {
-        yearInputCE.textContent = Math.abs(displayYear - 10000) + 1;
-        setBCE.textContent = "BCE";
-    }
-
-    if (displayYear - 10000 > 0) {
-        yearInputCE.textContent = (displayYear - 10000);
-        setBCE.textContent = "\u00A0CE";
-    }
+    // Update CE/BCE display
+    const converted = fromHoloceneYear(displayYear);
+    yearInputCE.value = converted.year;
+    setBCE.textContent = converted.era === 'BCE' ? 'BCE' : '\u00A0CE';
     
     if (scrollProgress) {
         const scrollPercent = (displayYear / currentYear) * 100;
@@ -404,47 +457,79 @@ function scrollToYear(year) {
  */
 function setupYearInput() {
     const yearInput = document.getElementById('currentYear');
-    if (!yearInput) return;
+    const yearInputCE = document.getElementById('currentYearCE');
     
-    // When user focuses the input
-    yearInput.addEventListener('focus', () => {
-        isEditingYear = true;
-        yearInput.select(); // Select all text for easy replacement
-    });
-    
-    // When user leaves the input without pressing Enter
-    yearInput.addEventListener('blur', () => {
-        isEditingYear = false;
-        updateYearDisplay(); // Reset to current scroll position
-    });
-    
-    // When user presses Enter
-    yearInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            
-            // Parse the input value (remove commas)
-            // Plain numbers are treated as HE, no conversion
-            const inputValue = yearInput.value.replace(/,/g, '').trim();
-            const targetYear = parseDateToHE(inputValue);
-            
-            if (!isNaN(targetYear)) {
+    // ===== HE Year Input =====
+    if (yearInput) {
+        yearInput.addEventListener('focus', () => {
+            isEditingYear = true;
+            yearInput.select();
+        });
+        
+        yearInput.addEventListener('blur', () => {
+            isEditingYear = false;
+            updateYearDisplay();
+        });
+        
+        yearInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const inputValue = yearInput.value.replace(/,/g, '').trim();
+                const targetYear = parseDateToHE(inputValue);
+                
+                if (!isNaN(targetYear)) {
+                    isEditingYear = false;
+                    yearInput.blur();
+                    scrollToYear(targetYear);
+                } else {
+                    yearInput.style.color = '#d4442e';
+                    setTimeout(() => { yearInput.style.color = ''; }, 500);
+                }
+            } else if (e.key === 'Escape') {
                 isEditingYear = false;
                 yearInput.blur();
-                scrollToYear(targetYear);
-            } else {
-                // Invalid input - flash red briefly
-                yearInput.style.color = '#d4442e';
-                setTimeout(() => {
-                    yearInput.style.color = '';
-                }, 500);
+                updateYearDisplay();
             }
-        } else if (e.key === 'Escape') {
+        });
+    }
+    
+    // ===== CE/BCE Year Input =====
+    if (yearInputCE) {
+        yearInputCE.addEventListener('focus', () => {
+            isEditingYear = true;
+            // Append the current era to the value so user knows context
+            const currentEra = document.getElementById('set-bce').textContent.trim();
+            const currentValue = yearInputCE.value.replace(/,/g, '');
+            yearInputCE.value = `${currentValue} ${currentEra}`;
+            yearInputCE.select();
+        });
+        
+        yearInputCE.addEventListener('blur', () => {
             isEditingYear = false;
-            yearInput.blur();
             updateYearDisplay();
-        }
-    });
+        });
+        
+        yearInputCE.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const inputValue = yearInputCE.value.replace(/,/g, '').trim();
+                const targetYear = parseCEDateToHE(inputValue);
+                
+                if (!isNaN(targetYear)) {
+                    isEditingYear = false;
+                    yearInputCE.blur();
+                    scrollToYear(targetYear);
+                } else {
+                    yearInputCE.style.color = '#d4442e';
+                    setTimeout(() => { yearInputCE.style.color = ''; }, 500);
+                }
+            } else if (e.key === 'Escape') {
+                isEditingYear = false;
+                yearInputCE.blur();
+                updateYearDisplay();
+            }
+        });
+    }
 }
 
 // ============ SCALE CONTROL ============
