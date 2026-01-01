@@ -333,7 +333,7 @@ h1 span {
     position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 4;
+    z-index: 5;
 }
 
 .decade-marker span {
@@ -346,7 +346,7 @@ h1 span {
     background: var(--bg-dark);
     border: 1px solid var(--timeline-line);
     padding: 4px 10px;
-    opacity: 0.7;
+    opacity: 1;
 }
 
 /* ============ YEAR TICKS ============ */
@@ -372,6 +372,7 @@ h1 span {
 
 .event:hover {
     z-index: 100;
+    opacity: 1;
 }
 
 /* Left side events */
@@ -536,99 +537,51 @@ h1 span {
 }
 
 /* ============ RANGE BARS ============ */
-.range-bar {
-    position: absolute;
-    width: 8px;
-    border-radius: 4px;
-    border: 1px solid;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 5;
-}
+/* Ranges use .event class, bar is like year-marker but taller */
 
-.range-bar:hover {
-    width: 10px;
-    box-shadow: 0 0 15px currentColor;
-    z-index: 50;
-}
-
-.range-bar.left {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-}
-
-.range-bar.right {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-left: none;
-}
-
-/* Range label - hidden by default, shows on hover */
-.range-label {
+/* Range bar indicator - positioned exactly like event-year-marker */
+.range-bar-indicator {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    padding: 6px 10px;
-    background: var(--bg-card);
+    width: 12px;
+    height: var(--bar-height);
+    border-radius: 6px;
     border: 1px solid;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 60;
+    /* Below date labels (z-index 5+), above ticks */
+    z-index: 4;
+    /* Completely static - no transitions on position */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transform: translateY(-50%); /* Center vertically on the midpoint */
 }
 
-.range-bar.left .range-label {
-    right: calc(100% + 10px);
-    text-align: right;
+/* Position like event-year-marker */
+.event.left .content .range-bar-indicator {
+    right: -61px;
+    transform: translate(50%, -50%);
 }
 
-.range-bar.right .range-label {
-    left: calc(100% + 10px);
-    text-align: left;
+.event.right .content .range-bar-indicator {
+    left: -61px;
+    transform: translate(-50%, -50%);
 }
 
-.range-bar:hover .range-label {
-    opacity: 1;
-    visibility: visible;
+/* Brighter + glow on hover */
+.event.range:hover .range-bar-indicator {
+    background-color: var(--bar-bg-hover) !important;
+    box-shadow: 0 0 20px var(--bar-border);
 }
 
-.range-label .range-title {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 400;
-}
-
-.range-label .range-years {
+/* Date range text in content box */
+.range-dates {
     display: block;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
-    opacity: 0.7;
+    letter-spacing: 1px;
     margin-top: 2px;
 }
 
-/* Range connector line */
-.range-connector {
-    position: absolute;
-    top: 50%;
-    height: 1px;
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.range-bar.left .range-connector {
-    left: 100%;
-    width: 70px;
-}
-
-.range-bar.right .range-connector {
-    right: 100%;
-    width: 70px;
-}
-
-.range-bar:hover .range-connector {
-    opacity: 1;
+.event.range:hover {
+    z-index: 200 !important;
 }
 
 /* ============ FOOTER ============ */

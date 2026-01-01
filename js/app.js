@@ -296,6 +296,9 @@ function assignRangeTracks(ranges) {
         const colorIndex = index % RANGE_COLORS.length;
         const color = RANGE_COLORS[colorIndex];
         
+        // Calculate duration for z-index (shorter = higher z-index)
+        const duration = range.endYear - range.year;
+        
         // Try to find a track on the left that's free
         let assignedSide = 'left';
         let assignedTrack = -1;
@@ -339,46 +342,63 @@ function assignRangeTracks(ranges) {
             ...range,
             side: assignedSide,
             track: assignedTrack,
-            color
+            color,
+            duration
         };
     });
 }
 
-function createRangeBar(rangeData) {
+function createRangeBar(rangeData, index, maxDuration) {
     const range = document.createElement('div');
-    range.className = `range-bar ${rangeData.side}`;
+    const side = index % 2 === 0 ? 'left' : 'right';
+    range.className = `event range ${side}`;
     
-    const topPx = yearToPixels(rangeData.year);
-    const heightPx = yearToPixels(rangeData.endYear - rangeData.year);
-    const trackOffset = rangeData.track * 14; // 10px bar + 4px gap
+    const startPx = yearToPixels(rangeData.year);
+    const endPx = yearToPixels(rangeData.endYear);
+    const heightPx = endPx - startPx;
+    const midPx = startPx + (heightPx / 2);
     
-    range.style.top = topPx + 'px';
-    range.style.height = heightPx + 'px';
-    range.style.backgroundColor = rangeData.color.bg;
-    range.style.borderColor = rangeData.color.border;
+    // All range bars start at z-index 4 (above ticks, below date labels)
+    const zIndex = 4;
     
-    if (rangeData.side === 'left') {
-        range.style.right = `calc(50% + 70px + ${trackOffset}px)`;
-    } else {
-        range.style.left = `calc(50% + 70px + ${trackOffset}px)`;
-    }
+    // Position at midpoint like point events
+    range.style.top = midPx + 'px';
+    range.style.zIndex = zIndex;
+    range.dataset.zIndex = zIndex;
     
-    // Create the label
-    const label = document.createElement('div');
-    label.className = 'range-label';
-    label.style.color = rangeData.color.text;
-    label.style.borderColor = rangeData.color.border;
-    label.innerHTML = `
-        <span class="range-title">${rangeData.title}</span>
-        <span class="range-years">${rangeData.year.toLocaleString()} - ${rangeData.endYear.toLocaleString()} HE</span>
+    const yearLabel = `${rangeData.year.toLocaleString()} – ${rangeData.endYear.toLocaleString()} HE`;
+    
+    // Get color from the rangeData (assigned in assignRangeTracks) or use default
+    const colorIndex = index % RANGE_COLORS.length;
+    const color = RANGE_COLORS[colorIndex];
+    const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
+    const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
+    
+    range.innerHTML = `
+        <div class="content">
+            <div class="connector" style="background: ${color.border}"></div>
+            <div class="range-bar-indicator" 
+                 style="--bar-height: ${heightPx}px; 
+                        --bar-bg: ${barBgColor}; 
+                        --bar-bg-hover: ${barBgColorHover}; 
+                        --bar-border: ${color.border};
+                        background-color: var(--bar-bg); 
+                        border-color: var(--bar-border);"></div>
+            <div class="event-header">
+                <span class="event-title">${rangeData.title}</span>
+            </div>
+            <span class="range-dates" style="color: ${color.text}">${yearLabel}</span>
+            <p class="event-desc">${rangeData.desc || ''}</p>
+        </div>
     `;
-    range.appendChild(label);
     
-    // Create connector line
-    const connector = document.createElement('div');
-    connector.className = 'range-connector';
-    connector.style.backgroundColor = rangeData.color.border;
-    range.appendChild(connector);
+    // Hover behavior - bring to top, handled via CSS for the bar glow
+    range.addEventListener('mouseenter', () => {
+        range.style.zIndex = 200;
+    });
+    range.addEventListener('mouseleave', () => {
+        range.style.zIndex = zIndex;
+    });
     
     return range;
 }
@@ -514,19 +534,27 @@ function renderTimeline() {
         }
     }
     
-    // Create events (alternating left/right) - only point events
-    console.log(`Rendering ${STATE.pointEvents.length} point events`);
-    STATE.pointEvents.forEach((eventData, index) => {
-        const eventEl = createEvent(eventData, index);
-        track.appendChild(eventEl);
-    });
+    // Create all events together (point + range) for proper alternation
+    // Sort by midpoint year for ranges, year for points
+    const allEventsForRender = [
+        ...STATE.pointEvents.map(e => ({ ...e, isRange: false, sortYear: e.year })),
+        ...STATE.rangeEvents.map(e => ({ ...e, isRange: true, sortYear: e.year + (e.endYear - e.year) / 2 }))
+    ].sort((a, b) => a.sortYear - b.sortYear);
     
-    // Create range bars
-    console.log(`Rendering ${STATE.rangeEvents.length} range events`);
-    const assignedRanges = assignRangeTracks(STATE.rangeEvents);
-    assignedRanges.forEach(rangeData => {
-        const rangeEl = createRangeBar(rangeData);
-        track.appendChild(rangeEl);
+    const maxDuration = STATE.rangeEvents.length > 0 
+        ? Math.max(...STATE.rangeEvents.map(r => r.endYear - r.year))
+        : 1;
+    
+    console.log(`Rendering ${allEventsForRender.length} total events (${STATE.pointEvents.length} point, ${STATE.rangeEvents.length} range)`);
+    
+    allEventsForRender.forEach((eventData, index) => {
+        if (eventData.isRange) {
+            const rangeEl = createRangeBar(eventData, index, maxDuration);
+            track.appendChild(rangeEl);
+        } else {
+            const eventEl = createEvent(eventData, index);
+            track.appendChild(eventEl);
+        }
     });
 }
 
