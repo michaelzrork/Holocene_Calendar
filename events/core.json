@@ -6,128 +6,163 @@
     {
       "year": 0,
       "title": "Neolithic Revolution Begins",
-      "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently.",
-      "approximate": true
+      "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently."
     },
     {
       "year": 500,
       "title": "Göbekli Tepe",
-      "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
-      "approximate": true
+      "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel."
     },
     {
       "year": 1000,
       "title": "Jericho Settlement",
-      "desc": "One of humanity's first permanent settlements builds defensive walls and a tower.",
-      "approximate": true
+      "desc": "One of humanity's first permanent settlements builds defensive walls and a tower."
     },
     {
       "year": 4700,
       "title": "Invention of Writing",
-      "desc": "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\"",
-      "approximate": true
+      "desc": "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\""
     },
     {
       "year": 5450,
       "title": "Great Pyramid of Giza",
-      "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
-      "approximate": true
+      "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years."
     },
     {
       "year": 6250,
       "title": "Code of Hammurabi",
-      "desc": "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought.",
-      "approximate": true
+      "desc": "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought."
+    },
+    {
+      "year": 7000,
+      "endYear": 9000,
+      "title": "Ancient Egypt",
+      "desc": "From the Early Dynastic Period through the New Kingdom. Pyramids, pharaohs, and hieroglyphs."
     },
     {
       "year": 9200,
       "title": "Athenian Democracy",
-      "desc": "World's first democracy. Philosophy, theater, and science flourish in Greece.",
-      "approximate": true
+      "desc": "World's first democracy. Philosophy, theater, and science flourish in Greece."
     },
     {
       "year": 9550,
       "title": "Roman Republic Founded",
-      "desc": "Rome overthrows its kings. The Republic will shape governance for millennia.",
-      "approximate": true
+      "desc": "Rome overthrows its kings. The Republic will shape governance for millennia."
     },
     {
       "year": 9677,
+      "endYear": 9690,
       "title": "Alexander's Empire",
-      "desc": "Conquers from Greece to India in 13 years. Hellenistic culture spreads worldwide.",
-      "approximate": true
+      "desc": "Conquers from Greece to India in 13 years. Hellenistic culture spreads worldwide."
+    },
+    {
+      "year": 9794,
+      "endYear": 10220,
+      "title": "Han Dynasty",
+      "desc": "One of China's greatest dynasties. Paper invented, Silk Road flourishes."
+    },
+    {
+      "year": 9973,
+      "endYear": 10476,
+      "title": "Roman Empire",
+      "desc": "From Augustus to the fall. At its peak, ruled 70 million people across three continents."
     },
     {
       "year": 10000,
       "title": "Year Zero (CE/AD)",
-      "desc": "The Gregorian calendar's anchor point. Roman Empire at its height.",
-      "approximate": false
+      "desc": "The Gregorian calendar's anchor point. Roman Empire at its height."
     },
     {
       "year": 10476,
       "title": "Fall of Rome",
-      "desc": "Western Roman Empire collapses. Europe enters the Middle Ages.",
-      "approximate": false
+      "desc": "Western Roman Empire collapses. Europe enters the Middle Ages."
+    },
+    {
+      "year": 10476,
+      "endYear": 11500,
+      "title": "Middle Ages",
+      "desc": "Medieval Europe. Feudalism, castles, crusades, and the slow rebuilding of civilization."
     },
     {
       "year": 11215,
       "title": "Magna Carta",
-      "desc": "English nobles force King John to sign—foundation of constitutional law.",
-      "approximate": false
+      "desc": "English nobles force King John to sign—foundation of constitutional law."
+    },
+    {
+      "year": 11300,
+      "endYear": 11600,
+      "title": "Renaissance",
+      "desc": "Rebirth of art, science, and humanism. Da Vinci, Michelangelo, and the printing press."
     },
     {
       "year": 11440,
       "title": "Gutenberg's Press",
-      "desc": "Movable type printing spreads knowledge faster than ever before.",
-      "approximate": false
+      "desc": "Movable type printing spreads knowledge faster than ever before."
     },
     {
       "year": 11492,
       "title": "Columbus Reaches Americas",
-      "desc": "European contact with the \"New World.\" Global exchange—and exploitation—begins.",
-      "approximate": false
+      "desc": "European contact with the \"New World.\" Global exchange—and exploitation—begins."
     },
     {
       "year": 11776,
       "title": "American Independence",
-      "desc": "Declaration signed. Democratic self-governance becomes reality.",
-      "approximate": false
+      "desc": "Declaration signed. Democratic self-governance becomes reality."
     },
     {
       "year": 11789,
       "title": "French Revolution",
-      "desc": "Monarchy overthrown. Liberty, equality, fraternity reshape political thought.",
-      "approximate": false
+      "desc": "Monarchy overthrown. Liberty, equality, fraternity reshape political thought."
     },
     {
-      "year": 11850,
+      "year": 11760,
+      "endYear": 11840,
       "title": "Industrial Revolution",
-      "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
-      "approximate": true
+      "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000."
+    },
+    {
+      "year": 11837,
+      "endYear": 11901,
+      "title": "Victorian Era",
+      "desc": "British Empire at its height. Rapid industrialization, social reform, and global expansion."
+    },
+    {
+      "year": 11914,
+      "endYear": 11918,
+      "title": "World War I",
+      "desc": "The Great War. 20 million dead. Empires fall, modern warfare emerges."
+    },
+    {
+      "year": 11939,
+      "endYear": 11945,
+      "title": "World War II",
+      "desc": "History's deadliest conflict. 70-85 million dead. The world reshaped."
     },
     {
       "year": 11945,
       "title": "Nuclear Age & United Nations",
-      "desc": "WWII ends. Atomic weapons unveiled. UN founded to prevent future wars.",
-      "approximate": false
+      "desc": "WWII ends. Atomic weapons unveiled. UN founded to prevent future wars."
+    },
+    {
+      "year": 11947,
+      "endYear": 11991,
+      "title": "Cold War",
+      "desc": "US vs USSR. Nuclear standoff, space race, proxy wars across the globe."
     },
     {
       "year": 11969,
       "title": "Moon Landing",
-      "desc": "Humans walk on another world. \"One giant leap for mankind.\"",
-      "approximate": false
+      "desc": "Humans walk on another world. \"One giant leap for mankind.\""
     },
     {
       "year": 11991,
       "title": "World Wide Web",
-      "desc": "Tim Berners-Lee creates the web. Information becomes instantly global.",
-      "approximate": false
+      "desc": "Tim Berners-Lee creates the web. Information becomes instantly global."
     },
     {
       "year": 12022,
       "title": "AI Goes Mainstream",
-      "desc": "Large language models enter public use. The nature of knowledge work shifts.",
-      "approximate": false
+      "desc": "Large language models enter public use. The nature of knowledge work shifts."
     }
   ]
 }

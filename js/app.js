@@ -11,6 +11,8 @@ const CONFIG = {
 const STATE = {
     datasets: [],           // Array of loaded datasets
     allEvents: [],          // Merged and sorted events from all datasets
+    pointEvents: [],        // Events without endYear
+    rangeEvents: [],        // Events with endYear
 };
 
 // ============ DATE CONVERSION UTILITIES ============
@@ -257,10 +259,129 @@ async function loadAllDatasets(urls) {
     // Re-sort after adding Today
     STATE.allEvents.sort((a, b) => a.year - b.year);
     
-    console.log(`Loaded ${STATE.datasets.length} datasets with ${STATE.allEvents.length} total events`);
+    // Separate point events and range events
+    STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
+    STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
+    
+    console.log(`Loaded ${STATE.datasets.length} datasets with ${STATE.pointEvents.length} point events and ${STATE.rangeEvents.length} range events`);
 }
 
 // ============ RENDER FUNCTIONS ============
+
+// Color palette for ranges
+const RANGE_COLORS = [
+    { bg: 'rgba(201, 162, 39, 0.3)', border: '#8a7019', text: '#c9a227' },   // gold
+    { bg: 'rgba(212, 68, 46, 0.3)', border: '#a33322', text: '#d4442e' },    // red
+    { bg: 'rgba(100, 149, 237, 0.3)', border: '#4a7dc4', text: '#6495ed' },  // blue
+    { bg: 'rgba(144, 238, 144, 0.3)', border: '#5a9a5a', text: '#90ee90' },  // green
+    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
+    { bg: 'rgba(255, 165, 0, 0.3)', border: '#cc8400', text: '#ffa500' },    // orange
+    { bg: 'rgba(64, 224, 208, 0.3)', border: '#2a9a8a', text: '#40e0d0' },   // turquoise
+];
+
+/**
+ * Assign ranges to tracks (left or right side) to minimize overlap
+ * Returns array of ranges with track assignments
+ */
+function assignRangeTracks(ranges) {
+    // Sort by start year
+    const sorted = [...ranges].sort((a, b) => a.year - b.year);
+    
+    // Track end years for each side
+    const leftTracks = [];   // Array of track end years
+    const rightTracks = [];  // Array of track end years
+    
+    return sorted.map((range, index) => {
+        // Assign color based on index
+        const colorIndex = index % RANGE_COLORS.length;
+        const color = RANGE_COLORS[colorIndex];
+        
+        // Try to find a track on the left that's free
+        let assignedSide = 'left';
+        let assignedTrack = -1;
+        
+        // Check left tracks
+        for (let i = 0; i < leftTracks.length; i++) {
+            if (leftTracks[i] < range.year) {
+                assignedTrack = i;
+                leftTracks[i] = range.endYear;
+                break;
+            }
+        }
+        
+        // If no free left track, check right
+        if (assignedTrack === -1) {
+            assignedSide = 'right';
+            for (let i = 0; i < rightTracks.length; i++) {
+                if (rightTracks[i] < range.year) {
+                    assignedTrack = i;
+                    rightTracks[i] = range.endYear;
+                    break;
+                }
+            }
+        }
+        
+        // If still no track, create new one
+        if (assignedTrack === -1) {
+            // Prefer the side with fewer tracks
+            if (leftTracks.length <= rightTracks.length) {
+                assignedSide = 'left';
+                assignedTrack = leftTracks.length;
+                leftTracks.push(range.endYear);
+            } else {
+                assignedSide = 'right';
+                assignedTrack = rightTracks.length;
+                rightTracks.push(range.endYear);
+            }
+        }
+        
+        return {
+            ...range,
+            side: assignedSide,
+            track: assignedTrack,
+            color
+        };
+    });
+}
+
+function createRangeBar(rangeData) {
+    const range = document.createElement('div');
+    range.className = `range-bar ${rangeData.side}`;
+    
+    const topPx = yearToPixels(rangeData.year);
+    const heightPx = yearToPixels(rangeData.endYear - rangeData.year);
+    const trackOffset = rangeData.track * 14; // 10px bar + 4px gap
+    
+    range.style.top = topPx + 'px';
+    range.style.height = heightPx + 'px';
+    range.style.backgroundColor = rangeData.color.bg;
+    range.style.borderColor = rangeData.color.border;
+    
+    if (rangeData.side === 'left') {
+        range.style.right = `calc(50% + 70px + ${trackOffset}px)`;
+    } else {
+        range.style.left = `calc(50% + 70px + ${trackOffset}px)`;
+    }
+    
+    // Create the label
+    const label = document.createElement('div');
+    label.className = 'range-label';
+    label.style.color = rangeData.color.text;
+    label.style.borderColor = rangeData.color.border;
+    label.innerHTML = `
+        <span class="range-title">${rangeData.title}</span>
+        <span class="range-years">${rangeData.year.toLocaleString()} - ${rangeData.endYear.toLocaleString()} HE</span>
+    `;
+    range.appendChild(label);
+    
+    // Create connector line
+    const connector = document.createElement('div');
+    connector.className = 'range-connector';
+    connector.style.backgroundColor = rangeData.color.border;
+    range.appendChild(connector);
+    
+    return range;
+}
 
 function createCenturyMarker(year) {
     const marker = document.createElement('div');
@@ -393,11 +514,19 @@ function renderTimeline() {
         }
     }
     
-    // Create events (alternating left/right)
-    console.log(`Rendering ${STATE.allEvents.length} events`);
-    STATE.allEvents.forEach((eventData, index) => {
+    // Create events (alternating left/right) - only point events
+    console.log(`Rendering ${STATE.pointEvents.length} point events`);
+    STATE.pointEvents.forEach((eventData, index) => {
         const eventEl = createEvent(eventData, index);
         track.appendChild(eventEl);
+    });
+    
+    // Create range bars
+    console.log(`Rendering ${STATE.rangeEvents.length} range events`);
+    const assignedRanges = assignRangeTracks(STATE.rangeEvents);
+    assignedRanges.forEach(rangeData => {
+        const rangeEl = createRangeBar(rangeData);
+        track.appendChild(rangeEl);
     });
 }
 

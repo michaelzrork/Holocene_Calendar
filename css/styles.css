@@ -535,6 +535,102 @@ h1 span {
     white-space: normal;
 }
 
+/* ============ RANGE BARS ============ */
+.range-bar {
+    position: absolute;
+    width: 8px;
+    border-radius: 4px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.range-bar:hover {
+    width: 10px;
+    box-shadow: 0 0 15px currentColor;
+    z-index: 50;
+}
+
+.range-bar.left {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.range-bar.right {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+}
+
+/* Range label - hidden by default, shows on hover */
+.range-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    background: var(--bg-card);
+    border: 1px solid;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 60;
+}
+
+.range-bar.left .range-label {
+    right: calc(100% + 10px);
+    text-align: right;
+}
+
+.range-bar.right .range-label {
+    left: calc(100% + 10px);
+    text-align: left;
+}
+
+.range-bar:hover .range-label {
+    opacity: 1;
+    visibility: visible;
+}
+
+.range-label .range-title {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.range-label .range-years {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+/* Range connector line */
+.range-connector {
+    position: absolute;
+    top: 50%;
+    height: 1px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.range-bar.left .range-connector {
+    left: 100%;
+    width: 70px;
+}
+
+.range-bar.right .range-connector {
+    right: 100%;
+    width: 70px;
+}
+
+.range-bar:hover .range-connector {
+    opacity: 1;
+}
+
 /* ============ FOOTER ============ */
 footer {
     position: fixed;
