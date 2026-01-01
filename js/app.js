@@ -362,15 +362,15 @@ function updateYearDisplay() {
     displayYear = Math.min(currentYear, displayYear);
     
     yearInput.value = displayYear.toLocaleString();
-    yearInputCE.value = (displayYear - 10000);
-
+    
     if (displayYear - 10000 <= 0) {
-        yearInputCE.value = Math.abs(yearInputCE.value) + 1;
+        yearInputCE.textContent = Math.abs(displayYear - 10000) + 1;
         setBCE.textContent = "BCE";
     }
 
     if (displayYear - 10000 > 0) {
-        setBCE.textContent = "CE";
+        yearInputCE.textContent = (displayYear - 10000);
+        setBCE.textContent = "\u00A0CE";
     }
     
     if (scrollProgress) {

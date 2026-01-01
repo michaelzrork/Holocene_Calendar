@@ -118,12 +118,13 @@ h1 span {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 15px 25px;
+    padding: 15px 20px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     font-family: 'JetBrains Mono', monospace;
     z-index: 1001;
     min-width: 110px;
+    text-align: right;
 }
 
 .year-display .current-year {
@@ -139,6 +140,7 @@ h1 span {
     outline: none;
     cursor: text;
     padding: 0;
+    display: block;
 }
 
 .year-display .current-year:focus {
@@ -151,41 +153,35 @@ h1 span {
     color: var(--bg-dark);
 }
 
-.year-display .ce-year  {
-    font-size: 0.85rem;
-    color: var(--bone-dim);
-    letter-spacing: 2px;
-    background: transparent;
-    border: none;
-    font-family: 'JetBrains Mono', monospace;
-    width: 100%;
-    max-width: 110px;
-    text-align: right;
-    outline: none;
-    cursor: text;
-    padding: 0;
-}
-
 .year-display .he-label {
     font-size: 0.65rem;
     color: var(--gold);
     letter-spacing: 1px;
     margin-top: 2px;
-    text-align: right;
+}
+
+.year-display .ce-display {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #1a1a1f;
+}
+
+.year-display .ce-year {
+    font-size: 1rem;
+    color: var(--bone-dim);
+    letter-spacing: 1px;
 }
 
 .year-display .ce-label {
     font-size: 0.65rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
-    margin-top: 2px;
-    text-align: right;
 }
 
 /* ============ SCALE CONTROL ============ */
 .scale-control {
     position: fixed;
-    top: 140px;
+    top: 180px;
     right: 20px;
     padding: 15px 25px;
     background: var(--bg-card);
@@ -437,15 +433,15 @@ footer {
     left: 0;
     right: 0;
     text-align: center;
-    padding: 10px 20px;
-    background: var(--bg-dark);
+    padding: 15px 15px;
+    background: var(--bg-card);
     border-top: 1px solid #1a1a1f;
     z-index: 1000;
 }
 
 footer p {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.60rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
 }
