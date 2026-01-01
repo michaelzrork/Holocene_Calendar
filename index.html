@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Era Timeline | 12,000 Years to Scale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+            --gold: #c9a227;
+            --gold-dim: #8a7019;
+            --bone: #e8e4d9;
+            --bone-dim: #9a978c;
+            --accent: #d4442e;
+            --timeline-line: #2a2a2f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--bone);
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 1000;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .era-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+        }
+
+        h1 span {
+            color: var(--gold);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--bone-dim);
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        .scale-note {
+            max-width: 500px;
+            margin: 40px auto 0;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border: 1px solid #1a1a1f;
+            text-align: center;
+        }
+
+        .scale-note p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--bone-dim);
+            letter-spacing: 1px;
+            line-height: 1.8;
+        }
+
+        .scale-note strong {
+            color: var(--gold);
+        }
+
+        /* ============ SCROLL PROGRESS & YEAR DISPLAY ============ */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--gold);
+            z-index: 1001;
+            width: 0%;
+        }
+
+        .year-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border: 1px solid #1a1a1f;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 1001;
+        }
+
+        .year-display .current-year {
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .year-display .he-label {
+            font-size: 0.65rem;
+            color: var(--bone-dim);
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* ============ TIMELINE CONTAINER ============ */
+        .timeline-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 40px 100px;
+            position: relative;
+        }
+
+        .timeline-track {
+            position: relative;
+            margin-left: 150px;
+            /* Height set dynamically by JS */
+        }
+
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--timeline-line);
+        }
+
+        /* ============ CENTURY MARKERS ============ */
+        .century-marker {
+            position: absolute;
+            left: -130px;
+            width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .century-marker span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--bone-dim);
+            letter-spacing: 1px;
+        }
+
+        .century-marker::after {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--timeline-line);
+        }
+
+        .century-marker.millennium span {
+            color: var(--gold-dim);
+            font-size: 0.8rem;
+        }
+
+        .century-marker.millennium::after {
+            background: var(--gold-dim);
+            width: 30px;
+        }
+
+        /* ============ DECADE TICKS ============ */
+        .decade-tick {
+            position: absolute;
+            left: -8px;
+            width: 8px;
+            height: 1px;
+            background: var(--timeline-line);
+            opacity: 0.4;
+        }
+
+        /* ============ EVENTS ============ */
+        .event {
+            position: absolute;
+            left: 30px;
+            width: calc(100% - 30px);
+            max-width: 450px;
+        }
+
+        .event::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 15px;
+            width: 20px;
+            height: 1px;
+            background: var(--gold-dim);
+        }
+
+        .event .dot {
+            position: absolute;
+            left: -37px;
+            top: 10px;
+            width: 12px;
+            height: 12px;
+            background: var(--bg-dark);
+            border: 2px solid var(--gold-dim);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .event:hover .dot {
+            background: var(--gold);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.5);
+        }
+
+        .event .content {
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border: 1px solid #1a1a1f;
+            transition: all 0.3s ease;
+        }
+
+        .event:hover .content {
+            border-color: var(--gold-dim);
+            transform: translateX(5px);
+        }
+
+        .event .event-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--gold);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .event .event-title {
+            font-size: 1.15rem;
+            font-weight: 400;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .event .event-desc {
+            font-size: 0.85rem;
+            color: var(--bone-dim);
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        /* User-added events get a slightly different style */
+        .event.user-added .dot {
+            border-color: var(--accent);
+        }
+
+        .event.user-added:hover .dot {
+            background: var(--accent);
+            box-shadow: 0 0 20px rgba(212, 68, 46, 0.5);
+        }
+
+        .event.user-added::before {
+            background: var(--accent);
+        }
+
+        /* ============ NOW MARKER ============ */
+        .now-marker {
+            position: absolute;
+            left: -37px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .now-marker .dot {
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(212, 68, 46, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .now-marker .info .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+        }
+
+        .now-marker .info .sublabel {
+            font-size: 0.7rem;
+            color: var(--bone-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 68, 46, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(212, 68, 46, 0.8); }
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            text-align: center;
+            padding: 80px 20px;
+            border-top: 1px solid #1a1a1f;
+        }
+
+        footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--bone-dim);
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 700px) {
+            .timeline-track {
+                margin-left: 80px;
+            }
+            
+            .century-marker {
+                left: -70px;
+                width: 60px;
+            }
+            
+            .event {
+                max-width: calc(100vw - 150px);
+            }
+            
+            .year-display {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+            
+            .year-display .current-year {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    
+    <div class="year-display" id="yearDisplay">
+        <div class="current-year" id="currentYear">0</div>
+        <div class="he-label">Human Era</div>
+    </div>
+    
+    <header>
+        <p class="era-label">The Holocene Calendar</p>
+        <h1>12,000 Years of <span>Human Era</span></h1>
+        <p class="subtitle">Scroll through civilization — to scale</p>
+        
+        <div class="scale-note">
+            <p>This timeline is <strong>proportionally accurate</strong>.<br>
+            Scroll distance = time elapsed.<br>
+            <strong id="scaleDisplay">100 years = 400 pixels</strong></p>
+        </div>
+    </header>
+
+    <div class="timeline-container">
+        <div class="timeline-track" id="timelineTrack">
+            <!-- Everything generated by JavaScript -->
+        </div>
+    </div>
+
+    <footer>
+        <p>The Holocene Calendar — Proposed by Cesare Emiliani, 11993 HE</p>
+    </footer>
+
+    <script>
+        // ============ CONFIGURATION ============
+        const CONFIG = {
+            pxPerYear: 4,          // Scale: pixels per year
+            currentYear: 12025,    // End of timeline
+            centuryInterval: 100,  // Label every N years
+            decadeInterval: 10,    // Tick every N years
+        };
+
+        // ============ EVENT DATA ============
+        const EVENTS = [
+            {
+                year: 0,
+                title: "Neolithic Revolution Begins",
+                desc: "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently.",
+                approximate: true
+            },
+            {
+                year: 500,
+                title: "Göbekli Tepe",
+                desc: "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
+                approximate: true
+            },
+            {
+                year: 1000,
+                title: "Jericho Settlement",
+                desc: "One of humanity's first permanent settlements builds defensive walls and a tower.",
+                approximate: true
+            },
+            {
+                year: 4700,
+                title: "Invention of Writing",
+                desc: "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\"",
+                approximate: true
+            },
+            {
+                year: 5450,
+                title: "Great Pyramid of Giza",
+                desc: "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
+                approximate: true
+            },
+            {
+                year: 6250,
+                title: "Code of Hammurabi",
+                desc: "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought.",
+                approximate: true
+            },
+            {
+                year: 9200,
+                title: "Athenian Democracy",
+                desc: "World's first democracy. Philosophy, theater, and science flourish in Greece.",
+                approximate: true
+            },
+            {
+                year: 9550,
+                title: "Roman Republic Founded",
+                desc: "Rome overthrows its kings. The Republic will shape governance for millennia.",
+                approximate: true
+            },
+            {
+                year: 9677,
+                title: "Alexander's Empire",
+                desc: "Conquers from Greece to India in 13 years. Hellenistic culture spreads worldwide.",
+                approximate: true
+            },
+            {
+                year: 10000,
+                title: "Year Zero (CE/AD)",
+                desc: "The Gregorian calendar's anchor point. Roman Empire at its height.",
+                approximate: false
+            },
+            {
+                year: 10476,
+                title: "Fall of Rome",
+                desc: "Western Roman Empire collapses. Europe enters the Middle Ages.",
+                approximate: false
+            },
+            {
+                year: 11215,
+                title: "Magna Carta",
+                desc: "English nobles force King John to sign—foundation of constitutional law.",
+                approximate: false
+            },
+            {
+                year: 11440,
+                title: "Gutenberg's Press",
+                desc: "Movable type printing spreads knowledge faster than ever before.",
+                approximate: false
+            },
+            {
+                year: 11492,
+                title: "Columbus Reaches Americas",
+                desc: "European contact with the \"New World.\" Global exchange—and exploitation—begins.",
+                approximate: false
+            },
+            {
+                year: 11776,
+                title: "American Independence",
+                desc: "Declaration signed. Democratic self-governance becomes reality.",
+                approximate: false
+            },
+            {
+                year: 11789,
+                title: "French Revolution",
+                desc: "Monarchy overthrown. Liberty, equality, fraternity reshape political thought.",
+                approximate: false
+            },
+            {
+                year: 11850,
+                title: "Industrial Revolution",
+                desc: "Steam, factories, railways. More change in 100 years than the previous 10,000.",
+                approximate: true
+            },
+            {
+                year: 11945,
+                title: "Nuclear Age & United Nations",
+                desc: "WWII ends. Atomic weapons unveiled. UN founded to prevent future wars.",
+                approximate: false
+            },
+            {
+                year: 11969,
+                title: "Moon Landing",
+                desc: "Humans walk on another world. \"One giant leap for mankind.\"",
+                approximate: false
+            },
+            {
+                year: 11991,
+                title: "World Wide Web",
+                desc: "Tim Berners-Lee creates the web. Information becomes instantly global.",
+                approximate: false
+            },
+            {
+                year: 12022,
+                title: "AI Goes Mainstream",
+                desc: "Large language models enter public use. The nature of knowledge work shifts.",
+                approximate: false
+            },
+            {
+                year: 12025,
+                title: "Today",
+                desc: "You are here.",
+                approximate: false
+            }
+        ];
+
+        // ============ HELPER FUNCTIONS ============
+        function yearToPixels(year) {
+            return year * CONFIG.pxPerYear;
+        }
+
+        function pixelsToYear(px) {
+            return Math.floor(px / CONFIG.pxPerYear);
+        }
+
+        function formatYear(year, approximate = false) {
+            const prefix = approximate ? "~" : "";
+            return `${prefix}${year.toLocaleString()} HE`;
+        }
+
+        // ============ RENDER FUNCTIONS ============
+        function createCenturyMarker(year) {
+            const marker = document.createElement('div');
+            marker.className = 'century-marker';
+            if (year % 1000 === 0) {
+                marker.classList.add('millennium');
+            }
+            marker.style.top = yearToPixels(year) + 'px';
+            marker.innerHTML = `<span>${year.toLocaleString()} HE</span>`;
+            return marker;
+        }
+
+        function createDecadeTick(year) {
+            const tick = document.createElement('div');
+            tick.className = 'decade-tick';
+            tick.style.top = yearToPixels(year) + 'px';
+            return tick;
+        }
+
+        function createEvent(eventData, isUserAdded = false) {
+            const event = document.createElement('div');
+            event.className = 'event';
+            if (isUserAdded) {
+                event.classList.add('user-added');
+            }
+            event.style.top = yearToPixels(eventData.year) + 'px';
+            event.innerHTML = `
+                <div class="dot"></div>
+                <div class="content">
+                    <p class="event-year">${formatYear(eventData.year, eventData.approximate)}</p>
+                    <h3 class="event-title">${eventData.title}</h3>
+                    <p class="event-desc">${eventData.desc}</p>
+                </div>
+            `;
+            return event;
+        }
+
+        function createNowMarker() {
+            const marker = document.createElement('div');
+            marker.className = 'now-marker';
+            marker.style.top = yearToPixels(CONFIG.currentYear) + 'px';
+            marker.innerHTML = `
+                <div class="dot"></div>
+                <div class="info">
+                    <div class="label">${CONFIG.currentYear.toLocaleString()} HE</div>
+                    <div class="sublabel">You Are Here</div>
+                </div>
+            `;
+            return marker;
+        }
+
+        // ============ MAIN RENDER ============
+        function renderTimeline() {
+            const track = document.getElementById('timelineTrack');
+            track.innerHTML = ''; // Clear existing content
+            
+            // Set track height
+            const totalHeight = yearToPixels(CONFIG.currentYear);
+            track.style.height = totalHeight + 'px';
+            
+            // Update scale display
+            const scaleDisplay = document.getElementById('scaleDisplay');
+            scaleDisplay.textContent = `100 years = ${CONFIG.pxPerYear * 100} pixels`;
+            
+            // Create century markers
+            for (let year = 0; year <= CONFIG.currentYear; year += CONFIG.centuryInterval) {
+                track.appendChild(createCenturyMarker(year));
+            }
+            
+            // Create decade ticks (skip centuries)
+            for (let year = CONFIG.decadeInterval; year <= CONFIG.currentYear; year += CONFIG.decadeInterval) {
+                if (year % CONFIG.centuryInterval !== 0) {
+                    track.appendChild(createDecadeTick(year));
+                }
+            }
+            
+            // Create events
+            EVENTS.forEach(eventData => {
+                track.appendChild(createEvent(eventData, false));
+            });
+            
+            // Create "now" marker
+            // track.appendChild(createNowMarker());
+        }
+
+        // ============ SCROLL TRACKING ============
+        function updateYearDisplay() {
+            const track = document.getElementById('timelineTrack');
+            const yearDisplay = document.getElementById('currentYear');
+            const scrollProgress = document.getElementById('scrollProgress');
+            
+            const rect = track.getBoundingClientRect();
+            const headerHeight = document.querySelector('header').offsetHeight;
+            
+            const scrolledIntoTimeline = (headerHeight + 100) - rect.top;
+            
+            let currentYear = pixelsToYear(scrolledIntoTimeline);
+            currentYear = Math.max(0, Math.min(CONFIG.currentYear, currentYear));
+            
+            yearDisplay.textContent = currentYear.toLocaleString();
+            
+            const scrollPercent = (currentYear / CONFIG.currentYear) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        }
+
+        // ============ PUBLIC API FOR ADDING EVENTS ============
+        function addEvent(year, title, desc, approximate = false) {
+            const newEvent = { year, title, desc, approximate };
+            EVENTS.push(newEvent);
+            
+            // Re-sort events by year
+            EVENTS.sort((a, b) => a.year - b.year);
+            
+            // Re-render
+            renderTimeline();
+            
+            // Scroll to the new event
+            setTimeout(() => {
+                window.scrollTo({
+                    top: yearToPixels(year) + document.querySelector('header').offsetHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+            
+            return newEvent;
+        }
+
+        // Expose to global scope for console/UI access
+        window.timelineAPI = {
+            addEvent,
+            getEvents: () => [...EVENTS],
+            getConfig: () => ({...CONFIG}),
+            setScale: (pxPerYear) => {
+                CONFIG.pxPerYear = pxPerYear;
+                renderTimeline();
+            }
+        };
+
+        // ============ INITIALIZE ============
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTimeline();
+            updateYearDisplay();
+            
+            window.addEventListener('scroll', updateYearDisplay);
+            window.addEventListener('resize', updateYearDisplay);
+        });
+    </script>
+</body>
+</html>
