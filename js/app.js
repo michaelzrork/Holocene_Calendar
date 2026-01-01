@@ -275,6 +275,18 @@ async function loadAllDatasets(urls) {
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
     STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
     
+    // Pre-assign colors and sides to all events based on their position in the FULL sorted list
+    // This ensures colors don't change when filtering
+    const allSorted = [...STATE.allEvents].map(e => ({
+        event: e,
+        sortYear: e.endYear ? e.year + (e.endYear - e.year) / 2 : e.year
+    })).sort((a, b) => a.sortYear - b.sortYear);
+    
+    allSorted.forEach(({ event }, index) => {
+        event.colorIndex = index;
+        event.side = index % 2 === 0 ? 'left' : 'right';
+    });
+    
     // Initialize filters - all categories active by default
     STATE.activeFilters = new Set(Object.keys(STATE.categories));
     
@@ -493,7 +505,8 @@ function assignRangeTracks(ranges) {
 
 function createRangeBar(rangeData, index, maxDuration) {
     const range = document.createElement('div');
-    const side = index % 2 === 0 ? 'left' : 'right';
+    // Use pre-assigned side from data loading
+    const side = rangeData.side || (index % 2 === 0 ? 'left' : 'right');
     range.className = `event range ${side}`;
     
     const startPx = yearToPixels(rangeData.year);
@@ -511,8 +524,8 @@ function createRangeBar(rangeData, index, maxDuration) {
     
     const yearLabel = `${rangeData.year.toLocaleString()} – ${rangeData.endYear.toLocaleString()} HE`;
     
-    // Get color from the rangeData (assigned in assignRangeTracks) or use default
-    const colorIndex = index % RANGE_COLORS.length;
+    // Use pre-assigned colorIndex from data loading
+    const colorIndex = (rangeData.colorIndex !== undefined ? rangeData.colorIndex : index) % RANGE_COLORS.length;
     const color = RANGE_COLORS[colorIndex];
     const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
     const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
@@ -587,7 +600,8 @@ function createYearTick(year) {
 
 function createEvent(eventData, index) {
     const event = document.createElement('div');
-    const side = index % 2 === 0 ? 'left' : 'right';
+    // Use pre-assigned side from data loading
+    const side = eventData.side || (index % 2 === 0 ? 'left' : 'right');
     event.className = `event ${side}`;
     event.style.top = yearToPixels(eventData.year) + 'px';
     
