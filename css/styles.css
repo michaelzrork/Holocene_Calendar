@@ -369,6 +369,7 @@ h1 span {
     cursor: pointer;
     transition: z-index 0s;
     z-index: 10;
+    transform: translateY(-50%);
 }
 
 .event:hover {
@@ -384,7 +385,8 @@ h1 span {
 .event.left .content .connector {
     position: absolute;
     right: -60px;
-    top: 0px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 60px;
     height: 1px;
 }
@@ -392,7 +394,8 @@ h1 span {
 .event.left .content .dot {
     position: absolute;
     right: -66px;
-    top: -6px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Right side events */
@@ -404,7 +407,8 @@ h1 span {
 .event.right .content .connector {
     position: absolute;
     left: -60px;
-    top: 0px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 60px;
     height: 1px;
 }
@@ -412,7 +416,8 @@ h1 span {
 .event.right .content .dot {
     position: absolute;
     left: -66px;
-    top: -6px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Connector line */
