@@ -377,46 +377,42 @@ h1 span {
 
 /* Left side events */
 .event.left {
-    right: calc(50% + 20px);
+    right: calc(50% + 60px);
     text-align: right;
 }
 
 .event.left .content .connector {
     position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
+    right: -60px;
+    top: 0px;
+    width: 60px;
     height: 1px;
 }
 
 .event.left .content .dot {
     position: absolute;
-    right: -27px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: -66px;
+    top: -6px;
 }
 
 /* Right side events */
 .event.right {
-    left: calc(50% + 20px);
+    left: calc(50% + 60px);
     text-align: left;
 }
 
 .event.right .content .connector {
     position: absolute;
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
+    left: -60px;
+    top: 0px;
+    width: 60px;
     height: 1px;
 }
 
 .event.right .content .dot {
     position: absolute;
-    left: -27px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: -66px;
+    top: -6px;
 }
 
 /* Connector line */
@@ -514,17 +510,6 @@ h1 span {
 
 .event:hover .event-title {
     white-space: normal;
-}
-
-/* Category color indicator */
-/* To Use: ${eventData.color ? `<span class="category-dot" style="${colorStyle}"></span>` : ''} */
-.event .category-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 6px;
-    flex-shrink: 0;
 }
 
 /* ============ FOOTER ============ */
