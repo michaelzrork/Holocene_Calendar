@@ -262,9 +262,24 @@ function createCenturyMarker(year) {
     return marker;
 }
 
+function createDecadeMarker(year) {
+    const marker = document.createElement('div');
+    marker.className = 'decade-marker';
+    marker.style.top = yearToPixels(year) + 'px';
+    marker.innerHTML = `<span>${year.toLocaleString()} HE</span>`;
+    return marker;
+}
+
 function createDecadeTick(year) {
     const tick = document.createElement('div');
     tick.className = 'decade-tick';
+    tick.style.top = yearToPixels(year) + 'px';
+    return tick;
+}
+
+function createYearTick(year) {
+    const tick = document.createElement('div');
+    tick.className = 'year-tick';
     tick.style.top = yearToPixels(year) + 'px';
     return tick;
 }
@@ -275,13 +290,12 @@ function createEvent(eventData, index) {
     event.className = `event ${side}`;
     event.style.top = yearToPixels(eventData.year) + 'px';
     
-    const colorStyle = eventData.color ? `background: ${eventData.color}` : '';
     const dotColor = eventData.color || 'var(--gold-dim)';
     
     event.innerHTML = `
-        <div class="connector" style="background: ${dotColor}"></div>
-        <div class="dot" style="border-color: ${dotColor}"></div>
         <div class="content">
+            <div class="connector" style="background: ${dotColor}"></div>
+            <div class="dot" style="border-color: ${dotColor}"></div>
             <div class="event-header">
                 <span class="event-year">${formatYear(eventData.year, eventData.approximate)}</span>
                 <span class="event-title">${eventData.title}</span>
@@ -335,15 +349,36 @@ function renderTimeline() {
         scaleValue.textContent = `${CONFIG.pxPerYear}px/yr`;
     }
     
+    const scaleInput = document.getElementById('scaleInput');
+    if (scaleInput && !isEditingScale) {
+        scaleInput.value = CONFIG.pxPerYear;
+    }
+    
     // Create century markers up to current year
     for (let year = 0; year <= currentYear; year += CONFIG.centuryInterval) {
         track.appendChild(createCenturyMarker(year));
     }
     
-    // Create decade ticks (skip centuries)
+    // Create decade markers/ticks (skip centuries)
+    // At high zoom (>10px/yr), show labeled decade markers; otherwise just ticks
+    const useDecadeMarkers = CONFIG.pxPerYear > 10;
     for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
         if (year % CONFIG.centuryInterval !== 0) {
-            track.appendChild(createDecadeTick(year));
+            if (useDecadeMarkers) {
+                track.appendChild(createDecadeMarker(year));
+            } else {
+                track.appendChild(createDecadeTick(year));
+            }
+        }
+    }
+    
+    // At high zoom (>10px/yr), also show year ticks
+    if (CONFIG.pxPerYear > 10) {
+        for (let year = 1; year <= currentYear; year++) {
+            // Skip decades and centuries
+            if (year % CONFIG.decadeInterval !== 0) {
+                track.appendChild(createYearTick(year));
+            }
         }
     }
     
@@ -534,36 +569,75 @@ function setupYearInput() {
 
 // ============ SCALE CONTROL ============
 
+let isEditingScale = false;
+
+function applyScale(newScale) {
+    // Remember scroll position as a year
+    const currentScrollYear = getYearAtReference();
+    
+    // Update scale
+    CONFIG.pxPerYear = newScale;
+    
+    // Re-render
+    renderTimeline();
+    
+    // Restore scroll position
+    const trackOffset = getTrackOffset();
+    const referencePoint = getReferencePoint();
+    const newScrollTop = trackOffset + yearToPixels(currentScrollYear) - referencePoint;
+    window.scrollTo(0, Math.max(0, newScrollTop));
+    
+    // Update display
+    updateYearDisplay();
+}
+
 function setupScaleControl() {
     const slider = document.getElementById('scaleSlider');
-    if (!slider) return;
+    const scaleInput = document.getElementById('scaleInput');
     
-    slider.min = CONFIG.minPxPerYear;
-    slider.max = CONFIG.maxPxPerYear;
-    slider.step = 0.5;
-    slider.value = CONFIG.pxPerYear;
+    if (slider) {
+        slider.min = CONFIG.minPxPerYear;
+        slider.max = CONFIG.maxPxPerYear;
+        slider.step = 0.5;
+        slider.value = CONFIG.pxPerYear;
+        
+        slider.addEventListener('input', (e) => {
+            const newScale = parseFloat(e.target.value);
+            if (scaleInput) scaleInput.value = newScale;
+            applyScale(newScale);
+        });
+    }
     
-    slider.addEventListener('input', (e) => {
-        const newScale = parseFloat(e.target.value);
+    if (scaleInput) {
+        scaleInput.value = CONFIG.pxPerYear;
         
-        // Remember scroll position as a year
-        const currentScrollYear = getYearAtReference();
+        scaleInput.addEventListener('focus', () => {
+            isEditingScale = true;
+            scaleInput.select();
+        });
         
-        // Update scale
-        CONFIG.pxPerYear = newScale;
+        scaleInput.addEventListener('blur', () => {
+            isEditingScale = false;
+            // Validate and apply
+            let newScale = parseFloat(scaleInput.value);
+            if (isNaN(newScale)) newScale = CONFIG.pxPerYear;
+            newScale = Math.max(CONFIG.minPxPerYear, Math.min(CONFIG.maxPxPerYear, newScale));
+            scaleInput.value = newScale;
+            if (slider) slider.value = newScale;
+            applyScale(newScale);
+        });
         
-        // Re-render
-        renderTimeline();
-        
-        // Restore scroll position
-        const trackOffset = getTrackOffset();
-        const referencePoint = getReferencePoint();
-        const newScrollTop = trackOffset + yearToPixels(currentScrollYear) - referencePoint;
-        window.scrollTo(0, Math.max(0, newScrollTop));
-        
-        // Update display
-        updateYearDisplay();
-    });
+        scaleInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                scaleInput.blur();
+            } else if (e.key === 'Escape') {
+                scaleInput.value = CONFIG.pxPerYear;
+                isEditingScale = false;
+                scaleInput.blur();
+            }
+        });
+    }
 }
 
 // ============ PUBLIC API ============

@@ -241,6 +241,42 @@ h1 span {
     color: var(--gold);
 }
 
+.scale-control .scale-input-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    justify-content: center;
+}
+
+.scale-control .scale-input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gold);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    width: 40px;
+    text-align: right;
+    outline: none;
+    padding: 0;
+}
+
+.scale-control .scale-input:focus {
+    color: var(--bone);
+    border-bottom-color: var(--gold);
+}
+
+.scale-control .scale-input::selection {
+    background: var(--gold);
+    color: var(--bg-dark);
+}
+
+.scale-control .scale-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--bone-dim);
+}
+
 /* ============ TIMELINE CONTAINER ============ */
 .timeline-container {
     max-width: 1000px;
@@ -284,8 +320,39 @@ h1 span {
     padding: 6px 14px;
 }
 
-/* ============ DECADE TICKS ============ */
+/* ============ DECADE TICKS & MARKERS ============ */
 .decade-tick {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 1px;
+    background: var(--timeline-line);
+    opacity: 1;
+}
+
+.decade-marker {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+}
+
+.decade-marker span {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--bone-dim);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    background: var(--bg-dark);
+    border: 1px solid var(--timeline-line);
+    padding: 2px 6px;
+    opacity: 0.7;
+}
+
+/* ============ YEAR TICKS ============ */
+.year-tick {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -301,6 +368,7 @@ h1 span {
     width: 300px;
     cursor: pointer;
     transition: z-index 0s;
+    z-index: 10;
 }
 
 .event:hover {
@@ -313,18 +381,20 @@ h1 span {
     text-align: right;
 }
 
-.event.left .connector {
+.event.left .content .connector {
     position: absolute;
     right: -20px;
-    top: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 20px;
     height: 1px;
 }
 
-.event.left .dot {
+.event.left .content .dot {
     position: absolute;
     right: -27px;
-    top: 5px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Right side events */
@@ -333,18 +403,20 @@ h1 span {
     text-align: left;
 }
 
-.event.right .connector {
+.event.right .content .connector {
     position: absolute;
     left: -20px;
-    top: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 20px;
     height: 1px;
 }
 
-.event.right .dot {
+.event.right .content .dot {
     position: absolute;
     left: -27px;
-    top: 5px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Connector line */
@@ -382,6 +454,7 @@ h1 span {
     transition: all 0.3s ease;
     display: inline-block;
     max-width: 100%;
+    position: relative;
 }
 
 .event:hover .content {
@@ -398,6 +471,7 @@ h1 span {
 
 .event.left .event-header {
     justify-content: flex-end;
+    flex-direction: row-reverse;
 }
 
 .event.right .event-header {
