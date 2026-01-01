@@ -5,7 +5,6 @@ const CONFIG = {
     maxPxPerYear: 100,      // Maximum scale
     centuryInterval: 100,   // Label every N years
     decadeInterval: 10,     // Tick every N years
-    futureBuffer: 100,      // Years to show past current year
 };
 
 // ============ STATE ============
@@ -22,14 +21,6 @@ const STATE = {
  */
 function getCurrentHoloceneYear() {
     return new Date().getFullYear() + 10000;
-}
-
-/**
- * Get the maximum year shown on timeline (current + buffer)
- * @returns {number} Max year in HE
- */
-function getTimelineEndYear() {
-    return getCurrentHoloceneYear() + CONFIG.futureBuffer;
 }
 
 /**
@@ -245,6 +236,7 @@ function createEvent(eventData, index) {
 
 function renderTimeline() {
     const track = document.getElementById('timelineTrack');
+    const container = document.querySelector('.timeline-container');
     if (!track) {
         console.error('Timeline track element not found');
         return;
@@ -252,11 +244,18 @@ function renderTimeline() {
     
     track.innerHTML = '';
     
-    const endYear = getTimelineEndYear();
+    const currentYear = getCurrentHoloceneYear();
     
-    // Set track height (includes future buffer)
-    const totalHeight = yearToPixels(endYear);
+    // Set track height to current year
+    const totalHeight = yearToPixels(currentYear);
     track.style.height = totalHeight + 'px';
+    
+    // Add bottom padding to container so we can scroll the last year to the reference point
+    // Padding = viewport height - reference point position
+    // Reference point is at min(50% viewport, trackOffset), so max padding needed is 50% viewport
+    if (container) {
+        container.style.paddingBottom = '50vh';
+    }
     
     // Update scale display
     const scaleDisplay = document.getElementById('scaleDisplay');
@@ -275,13 +274,13 @@ function renderTimeline() {
         scaleValue.textContent = `${CONFIG.pxPerYear}px/yr`;
     }
     
-    // Create century markers (include future)
-    for (let year = 0; year <= endYear; year += CONFIG.centuryInterval) {
+    // Create century markers up to current year
+    for (let year = 0; year <= currentYear; year += CONFIG.centuryInterval) {
         track.appendChild(createCenturyMarker(year));
     }
     
     // Create decade ticks (skip centuries)
-    for (let year = CONFIG.decadeInterval; year <= endYear; year += CONFIG.decadeInterval) {
+    for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
         if (year % CONFIG.centuryInterval !== 0) {
             track.appendChild(createDecadeTick(year));
         }
@@ -322,18 +321,6 @@ function getReferencePoint() {
     const viewportHalf = window.innerHeight / 2;
     const trackOffset = getTrackOffset();
     
-    // Where would year 0 be on first load (no scrolling)?
-    // That's just trackOffset pixels from the top of the page
-    // On first load, scrollY = 0, so year 0 is at trackOffset in viewport
-    // But we want the reference point relative to current viewport
-    // The reference should be min(50% viewport, trackOffset) from viewport top
-    // But trackOffset is page-relative... we need viewport-relative.
-    
-    // Actually simpler: the reference line should be at a fixed viewport position
-    // that is the minimum of (50% viewport height) and (where track starts when at top of page)
-    // Since trackOffset is where the track starts on the page, if we're scrolled to top (scrollY=0),
-    // the track top is at trackOffset from viewport top.
-    
     // Reference = min(viewportHalf, trackOffset)
     // This ensures we never set a reference point below where year 0 can physically be
     return Math.min(viewportHalf, trackOffset);
@@ -351,10 +338,6 @@ function getYearAtReference() {
     const referencePoint = getReferencePoint();
     
     // How many pixels into the track is our reference point?
-    // Reference point is referencePoint pixels from viewport top
-    // Track starts at (trackOffset - scrollY) from viewport top
-    // So pixels into track = referencePoint - (trackOffset - scrollY)
-    //                      = referencePoint - trackOffset + scrollY
     const pixelsIntoTrack = window.scrollY + referencePoint - trackOffset;
     
     return Math.max(0, pixelsToYear(pixelsIntoTrack));
@@ -369,14 +352,14 @@ function updateYearDisplay() {
     // Don't update if user is editing
     if (isEditingYear) return;
     
-    const endYear = getTimelineEndYear();
+    const currentYear = getCurrentHoloceneYear();
     let displayYear = getYearAtReference();
-    displayYear = Math.min(endYear, displayYear);
+    displayYear = Math.min(currentYear, displayYear);
     
     yearInput.value = displayYear.toLocaleString();
     
     if (scrollProgress) {
-        const scrollPercent = (displayYear / endYear) * 100;
+        const scrollPercent = (displayYear / currentYear) * 100;
         scrollProgress.style.width = scrollPercent + '%';
     }
 }
@@ -386,20 +369,13 @@ function updateYearDisplay() {
  * @param {number} year - Year in HE to scroll to
  */
 function scrollToYear(year) {
-    const endYear = getTimelineEndYear();
-    const clampedYear = Math.max(0, Math.min(endYear, year));
+    const currentYear = getCurrentHoloceneYear();
+    const clampedYear = Math.max(0, Math.min(currentYear, year));
     
     const trackOffset = getTrackOffset();
     const referencePoint = getReferencePoint();
     
-    // We want the year to land at the reference point
-    // Reference point is referencePoint pixels from viewport top
-    // Year is at yearToPixels(year) pixels into the track
-    // Track starts at trackOffset from page top
-    // So year is at (trackOffset + yearToPixels(year)) from page top
-    // We want that to be at referencePoint from viewport top
-    // So: scrollY + referencePoint = trackOffset + yearToPixels(year)
-    // scrollY = trackOffset + yearToPixels(year) - referencePoint
+    // Scroll so the year lands at the reference point
     const targetScroll = trackOffset + yearToPixels(clampedYear) - referencePoint;
     
     window.scrollTo({
@@ -533,7 +509,6 @@ window.timelineAPI = {
     getDatasets: () => [...STATE.datasets],
     getConfig: () => ({ ...CONFIG }),
     getCurrentYear: getCurrentHoloceneYear,
-    getTimelineEndYear,
     
     // Set scale
     setScale(pxPerYear) {
@@ -555,7 +530,6 @@ window.timelineAPI = {
 async function init() {
     console.log('Initializing timeline...');
     console.log('Current Holocene Year:', getCurrentHoloceneYear());
-    console.log('Timeline ends at:', getTimelineEndYear());
     
     // Load core dataset
     await loadAllDatasets(['events/core.json']);
