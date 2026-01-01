@@ -37,6 +37,13 @@
       "categories": ["civilization"]
     },
     {
+      "year": 3000,
+      "title": "Wheel Invented",
+      "desc": "The wheel appears in Mesopotamia, revolutionizing transportation and pottery-making.",
+      "source": "https://en.wikipedia.org/wiki/Wheel",
+      "categories": ["science"]
+    },
+    {
       "year": 4700,
       "title": "Invention of Writing",
       "desc": "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\"",
@@ -51,11 +58,25 @@
       "categories": ["civilization", "culture"]
     },
     {
+      "year": 6000,
+      "title": "Abraham",
+      "desc": "Traditional date for the patriarch Abraham, father of Judaism, Christianity, and Islam.",
+      "source": "https://en.wikipedia.org/wiki/Abraham",
+      "categories": ["religion", "figure"]
+    },
+    {
       "year": 6250,
       "title": "Code of Hammurabi",
       "desc": "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought.",
       "source": "https://en.wikipedia.org/wiki/Code_of_Hammurabi",
       "categories": ["politics", "civilization"]
+    },
+    {
+      "year": 6500,
+      "title": "Moses and the Exodus",
+      "desc": "Traditional date for Moses leading the Israelites out of Egypt. The Ten Commandments given.",
+      "source": "https://en.wikipedia.org/wiki/Moses",
+      "categories": ["religion", "figure"]
     },
     {
       "year": 7000,
@@ -66,6 +87,56 @@
       "categories": ["civilization"]
     },
     {
+      "year": 7224,
+      "title": "First Olympic Games",
+      "desc": "Traditional date for the first Olympic Games at Olympia, Greece. Athletic competition becomes sacred.",
+      "source": "https://en.wikipedia.org/wiki/Ancient_Olympic_Games",
+      "categories": ["culture"]
+    },
+    {
+      "year": 7247,
+      "title": "Founding of Rome",
+      "desc": "Traditional date for the founding of Rome by Romulus. A small village destined to rule the world.",
+      "source": "https://en.wikipedia.org/wiki/Founding_of_Rome",
+      "categories": ["civilization"]
+    },
+    {
+      "year": 8004,
+      "title": "King David",
+      "desc": "David becomes King of Israel, uniting the tribes. Jerusalem becomes the capital.",
+      "source": "https://en.wikipedia.org/wiki/David",
+      "categories": ["religion", "figure", "politics"]
+    },
+    {
+      "year": 8040,
+      "title": "Solomon's Temple Built",
+      "desc": "King Solomon completes the First Temple in Jerusalem, the holiest site in Judaism.",
+      "source": "https://en.wikipedia.org/wiki/Solomon%27s_Temple",
+      "categories": ["religion", "culture"]
+    },
+    {
+      "year": 8500,
+      "endYear": 8800,
+      "title": "Assyrian Empire",
+      "desc": "The Neo-Assyrian Empire dominates the Near East. First true empire in history.",
+      "source": "https://en.wikipedia.org/wiki/Neo-Assyrian_Empire",
+      "categories": ["civilization", "war"]
+    },
+    {
+      "year": 9437,
+      "title": "Buddha Born",
+      "desc": "Siddhartha Gautama born in Lumbini, Nepal. Will become the Buddha and found Buddhism.",
+      "source": "https://en.wikipedia.org/wiki/Gautama_Buddha",
+      "categories": ["religion", "figure"]
+    },
+    {
+      "year": 9449,
+      "title": "Confucius Born",
+      "desc": "Kong Qiu born in Lu, China. His teachings will shape Chinese civilization for millennia.",
+      "source": "https://en.wikipedia.org/wiki/Confucius",
+      "categories": ["religion", "figure", "culture"]
+    },
+    {
       "year": 9200,
       "title": "Athenian Democracy",
       "desc": "World's first democracy. Philosophy, theater, and science flourish in Greece.",
@@ -73,11 +144,46 @@
       "categories": ["politics", "civilization", "culture"]
     },
     {
+      "year": 9490,
+      "title": "Battle of Marathon",
+      "desc": "Athens defeats Persian invasion. The runner Pheidippides inspires the modern marathon.",
+      "source": "https://en.wikipedia.org/wiki/Battle_of_Marathon",
+      "categories": ["war"]
+    },
+    {
+      "year": 9530,
+      "title": "Socrates Born",
+      "desc": "The father of Western philosophy born in Athens. Will teach Plato and die for his beliefs.",
+      "source": "https://en.wikipedia.org/wiki/Socrates",
+      "categories": ["figure", "religion", "culture"]
+    },
+    {
       "year": 9550,
       "title": "Roman Republic Founded",
       "desc": "Rome overthrows its kings. The Republic will shape governance for millennia.",
       "source": "https://en.wikipedia.org/wiki/Roman_Republic",
       "categories": ["politics", "civilization"]
+    },
+    {
+      "year": 9586,
+      "title": "Parthenon Completed",
+      "desc": "Athens completes the Parthenon, temple to Athena. Peak of Classical Greek architecture.",
+      "source": "https://en.wikipedia.org/wiki/Parthenon",
+      "categories": ["culture", "religion"]
+    },
+    {
+      "year": 9601,
+      "title": "Death of Socrates",
+      "desc": "Socrates drinks hemlock after being condemned for corrupting Athens' youth. Philosophy's first martyr.",
+      "source": "https://en.wikipedia.org/wiki/Trial_of_Socrates",
+      "categories": ["figure", "religion"]
+    },
+    {
+      "year": 9616,
+      "title": "Aristotle Born",
+      "desc": "The polymath who will tutor Alexander the Great and systematize Western knowledge.",
+      "source": "https://en.wikipedia.org/wiki/Aristotle",
+      "categories": ["figure", "science", "culture"]
     },
     {
       "year": 9677,
@@ -88,12 +194,40 @@
       "categories": ["civilization", "war", "figure"]
     },
     {
+      "year": 9779,
+      "title": "Great Wall Construction Begins",
+      "desc": "Qin Shi Huang unifies China and begins the Great Wall. First Emperor of unified China.",
+      "source": "https://en.wikipedia.org/wiki/Great_Wall_of_China",
+      "categories": ["civilization", "culture"]
+    },
+    {
       "year": 9794,
       "endYear": 10220,
       "title": "Han Dynasty",
       "desc": "One of China's greatest dynasties. Paper invented, Silk Road flourishes.",
       "source": "https://en.wikipedia.org/wiki/Han_dynasty",
       "categories": ["civilization", "economics"]
+    },
+    {
+      "year": 9929,
+      "title": "Spartacus Rebellion",
+      "desc": "Gladiator Spartacus leads history's most famous slave revolt against Rome.",
+      "source": "https://en.wikipedia.org/wiki/Spartacus",
+      "categories": ["war", "figure"]
+    },
+    {
+      "year": 9956,
+      "title": "Julius Caesar Assassinated",
+      "desc": "\"Et tu, Brute?\" Caesar murdered by senators on the Ides of March. Republic dies with him.",
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_Julius_Caesar",
+      "categories": ["politics", "figure"]
+    },
+    {
+      "year": 9970,
+      "title": "Cleopatra Dies",
+      "desc": "Last pharaoh of Egypt takes her own life. Egypt becomes a Roman province.",
+      "source": "https://en.wikipedia.org/wiki/Cleopatra",
+      "categories": ["figure", "politics"]
     },
     {
       "year": 9973,
@@ -111,6 +245,34 @@
       "categories": ["religion", "culture"]
     },
     {
+      "year": 10004,
+      "title": "Birth of Jesus",
+      "desc": "Traditional date for the birth of Jesus of Nazareth in Bethlehem. Christianity's founding figure.",
+      "source": "https://en.wikipedia.org/wiki/Jesus",
+      "categories": ["religion", "figure"]
+    },
+    {
+      "year": 10030,
+      "title": "Crucifixion of Jesus",
+      "desc": "Jesus crucified in Jerusalem under Pontius Pilate. Christians believe he rose three days later.",
+      "source": "https://en.wikipedia.org/wiki/Crucifixion_of_Jesus",
+      "categories": ["religion", "figure"]
+    },
+    {
+      "year": 10079,
+      "title": "Eruption of Vesuvius",
+      "desc": "Mount Vesuvius buries Pompeii and Herculaneum. Preserved forever in volcanic ash.",
+      "source": "https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD",
+      "categories": ["disaster"]
+    },
+    {
+      "year": 10313,
+      "title": "Edict of Milan",
+      "desc": "Constantine legalizes Christianity throughout the Roman Empire. Faith goes mainstream.",
+      "source": "https://en.wikipedia.org/wiki/Edict_of_Milan",
+      "categories": ["religion", "politics"]
+    },
+    {
       "year": 10476,
       "title": "Fall of Rome",
       "desc": "Western Roman Empire collapses. Europe enters the Middle Ages.",
@@ -126,11 +288,77 @@
       "categories": ["civilization"]
     },
     {
+      "year": 10541,
+      "endYear": 10750,
+      "title": "Plague of Justinian",
+      "desc": "First bubonic plague pandemic. Kills up to 50 million—half of Europe's population.",
+      "source": "https://en.wikipedia.org/wiki/Plague_of_Justinian",
+      "categories": ["disaster"]
+    },
+    {
+      "year": 10570,
+      "title": "Muhammad Born",
+      "desc": "Prophet of Islam born in Mecca. Will unite Arabia and found world's second-largest religion.",
+      "source": "https://en.wikipedia.org/wiki/Muhammad",
+      "categories": ["religion", "figure"]
+    },
+    {
+      "year": 10622,
+      "title": "Hijra - Islamic Calendar Begins",
+      "desc": "Muhammad's migration from Mecca to Medina. Year One of the Islamic calendar.",
+      "source": "https://en.wikipedia.org/wiki/Hijra",
+      "categories": ["religion"]
+    },
+    {
+      "year": 10800,
+      "title": "Charlemagne Crowned Emperor",
+      "desc": "Pope crowns Charlemagne Emperor of the Romans. Holy Roman Empire begins.",
+      "source": "https://en.wikipedia.org/wiki/Charlemagne",
+      "categories": ["politics", "figure", "civilization"]
+    },
+    {
+      "year": 11066,
+      "title": "Norman Conquest of England",
+      "desc": "William the Conqueror defeats Harold at Hastings. English history forever changed.",
+      "source": "https://en.wikipedia.org/wiki/Norman_Conquest",
+      "categories": ["war", "politics"]
+    },
+    {
+      "year": 11096,
+      "endYear": 11099,
+      "title": "First Crusade",
+      "desc": "Christian armies capture Jerusalem. Two centuries of religious warfare begin.",
+      "source": "https://en.wikipedia.org/wiki/First_Crusade",
+      "categories": ["war", "religion"]
+    },
+    {
+      "year": 11162,
+      "title": "Genghis Khan Born",
+      "desc": "Temüjin born on the Mongolian steppe. Will build the largest contiguous empire in history.",
+      "source": "https://en.wikipedia.org/wiki/Genghis_Khan",
+      "categories": ["figure"]
+    },
+    {
+      "year": 11206,
+      "endYear": 11368,
+      "title": "Mongol Empire",
+      "desc": "Largest contiguous land empire ever. From Korea to Poland under one rule.",
+      "source": "https://en.wikipedia.org/wiki/Mongol_Empire",
+      "categories": ["civilization", "war"]
+    },
+    {
       "year": 11215,
       "title": "Magna Carta",
       "desc": "English nobles force King John to sign—foundation of constitutional law.",
       "source": "https://en.wikipedia.org/wiki/Magna_Carta",
       "categories": ["politics"]
+    },
+    {
+      "year": 11265,
+      "title": "Dante Born",
+      "desc": "Author of the Divine Comedy born in Florence. Father of the Italian language.",
+      "source": "https://en.wikipedia.org/wiki/Dante_Alighieri",
+      "categories": ["figure", "culture"]
     },
     {
       "year": 11300,
@@ -141,6 +369,14 @@
       "categories": ["civilization", "culture", "science"]
     },
     {
+      "year": 11347,
+      "endYear": 11353,
+      "title": "Black Death",
+      "desc": "Bubonic plague kills 50 million Europeans—up to 60% of the population. Society transformed.",
+      "source": "https://en.wikipedia.org/wiki/Black_Death",
+      "categories": ["disaster"]
+    },
+    {
       "year": 11440,
       "title": "Gutenberg's Press",
       "desc": "Movable type printing spreads knowledge faster than ever before.",
@@ -148,11 +384,75 @@
       "categories": ["science", "culture"]
     },
     {
+      "year": 11452,
+      "title": "Leonardo da Vinci Born",
+      "desc": "The ultimate Renaissance man. Painter, inventor, scientist, and visionary.",
+      "source": "https://en.wikipedia.org/wiki/Leonardo_da_Vinci",
+      "categories": ["figure", "science", "culture"]
+    },
+    {
+      "year": 11453,
+      "title": "Fall of Constantinople",
+      "desc": "Ottoman Turks conquer the Byzantine capital. End of the Roman Empire after 1,500 years.",
+      "source": "https://en.wikipedia.org/wiki/Fall_of_Constantinople",
+      "categories": ["war", "civilization"]
+    },
+    {
       "year": 11492,
       "title": "Columbus Reaches Americas",
       "desc": "European contact with the \"New World.\" Global exchange—and exploitation—begins.",
       "source": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus",
       "categories": ["exploration", "figure"]
+    },
+    {
+      "year": 11517,
+      "title": "Protestant Reformation",
+      "desc": "Martin Luther posts 95 Theses. Christianity splits, religious wars follow.",
+      "source": "https://en.wikipedia.org/wiki/Reformation",
+      "categories": ["religion", "politics"]
+    },
+    {
+      "year": 11543,
+      "title": "Copernican Revolution",
+      "desc": "Copernicus publishes heliocentric theory. Earth is not the center of the universe.",
+      "source": "https://en.wikipedia.org/wiki/Copernican_Revolution",
+      "categories": ["science"]
+    },
+    {
+      "year": 11564,
+      "title": "Shakespeare Born",
+      "desc": "The Bard of Avon born. Will write the most influential works in English literature.",
+      "source": "https://en.wikipedia.org/wiki/William_Shakespeare",
+      "categories": ["figure", "culture"]
+    },
+    {
+      "year": 11564,
+      "title": "Galileo Born",
+      "desc": "Father of modern science born in Pisa. Will confirm Copernicus and face the Inquisition.",
+      "source": "https://en.wikipedia.org/wiki/Galileo_Galilei",
+      "categories": ["figure", "science"]
+    },
+    {
+      "year": 11620,
+      "title": "Mayflower Landing",
+      "desc": "Pilgrims land at Plymouth Rock. English colonization of North America begins in earnest.",
+      "source": "https://en.wikipedia.org/wiki/Mayflower",
+      "categories": ["exploration", "religion"]
+    },
+    {
+      "year": 11687,
+      "title": "Newton's Principia",
+      "desc": "Isaac Newton publishes laws of motion and gravity. Modern physics is born.",
+      "source": "https://en.wikipedia.org/wiki/Philosophi%C3%A6_Naturalis_Principia_Mathematica",
+      "categories": ["science", "figure"]
+    },
+    {
+      "year": 11760,
+      "endYear": 11840,
+      "title": "Industrial Revolution",
+      "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
+      "source": "https://en.wikipedia.org/wiki/Industrial_Revolution",
+      "categories": ["civilization", "science", "economics"]
     },
     {
       "year": 11776,
@@ -169,12 +469,11 @@
       "categories": ["politics", "war"]
     },
     {
-      "year": 11760,
-      "endYear": 11840,
-      "title": "Industrial Revolution",
-      "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
-      "source": "https://en.wikipedia.org/wiki/Industrial_Revolution",
-      "categories": ["civilization", "science", "economics"]
+      "year": 11809,
+      "title": "Darwin Born",
+      "desc": "Charles Darwin born. Will revolutionize biology with theory of evolution by natural selection.",
+      "source": "https://en.wikipedia.org/wiki/Charles_Darwin",
+      "categories": ["figure", "science"]
     },
     {
       "year": 11837,
@@ -185,6 +484,49 @@
       "categories": ["civilization", "politics"]
     },
     {
+      "year": 11859,
+      "title": "Origin of Species Published",
+      "desc": "Darwin publishes theory of evolution. Biology—and humanity's self-image—transformed.",
+      "source": "https://en.wikipedia.org/wiki/On_the_Origin_of_Species",
+      "categories": ["science"]
+    },
+    {
+      "year": 11861,
+      "endYear": 11865,
+      "title": "American Civil War",
+      "desc": "Union vs. Confederacy. 620,000 dead. Slavery abolished, nation preserved.",
+      "source": "https://en.wikipedia.org/wiki/American_Civil_War",
+      "categories": ["war", "politics"]
+    },
+    {
+      "year": 11865,
+      "title": "Lincoln Assassinated",
+      "desc": "President Lincoln shot at Ford's Theatre, five days after the Civil War ends.",
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_Abraham_Lincoln",
+      "categories": ["figure", "politics"]
+    },
+    {
+      "year": 11879,
+      "title": "Einstein Born",
+      "desc": "Albert Einstein born in Ulm, Germany. Will redefine space, time, and reality itself.",
+      "source": "https://en.wikipedia.org/wiki/Albert_Einstein",
+      "categories": ["figure", "science"]
+    },
+    {
+      "year": 11905,
+      "title": "Einstein's Miracle Year",
+      "desc": "Einstein publishes special relativity and E=mc². Physics will never be the same.",
+      "source": "https://en.wikipedia.org/wiki/Annus_Mirabilis_papers",
+      "categories": ["science"]
+    },
+    {
+      "year": 11912,
+      "title": "Titanic Sinks",
+      "desc": "\"Unsinkable\" ocean liner hits iceberg on maiden voyage. 1,500 dead. End of an era.",
+      "source": "https://en.wikipedia.org/wiki/Sinking_of_the_Titanic",
+      "categories": ["disaster"]
+    },
+    {
       "year": 11914,
       "endYear": 11918,
       "title": "World War I",
@@ -193,12 +535,35 @@
       "categories": ["war"]
     },
     {
+      "year": 11918,
+      "endYear": 11920,
+      "title": "Spanish Flu Pandemic",
+      "desc": "Deadliest pandemic in modern history. 50-100 million dead worldwide.",
+      "source": "https://en.wikipedia.org/wiki/Spanish_flu",
+      "categories": ["disaster"]
+    },
+    {
+      "year": 11929,
+      "title": "Black Tuesday",
+      "desc": "Stock market crashes. Great Depression begins, reshaping global economics.",
+      "source": "https://en.wikipedia.org/wiki/Wall_Street_Crash_of_1929",
+      "categories": ["economics", "disaster"]
+    },
+    {
       "year": 11939,
       "endYear": 11945,
       "title": "World War II",
       "desc": "History's deadliest conflict. 70-85 million dead. The world reshaped.",
       "source": "https://en.wikipedia.org/wiki/World_War_II",
       "categories": ["war"]
+    },
+    {
+      "year": 11941,
+      "endYear": 11945,
+      "title": "The Holocaust",
+      "desc": "Nazi genocide kills 6 million Jews and millions of others. Humanity's darkest chapter.",
+      "source": "https://en.wikipedia.org/wiki/The_Holocaust",
+      "categories": ["disaster", "war"]
     },
     {
       "year": 11945,
@@ -216,6 +581,13 @@
       "categories": ["war", "politics"]
     },
     {
+      "year": 11963,
+      "title": "JFK Assassinated",
+      "desc": "President Kennedy shot in Dallas. End of Camelot, birth of conspiracy theories.",
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_John_F._Kennedy",
+      "categories": ["figure", "politics"]
+    },
+    {
       "year": 11969,
       "title": "Moon Landing",
       "desc": "Humans walk on another world. \"One giant leap for mankind.\"",
@@ -223,11 +595,33 @@
       "categories": ["exploration", "science"]
     },
     {
+      "year": 11989,
+      "title": "Fall of the Berlin Wall",
+      "desc": "East and West Germany reunite. Beginning of the end of the Cold War.",
+      "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall",
+      "categories": ["politics"]
+    },
+    {
       "year": 11991,
       "title": "World Wide Web",
       "desc": "Tim Berners-Lee creates the web. Information becomes instantly global.",
       "source": "https://en.wikipedia.org/wiki/World_Wide_Web",
       "categories": ["science"]
+    },
+    {
+      "year": 12001,
+      "title": "September 11 Attacks",
+      "desc": "Terrorist attacks kill nearly 3,000 in New York, Washington, and Pennsylvania. World changed forever.",
+      "source": "https://en.wikipedia.org/wiki/September_11_attacks",
+      "categories": ["disaster", "war"]
+    },
+    {
+      "year": 12020,
+      "endYear": 12023,
+      "title": "COVID-19 Pandemic",
+      "desc": "Global pandemic kills millions, transforms society. Lockdowns, vaccines, and remote work.",
+      "source": "https://en.wikipedia.org/wiki/COVID-19_pandemic",
+      "categories": ["disaster"]
     },
     {
       "year": 12022,
