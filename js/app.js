@@ -2,8 +2,7 @@
 const CONFIG = {
     pxPerYear: 4,           // Scale: pixels per year (adjustable via UI)
     minPxPerYear: 0.5,      // Minimum scale
-    maxPxPerYear: 10,       // Maximum scale
-    currentYear: 12025,     // End of timeline (current year in HE)
+    maxPxPerYear: 100,       // Maximum scale
     centuryInterval: 100,   // Label every N years
     decadeInterval: 10,     // Tick every N years
 };
@@ -15,6 +14,14 @@ const STATE = {
 };
 
 // ============ DATE CONVERSION UTILITIES ============
+
+/**
+ * Get the current year in Holocene Era
+ * @returns {number} Current year in HE
+ */
+function getCurrentHoloceneYear() {
+    return new Date().getFullYear() + 10000;
+}
 
 /**
  * Convert a year from CE/BCE to Holocene Era (HE)
@@ -128,6 +135,7 @@ async function loadDataset(url) {
             }));
         }
         
+        console.log(`Loaded dataset "${data.id}" with ${data.events?.length || 0} events`);
         return data;
     } catch (error) {
         console.error(`Failed to load dataset from ${url}:`, error);
@@ -179,10 +187,11 @@ function createEvent(eventData, index) {
     event.style.top = yearToPixels(eventData.year) + 'px';
     
     const colorStyle = eventData.color ? `background: ${eventData.color}` : '';
+    const dotColor = eventData.color || 'var(--gold-dim)';
     
     event.innerHTML = `
-        <div class="connector"></div>
-        <div class="dot" style="border-color: ${eventData.color || 'var(--gold-dim)'}"></div>
+        <div class="connector" style="background: ${dotColor}"></div>
+        <div class="dot" style="border-color: ${dotColor}"></div>
         <div class="content">
             <div class="event-header">
                 ${eventData.color ? `<span class="category-dot" style="${colorStyle}"></span>` : ''}
@@ -193,11 +202,6 @@ function createEvent(eventData, index) {
         </div>
     `;
     
-    // Update connector color
-    if (eventData.color) {
-        event.querySelector('.connector').style.background = eventData.color;
-    }
-    
     return event;
 }
 
@@ -205,10 +209,17 @@ function createEvent(eventData, index) {
 
 function renderTimeline() {
     const track = document.getElementById('timelineTrack');
+    if (!track) {
+        console.error('Timeline track element not found');
+        return;
+    }
+    
     track.innerHTML = '';
     
+    const currentYear = getCurrentHoloceneYear();
+    
     // Set track height
-    const totalHeight = yearToPixels(CONFIG.currentYear);
+    const totalHeight = yearToPixels(currentYear);
     track.style.height = totalHeight + 'px';
     
     // Update scale display
@@ -229,22 +240,23 @@ function renderTimeline() {
     }
     
     // Create century markers
-    for (let year = 0; year <= CONFIG.currentYear; year += CONFIG.centuryInterval) {
+    for (let year = 0; year <= currentYear; year += CONFIG.centuryInterval) {
         track.appendChild(createCenturyMarker(year));
     }
     
     // Create decade ticks (skip centuries)
-    for (let year = CONFIG.decadeInterval; year <= CONFIG.currentYear; year += CONFIG.decadeInterval) {
+    for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
         if (year % CONFIG.centuryInterval !== 0) {
             track.appendChild(createDecadeTick(year));
         }
     }
     
     // Create events (alternating left/right)
+    console.log(`Rendering ${STATE.allEvents.length} events`);
     STATE.allEvents.forEach((eventData, index) => {
-        track.appendChild(createEvent(eventData, index));
+        const eventEl = createEvent(eventData, index);
+        track.appendChild(eventEl);
     });
-
 }
 
 // ============ SCROLL TRACKING ============
@@ -256,19 +268,20 @@ function updateYearDisplay() {
     
     if (!track || !yearDisplay) return;
     
+    const currentYear = getCurrentHoloceneYear();
     const rect = track.getBoundingClientRect();
     const header = document.querySelector('header');
     const headerHeight = header ? header.offsetHeight : 0;
     
     const scrolledIntoTimeline = (headerHeight + 100) - rect.top;
     
-    let currentYear = pixelsToYear(scrolledIntoTimeline);
-    currentYear = Math.max(0, Math.min(CONFIG.currentYear, currentYear));
+    let displayYear = pixelsToYear(scrolledIntoTimeline);
+    displayYear = Math.max(0, Math.min(currentYear, displayYear));
     
-    yearDisplay.textContent = currentYear.toLocaleString();
+    yearDisplay.textContent = displayYear.toLocaleString();
     
     if (scrollProgress) {
-        const scrollPercent = (currentYear / CONFIG.currentYear) * 100;
+        const scrollPercent = (displayYear / currentYear) * 100;
         scrollProgress.style.width = scrollPercent + '%';
     }
 }
@@ -356,6 +369,7 @@ window.timelineAPI = {
     getEvents: () => [...STATE.allEvents],
     getDatasets: () => [...STATE.datasets],
     getConfig: () => ({ ...CONFIG }),
+    getCurrentYear: getCurrentHoloceneYear,
     
     // Set scale
     setScale(pxPerYear) {
@@ -372,6 +386,9 @@ window.timelineAPI = {
 // ============ INITIALIZE ============
 
 async function init() {
+    console.log('Initializing timeline...');
+    console.log('Current Holocene Year:', getCurrentHoloceneYear());
+    
     // Load core dataset
     await loadAllDatasets(['events/core.json']);
     
@@ -385,6 +402,8 @@ async function init() {
     updateYearDisplay();
     window.addEventListener('scroll', updateYearDisplay);
     window.addEventListener('resize', updateYearDisplay);
+    
+    console.log('Timeline initialized');
 }
 
 document.addEventListener('DOMContentLoaded', init);

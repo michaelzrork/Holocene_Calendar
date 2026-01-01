@@ -3,8 +3,8 @@
     --bg-card: #111113;
     --gold: #c9a227;
     --gold-dim: #8a7019;
-    --bone: #e8e4d9;
-    --bone-dim: #c4c1b3;
+    --bone: #e5e3de;
+    --bone-dim: #d6d3c7;
     --accent: #d4442e;
     --timeline-line: #2a2a2f;
 }
@@ -191,37 +191,28 @@ h1 span {
 .century-marker {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
 }
 
 .century-marker span {
+    display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
     white-space: nowrap;
-}
-
-.century-marker::before,
-.century-marker::after {
-    content: '';
-    width: 15px;
-    height: 1px;
-    background: var(--timeline-line);
+    background: var(--bg-dark);
+    border: 1px solid var(--timeline-line);
+    padding: 4px 10px;
 }
 
 .century-marker.millennium span {
-    color: var(--gold-dim);
-    font-size: 0.75rem;
-}
-
-.century-marker.millennium::before,
-.century-marker.millennium::after {
-    background: var(--gold-dim);
-    width: 25px;
+    color: var(--gold);
+    font-size: 0.7rem;
+    border-color: var(--gold-dim);
+    background: var(--bg-card);
+    padding: 6px 14px;
 }
 
 /* ============ DECADE TICKS ============ */
@@ -229,10 +220,10 @@ h1 span {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    width: 8px;
+    width: 20px;
     height: 1px;
     background: var(--timeline-line);
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 /* ============ EVENTS (ALTERNATING LEFT/RIGHT) ============ */
@@ -305,6 +296,7 @@ h1 span {
     border: 2px solid var(--gold-dim);
     border-radius: 50%;
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .event:hover .dot {
@@ -389,50 +381,6 @@ h1 span {
     display: inline-block;
     margin-right: 6px;
     flex-shrink: 0;
-}
-
-/* ============ NOW MARKER ============ */
-.now-marker {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.now-marker .dot {
-    width: 16px;
-    height: 16px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(212, 68, 46, 0.5);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-.now-marker .info {
-    background: var(--bg-card);
-    padding: 8px 15px;
-    border: 1px solid #1a1a1f;
-}
-
-.now-marker .info .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1rem;
-    color: var(--accent);
-    letter-spacing: 2px;
-}
-
-.now-marker .info .sublabel {
-    font-size: 0.65rem;
-    color: var(--bone-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(212, 68, 46, 0.5); }
-    50% { box-shadow: 0 0 35px rgba(212, 68, 46, 0.8); }
 }
 
 /* ============ FOOTER ============ */
