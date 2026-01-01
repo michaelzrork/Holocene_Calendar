@@ -518,7 +518,7 @@ h1 span {
     color: var(--bone-dim);
     line-height: 1.5;
     font-weight: 300;
-    margin-top: 8px;
+    margin-top: 0;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -528,6 +528,7 @@ h1 span {
 .event:hover .event-desc {
     max-height: 200px;
     opacity: 1;
+    margin-top: 8px;
 }
 
 .event:hover .event-title {
