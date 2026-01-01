@@ -512,6 +512,30 @@ h1 span {
     margin-top: 2px;
 }
 
+/* Source link */
+.event-source {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 8px;
+    text-decoration: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.event:hover .event-source {
+    opacity: 1;
+    max-height: 30px;
+}
+
+.event-source:hover {
+    text-decoration: underline;
+}
+
 /* Event content */
 .event .content {
     padding: 8px 12px;

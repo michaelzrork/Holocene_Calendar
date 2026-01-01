@@ -377,6 +377,11 @@ function createRangeBar(rangeData, index, maxDuration) {
     const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
     const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
     
+    // Build source link if available
+    const sourceLink = rangeData.source 
+        ? `<a href="${rangeData.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${color.text}">Learn more →</a>`
+        : '';
+    
     range.innerHTML = `
         <div class="content">
             <div class="connector" style="background: ${color.border}"></div>
@@ -392,6 +397,7 @@ function createRangeBar(rangeData, index, maxDuration) {
             </div>
             <span class="range-dates" style="color: ${color.text}">${yearLabel}</span>
             <p class="event-desc">${rangeData.desc || ''}</p>
+            ${sourceLink}
         </div>
     `;
     
@@ -448,6 +454,11 @@ function createEvent(eventData, index) {
     const dotColor = eventData.color || 'var(--gold)';
     const yearLabel = formatYear(eventData.year, eventData.approximate);
     
+    // Build source link if available
+    const sourceLink = eventData.source 
+        ? `<a href="${eventData.source}" target="_blank" rel="noopener noreferrer" class="event-source">Learn more →</a>`
+        : '';
+    
     event.innerHTML = `
         <div class="content">
             <div class="connector" style="background: ${dotColor}"></div>
@@ -457,6 +468,7 @@ function createEvent(eventData, index) {
             </div>
             <span class="event-year-text">${yearLabel}</span>
             <p class="event-desc">${eventData.desc || ''}</p>
+            ${sourceLink}
         </div>
     `;
     
