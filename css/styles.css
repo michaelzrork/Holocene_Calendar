@@ -277,6 +277,138 @@ h1 span {
     color: var(--bone-dim);
 }
 
+/* ============ FILTER CONTROL ============ */
+.filter-control {
+    background: var(--bg-card);
+    border: 1px solid #1a1a1f;
+    width: 150px;
+}
+
+.filter-toggle {
+    width: 100%;
+    padding: 12px 15px;
+    background: transparent;
+    border: none;
+    color: var(--bone-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.filter-toggle:hover {
+    color: var(--gold);
+}
+
+.filter-icon {
+    font-size: 0.9rem;
+}
+
+.filter-count {
+    margin-left: auto;
+    color: var(--gold);
+    font-size: 0.6rem;
+}
+
+.filter-panel {
+    display: none;
+    padding: 0 15px 15px;
+    border-top: 1px solid #1a1a1f;
+}
+
+.filter-panel.open {
+    display: block;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-top: 12px;
+}
+
+.filter-action {
+    flex: 1;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid #1a1a1f;
+    color: var(--bone-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-action:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.3s ease;
+}
+
+.filter-option:hover {
+    color: var(--gold);
+}
+
+.filter-option input[type="checkbox"] {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #1a1a1f;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.filter-option input[type="checkbox"]:checked {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.filter-option input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--bg-dark);
+    font-size: 0.6rem;
+}
+
+.filter-option-icon {
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
+
+.filter-option-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.5px;
+    color: var(--bone-dim);
+}
+
 /* ============ TIMELINE CONTAINER ============ */
 .timeline-container {
     max-width: 1000px;

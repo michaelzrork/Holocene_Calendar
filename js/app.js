@@ -13,6 +13,9 @@ const STATE = {
     allEvents: [],          // Merged and sorted events from all datasets
     pointEvents: [],        // Events without endYear
     rangeEvents: [],        // Events with endYear
+    categories: {},         // Category definitions from datasets
+    activeFilters: new Set(), // Currently active category filters (empty = show all)
+    filterMode: 'all',      // 'all' = show all, 'filtered' = show only active
 };
 
 // ============ DATE CONVERSION UTILITIES ============
@@ -242,6 +245,14 @@ async function loadAllDatasets(urls) {
     
     STATE.datasets = results.filter(d => d !== null);
     
+    // Merge categories from all datasets
+    STATE.categories = {};
+    STATE.datasets.forEach(dataset => {
+        if (dataset.categories) {
+            STATE.categories = { ...STATE.categories, ...dataset.categories };
+        }
+    });
+    
     // Merge all events
     STATE.allEvents = STATE.datasets
         .flatMap(dataset => dataset.events || [])
@@ -252,7 +263,8 @@ async function loadAllDatasets(urls) {
         year: getCurrentHoloceneYear(),
         title: "Today",
         desc: "You are here!",
-        isToday: true
+        isToday: true,
+        categories: []
     };
     STATE.allEvents.push(todayEvent);
     
@@ -263,7 +275,135 @@ async function loadAllDatasets(urls) {
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
     STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
     
+    // Initialize filters - all categories active by default
+    STATE.activeFilters = new Set(Object.keys(STATE.categories));
+    
+    // Build filter UI
+    buildFilterUI();
+    
     console.log(`Loaded ${STATE.datasets.length} datasets with ${STATE.pointEvents.length} point events and ${STATE.rangeEvents.length} range events`);
+    console.log(`Categories: ${Object.keys(STATE.categories).join(', ')}`);
+}
+
+// ============ FILTER FUNCTIONS ============
+
+/**
+ * Build the filter UI checkboxes
+ */
+function buildFilterUI() {
+    const filterOptions = document.getElementById('filterOptions');
+    if (!filterOptions) return;
+    
+    filterOptions.innerHTML = '';
+    
+    Object.entries(STATE.categories).forEach(([key, category]) => {
+        const label = document.createElement('label');
+        label.className = 'filter-option';
+        label.innerHTML = `
+            <input type="checkbox" value="${key}" checked>
+            <span class="filter-option-icon">${category.icon || ''}</span>
+            <span class="filter-option-label">${category.name}</span>
+        `;
+        
+        const checkbox = label.querySelector('input');
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                STATE.activeFilters.add(key);
+            } else {
+                STATE.activeFilters.delete(key);
+            }
+            updateFilterCount();
+            renderTimeline();
+        });
+        
+        filterOptions.appendChild(label);
+    });
+    
+    updateFilterCount();
+}
+
+/**
+ * Update the filter count display
+ */
+function updateFilterCount() {
+    const filterCount = document.getElementById('filterCount');
+    if (!filterCount) return;
+    
+    const total = Object.keys(STATE.categories).length;
+    const active = STATE.activeFilters.size;
+    
+    if (active === total) {
+        filterCount.textContent = '';
+    } else {
+        filterCount.textContent = `${active}/${total}`;
+    }
+}
+
+/**
+ * Setup filter controls (toggle, all/none buttons)
+ */
+function setupFilterControls() {
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+    const filterAll = document.getElementById('filterAll');
+    const filterNone = document.getElementById('filterNone');
+    
+    if (filterToggle && filterPanel) {
+        filterToggle.addEventListener('click', () => {
+            filterPanel.classList.toggle('open');
+        });
+    }
+    
+    if (filterAll) {
+        filterAll.addEventListener('click', () => {
+            STATE.activeFilters = new Set(Object.keys(STATE.categories));
+            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            updateFilterCount();
+            renderTimeline();
+        });
+    }
+    
+    if (filterNone) {
+        filterNone.addEventListener('click', () => {
+            STATE.activeFilters.clear();
+            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            updateFilterCount();
+            renderTimeline();
+        });
+    }
+}
+
+/**
+ * Check if an event passes the current filters
+ * @param {object} event - The event to check
+ * @returns {boolean} True if event should be shown
+ */
+function eventPassesFilter(event) {
+    // Always show Today
+    if (event.isToday) return true;
+    
+    // If no categories defined on event, show it (uncategorized)
+    if (!event.categories || event.categories.length === 0) return true;
+    
+    // If no filters active, hide all categorized events
+    if (STATE.activeFilters.size === 0) return false;
+    
+    // Show if any of the event's categories are active
+    return event.categories.some(cat => STATE.activeFilters.has(cat));
+}
+
+/**
+ * Get filtered events
+ */
+function getFilteredEvents() {
+    return {
+        pointEvents: STATE.pointEvents.filter(eventPassesFilter),
+        rangeEvents: STATE.rangeEvents.filter(eventPassesFilter)
+    };
 }
 
 // ============ RENDER FUNCTIONS ============
@@ -552,16 +692,19 @@ function renderTimeline() {
     
     // Create all events together (point + range) for proper alternation
     // Sort by midpoint year for ranges, year for points
+    // Use filtered events
+    const { pointEvents, rangeEvents } = getFilteredEvents();
+    
     const allEventsForRender = [
-        ...STATE.pointEvents.map(e => ({ ...e, isRange: false, sortYear: e.year })),
-        ...STATE.rangeEvents.map(e => ({ ...e, isRange: true, sortYear: e.year + (e.endYear - e.year) / 2 }))
+        ...pointEvents.map(e => ({ ...e, isRange: false, sortYear: e.year })),
+        ...rangeEvents.map(e => ({ ...e, isRange: true, sortYear: e.year + (e.endYear - e.year) / 2 }))
     ].sort((a, b) => a.sortYear - b.sortYear);
     
-    const maxDuration = STATE.rangeEvents.length > 0 
-        ? Math.max(...STATE.rangeEvents.map(r => r.endYear - r.year))
+    const maxDuration = rangeEvents.length > 0 
+        ? Math.max(...rangeEvents.map(r => r.endYear - r.year))
         : 1;
     
-    console.log(`Rendering ${allEventsForRender.length} total events (${STATE.pointEvents.length} point, ${STATE.rangeEvents.length} range)`);
+    console.log(`Rendering ${allEventsForRender.length} total events (${pointEvents.length} point, ${rangeEvents.length} range)`);
     
     allEventsForRender.forEach((eventData, index) => {
         if (eventData.isRange) {
@@ -899,6 +1042,7 @@ async function init() {
     setupScaleControl();
     setupYearInput();
     setupNavButtons();
+    setupFilterControls();
     
     // Setup scroll tracking
     updateYearDisplay();

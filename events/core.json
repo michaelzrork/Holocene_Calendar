@@ -2,197 +2,239 @@
   "id": "core",
   "name": "Core Historical Events",
   "color": "#c9a227",
+  "categories": {
+    "civilization": { "name": "Civilizations & Eras", "icon": "🏛️" },
+    "war": { "name": "Wars & Conflicts", "icon": "⚔️" },
+    "politics": { "name": "Political Events", "icon": "🏴" },
+    "science": { "name": "Science & Technology", "icon": "🔬" },
+    "culture": { "name": "Culture & Art", "icon": "🎭" },
+    "figure": { "name": "Historical Figures", "icon": "👤" },
+    "disaster": { "name": "Disasters & Plagues", "icon": "💀" },
+    "exploration": { "name": "Exploration & Discovery", "icon": "🧭" },
+    "economics": { "name": "Trade & Economics", "icon": "💰" },
+    "religion": { "name": "Religion & Philosophy", "icon": "✝️" }
+  },
   "events": [
     {
       "year": 0,
       "title": "Neolithic Revolution Begins",
       "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently.",
-      "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution"
+      "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution",
+      "categories": ["civilization", "science"]
     },
     {
       "year": 500,
       "title": "Göbekli Tepe",
       "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
-      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe"
+      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
+      "categories": ["civilization", "religion", "culture"]
     },
     {
       "year": 1000,
       "title": "Jericho Settlement",
       "desc": "One of humanity's first permanent settlements builds defensive walls and a tower.",
-      "source": "https://en.wikipedia.org/wiki/Jericho"
+      "source": "https://en.wikipedia.org/wiki/Jericho",
+      "categories": ["civilization"]
     },
     {
       "year": 4700,
       "title": "Invention of Writing",
       "desc": "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\"",
-      "source": "https://en.wikipedia.org/wiki/History_of_writing"
+      "source": "https://en.wikipedia.org/wiki/History_of_writing",
+      "categories": ["science", "culture", "civilization"]
     },
     {
       "year": 5450,
       "title": "Great Pyramid of Giza",
       "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
-      "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"
+      "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
+      "categories": ["civilization", "culture"]
     },
     {
       "year": 6250,
       "title": "Code of Hammurabi",
       "desc": "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought.",
-      "source": "https://en.wikipedia.org/wiki/Code_of_Hammurabi"
+      "source": "https://en.wikipedia.org/wiki/Code_of_Hammurabi",
+      "categories": ["politics", "civilization"]
     },
     {
       "year": 7000,
       "endYear": 9000,
       "title": "Ancient Egypt",
       "desc": "From the Early Dynastic Period through the New Kingdom. Pyramids, pharaohs, and hieroglyphs.",
-      "source": "https://en.wikipedia.org/wiki/Ancient_Egypt"
+      "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
+      "categories": ["civilization"]
     },
     {
       "year": 9200,
       "title": "Athenian Democracy",
       "desc": "World's first democracy. Philosophy, theater, and science flourish in Greece.",
-      "source": "https://en.wikipedia.org/wiki/Athenian_democracy"
+      "source": "https://en.wikipedia.org/wiki/Athenian_democracy",
+      "categories": ["politics", "civilization", "culture"]
     },
     {
       "year": 9550,
       "title": "Roman Republic Founded",
       "desc": "Rome overthrows its kings. The Republic will shape governance for millennia.",
-      "source": "https://en.wikipedia.org/wiki/Roman_Republic"
+      "source": "https://en.wikipedia.org/wiki/Roman_Republic",
+      "categories": ["politics", "civilization"]
     },
     {
       "year": 9677,
       "endYear": 9690,
       "title": "Alexander's Empire",
       "desc": "Conquers from Greece to India in 13 years. Hellenistic culture spreads worldwide.",
-      "source": "https://en.wikipedia.org/wiki/Alexander_the_Great"
+      "source": "https://en.wikipedia.org/wiki/Alexander_the_Great",
+      "categories": ["civilization", "war", "figure"]
     },
     {
       "year": 9794,
       "endYear": 10220,
       "title": "Han Dynasty",
       "desc": "One of China's greatest dynasties. Paper invented, Silk Road flourishes.",
-      "source": "https://en.wikipedia.org/wiki/Han_dynasty"
+      "source": "https://en.wikipedia.org/wiki/Han_dynasty",
+      "categories": ["civilization", "economics"]
     },
     {
       "year": 9973,
       "endYear": 10476,
       "title": "Roman Empire",
       "desc": "From Augustus to the fall. At its peak, ruled 70 million people across three continents.",
-      "source": "https://en.wikipedia.org/wiki/Roman_Empire"
+      "source": "https://en.wikipedia.org/wiki/Roman_Empire",
+      "categories": ["civilization"]
     },
     {
       "year": 10000,
       "title": "Year Zero (CE/AD)",
       "desc": "The Gregorian calendar's anchor point. Roman Empire at its height.",
-      "source": "https://en.wikipedia.org/wiki/Anno_Domini"
+      "source": "https://en.wikipedia.org/wiki/Anno_Domini",
+      "categories": ["religion", "culture"]
     },
     {
       "year": 10476,
       "title": "Fall of Rome",
       "desc": "Western Roman Empire collapses. Europe enters the Middle Ages.",
-      "source": "https://en.wikipedia.org/wiki/Fall_of_the_Western_Roman_Empire"
+      "source": "https://en.wikipedia.org/wiki/Fall_of_the_Western_Roman_Empire",
+      "categories": ["civilization", "politics"]
     },
     {
       "year": 10476,
       "endYear": 11500,
       "title": "Middle Ages",
       "desc": "Medieval Europe. Feudalism, castles, crusades, and the slow rebuilding of civilization.",
-      "source": "https://en.wikipedia.org/wiki/Middle_Ages"
+      "source": "https://en.wikipedia.org/wiki/Middle_Ages",
+      "categories": ["civilization"]
     },
     {
       "year": 11215,
       "title": "Magna Carta",
       "desc": "English nobles force King John to sign—foundation of constitutional law.",
-      "source": "https://en.wikipedia.org/wiki/Magna_Carta"
+      "source": "https://en.wikipedia.org/wiki/Magna_Carta",
+      "categories": ["politics"]
     },
     {
       "year": 11300,
       "endYear": 11600,
       "title": "Renaissance",
       "desc": "Rebirth of art, science, and humanism. Da Vinci, Michelangelo, and the printing press.",
-      "source": "https://en.wikipedia.org/wiki/Renaissance"
+      "source": "https://en.wikipedia.org/wiki/Renaissance",
+      "categories": ["civilization", "culture", "science"]
     },
     {
       "year": 11440,
       "title": "Gutenberg's Press",
       "desc": "Movable type printing spreads knowledge faster than ever before.",
-      "source": "https://en.wikipedia.org/wiki/Printing_press"
+      "source": "https://en.wikipedia.org/wiki/Printing_press",
+      "categories": ["science", "culture"]
     },
     {
       "year": 11492,
       "title": "Columbus Reaches Americas",
       "desc": "European contact with the \"New World.\" Global exchange—and exploitation—begins.",
-      "source": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus"
+      "source": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus",
+      "categories": ["exploration", "figure"]
     },
     {
       "year": 11776,
       "title": "American Independence",
       "desc": "Declaration signed. Democratic self-governance becomes reality.",
-      "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence"
+      "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence",
+      "categories": ["politics"]
     },
     {
       "year": 11789,
       "title": "French Revolution",
       "desc": "Monarchy overthrown. Liberty, equality, fraternity reshape political thought.",
-      "source": "https://en.wikipedia.org/wiki/French_Revolution"
+      "source": "https://en.wikipedia.org/wiki/French_Revolution",
+      "categories": ["politics", "war"]
     },
     {
       "year": 11760,
       "endYear": 11840,
       "title": "Industrial Revolution",
       "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
-      "source": "https://en.wikipedia.org/wiki/Industrial_Revolution"
+      "source": "https://en.wikipedia.org/wiki/Industrial_Revolution",
+      "categories": ["civilization", "science", "economics"]
     },
     {
       "year": 11837,
       "endYear": 11901,
       "title": "Victorian Era",
       "desc": "British Empire at its height. Rapid industrialization, social reform, and global expansion.",
-      "source": "https://en.wikipedia.org/wiki/Victorian_era"
+      "source": "https://en.wikipedia.org/wiki/Victorian_era",
+      "categories": ["civilization", "politics"]
     },
     {
       "year": 11914,
       "endYear": 11918,
       "title": "World War I",
       "desc": "The Great War. 20 million dead. Empires fall, modern warfare emerges.",
-      "source": "https://en.wikipedia.org/wiki/World_War_I"
+      "source": "https://en.wikipedia.org/wiki/World_War_I",
+      "categories": ["war"]
     },
     {
       "year": 11939,
       "endYear": 11945,
       "title": "World War II",
       "desc": "History's deadliest conflict. 70-85 million dead. The world reshaped.",
-      "source": "https://en.wikipedia.org/wiki/World_War_II"
+      "source": "https://en.wikipedia.org/wiki/World_War_II",
+      "categories": ["war"]
     },
     {
       "year": 11945,
       "title": "Nuclear Age & United Nations",
       "desc": "WWII ends. Atomic weapons unveiled. UN founded to prevent future wars.",
-      "source": "https://en.wikipedia.org/wiki/Atomic_Age"
+      "source": "https://en.wikipedia.org/wiki/Atomic_Age",
+      "categories": ["science", "politics", "war"]
     },
     {
       "year": 11947,
       "endYear": 11991,
       "title": "Cold War",
       "desc": "US vs USSR. Nuclear standoff, space race, proxy wars across the globe.",
-      "source": "https://en.wikipedia.org/wiki/Cold_War"
+      "source": "https://en.wikipedia.org/wiki/Cold_War",
+      "categories": ["war", "politics"]
     },
     {
       "year": 11969,
       "title": "Moon Landing",
       "desc": "Humans walk on another world. \"One giant leap for mankind.\"",
-      "source": "https://en.wikipedia.org/wiki/Apollo_11"
+      "source": "https://en.wikipedia.org/wiki/Apollo_11",
+      "categories": ["exploration", "science"]
     },
     {
       "year": 11991,
       "title": "World Wide Web",
       "desc": "Tim Berners-Lee creates the web. Information becomes instantly global.",
-      "source": "https://en.wikipedia.org/wiki/World_Wide_Web"
+      "source": "https://en.wikipedia.org/wiki/World_Wide_Web",
+      "categories": ["science"]
     },
     {
       "year": 12022,
       "title": "AI Goes Mainstream",
       "desc": "Large language models enter public use. The nature of knowledge work shifts.",
-      "source": "https://en.wikipedia.org/wiki/ChatGPT"
+      "source": "https://en.wikipedia.org/wiki/ChatGPT",
+      "categories": ["science"]
     }
   ]
 }
