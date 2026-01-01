@@ -195,8 +195,7 @@ function yearToCE(year) {
 // ============ FORMATTING ============
 
 function formatYear(year, approximate = false) {
-    const prefix = approximate ? "~" : "";
-    return `${prefix}${year.toLocaleString()} HE`;
+    return `${year.toLocaleString()} HE`;
 }
 
 // ============ DATA LOADING ============
@@ -291,13 +290,13 @@ function createEvent(eventData, index) {
     event.style.top = yearToPixels(eventData.year) + 'px';
     
     const dotColor = eventData.color || 'var(--gold-dim)';
+    const yearLabel = formatYear(eventData.year, eventData.approximate);
     
     event.innerHTML = `
         <div class="content">
             <div class="connector" style="background: ${dotColor}"></div>
-            <div class="dot" style="border-color: ${dotColor}"></div>
+            <div class="event-year-marker"><span>${yearLabel}</span></div>
             <div class="event-header">
-                <span class="event-year">${formatYear(eventData.year, eventData.approximate)}</span>
                 <span class="event-title">${eventData.title}</span>
             </div>
             <p class="event-desc">${eventData.desc || ''}</p>

@@ -303,7 +303,7 @@ h1 span {
 .century-marker span {
     display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
     white-space: nowrap;
@@ -314,10 +314,8 @@ h1 span {
 
 .century-marker.millennium span {
     color: var(--gold);
-    font-size: 0.7rem;
     border-color: var(--gold-dim);
     background: var(--bg-card);
-    padding: 6px 14px;
 }
 
 /* ============ DECADE TICKS & MARKERS ============ */
@@ -341,13 +339,13 @@ h1 span {
 .decade-marker span {
     display: block;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.5rem;
+    font-size: 0.55rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
     white-space: nowrap;
     background: var(--bg-dark);
     border: 1px solid var(--timeline-line);
-    padding: 2px 6px;
+    padding: 4px 10px;
     opacity: 0.7;
 }
 
@@ -398,6 +396,13 @@ h1 span {
     transform: translateY(-50%);
 }
 
+.event.left .content .event-year-marker {
+    position: absolute;
+    right: -61px;
+    top: 50%;
+    transform: translate(50%, -50%);
+}
+
 /* Right side events */
 .event.right {
     left: calc(50% + 60px);
@@ -420,6 +425,13 @@ h1 span {
     transform: translateY(-50%);
 }
 
+.event.right .content .event-year-marker {
+    position: absolute;
+    left: -61px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 /* Connector line */
 .event .connector {
     background: var(--gold-dim);
@@ -430,19 +442,27 @@ h1 span {
     background: var(--gold);
 }
 
-/* Dot on timeline */
-.event .dot {
-    width: 12px;
-    height: 12px;
-    background: var(--bg-dark);
-    border: 2px solid var(--gold-dim);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    z-index: 10;
+/* Event year marker (replaces dot) */
+.event .event-year-marker {
+    z-index: 15;
 }
 
-.event:hover .dot {
+.event .event-year-marker span {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 10px;
+    transition: all 0.3s ease;
+}
+
+.event:hover .event-year-marker span {
     background: var(--gold);
+    color: var(--bg-dark);
     border-color: var(--gold);
     box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
 }
@@ -465,14 +485,11 @@ h1 span {
 
 .event .event-header {
     display: flex;
-    gap: 10px;
     align-items: baseline;
-    flex-wrap: wrap;
 }
 
 .event.left .event-header {
     justify-content: flex-end;
-    flex-direction: row-reverse;
 }
 
 .event.right .event-header {
