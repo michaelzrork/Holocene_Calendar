@@ -297,7 +297,8 @@ h1 span {
     position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .century-marker span {
@@ -313,7 +314,7 @@ h1 span {
 }
 
 .century-marker.millennium span {
-    color: var(--gold);
+    
     border-color: var(--gold-dim);
     background: var(--bg-card);
 }
@@ -333,7 +334,8 @@ h1 span {
     position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .decade-marker span {
@@ -366,7 +368,7 @@ h1 span {
     width: 300px;
     cursor: pointer;
     transition: z-index 0s;
-    z-index: 10;
+    z-index: 9;
     transform: translateY(-50%);
 }
 
@@ -468,6 +470,48 @@ h1 span {
     box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
 }
 
+/* Event dot - gold circle on timeline */
+.event-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    border: 2px solid var(--bg-dark);
+    box-shadow: 0 0 0 1px var(--gold-dim);
+    z-index: 4; /* Above range bars, below date labels (5) */
+    transition: all 0.3s ease;
+}
+
+.event.left .content .event-dot {
+    right: -61px;
+    top: 50%;
+    transform: translate(50%, -50%);
+}
+
+.event.right .content .event-dot {
+    left: -61px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.event:hover .event-dot {
+    background: var(--gold);
+    border: none;
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.8);
+    z-index: 200; /* On hover, go to top */
+}
+
+/* Year text inside content box */
+.event-year-text {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
 /* Event content */
 .event .content {
     padding: 8px 12px;
@@ -547,8 +591,8 @@ h1 span {
     height: var(--bar-height);
     border-radius: 6px;
     border: 1px solid;
-    /* Below date labels (z-index 5+), above ticks */
-    z-index: 4;
+    /* Below dots (4) and date labels (5), above ticks */
+    z-index: 3;
     /* Completely static - no transitions on position */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     transform: translateY(-50%); /* Center vertically on the midpoint */

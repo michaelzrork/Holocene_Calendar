@@ -268,15 +268,17 @@ async function loadAllDatasets(urls) {
 
 // ============ RENDER FUNCTIONS ============
 
-// Color palette for ranges
+// Color palette for ranges - NO GOLD (reserved for single events)
 const RANGE_COLORS = [
-    { bg: 'rgba(201, 162, 39, 0.3)', border: '#8a7019', text: '#c9a227' },   // gold
     { bg: 'rgba(212, 68, 46, 0.3)', border: '#a33322', text: '#d4442e' },    // red
-    { bg: 'rgba(100, 149, 237, 0.3)', border: '#4a7dc4', text: '#6495ed' },  // blue
+    { bg: 'rgba(255, 100, 50, 0.3)', border: '#cc5020', text: '#ff6432' },   // burnt orange (more distinct from gold)
+    { bg: 'rgba(255, 220, 50, 0.3)', border: '#ccaa20', text: '#ffdc32' },   // yellow (bright, saturated)
     { bg: 'rgba(144, 238, 144, 0.3)', border: '#5a9a5a', text: '#90ee90' },  // green
-    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
-    { bg: 'rgba(255, 165, 0, 0.3)', border: '#cc8400', text: '#ffa500' },    // orange
     { bg: 'rgba(64, 224, 208, 0.3)', border: '#2a9a8a', text: '#40e0d0' },   // turquoise
+    { bg: 'rgba(100, 149, 237, 0.3)', border: '#4a7dc4', text: '#6495ed' },  // blue
+    { bg: 'rgba(138, 43, 226, 0.3)', border: '#6a20b0', text: '#8a2be2' },   // purple (blueviolet)
+    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
+    { bg: 'rgba(255, 105, 180, 0.3)', border: '#cc5090', text: '#ff69b4' },  // hot pink
 ];
 
 /**
@@ -442,16 +444,17 @@ function createEvent(eventData, index) {
     event.className = `event ${side}`;
     event.style.top = yearToPixels(eventData.year) + 'px';
     
-    const dotColor = eventData.color || 'var(--gold-dim)';
+    const dotColor = eventData.color || 'var(--gold)';
     const yearLabel = formatYear(eventData.year, eventData.approximate);
     
     event.innerHTML = `
         <div class="content">
             <div class="connector" style="background: ${dotColor}"></div>
-            <div class="event-year-marker"><span>${yearLabel}</span></div>
+            <div class="event-dot"></div>
             <div class="event-header">
                 <span class="event-title">${eventData.title}</span>
             </div>
+            <span class="event-year-text">${yearLabel}</span>
             <p class="event-desc">${eventData.desc || ''}</p>
         </div>
     `;
