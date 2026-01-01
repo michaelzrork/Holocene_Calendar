@@ -2,9 +2,10 @@
 const CONFIG = {
     pxPerYear: 4,           // Scale: pixels per year (adjustable via UI)
     minPxPerYear: 0.5,      // Minimum scale
-    maxPxPerYear: 100,       // Maximum scale
+    maxPxPerYear: 100,      // Maximum scale
     centuryInterval: 100,   // Label every N years
     decadeInterval: 10,     // Tick every N years
+    futureBuffer: 100,      // Years to show past current year
 };
 
 // ============ STATE ============
@@ -21,6 +22,14 @@ const STATE = {
  */
 function getCurrentHoloceneYear() {
     return new Date().getFullYear() + 10000;
+}
+
+/**
+ * Get the maximum year shown on timeline (current + buffer)
+ * @returns {number} Max year in HE
+ */
+function getTimelineEndYear() {
+    return getCurrentHoloceneYear() + CONFIG.futureBuffer;
 }
 
 /**
@@ -59,8 +68,9 @@ function fromHoloceneYear(heYear) {
 }
 
 /**
- * Parse a date string and convert to HE
- * Supports: "2025", "2025 CE", "500 BCE", "44 BC", "HE 12025"
+ * Parse a date string - treats plain numbers as HE years
+ * Only converts if explicitly marked as CE/AD/BCE/BC
+ * Supports: "12025", "2025 CE", "500 BCE", "44 BC", "HE 12025", "-2025" (as BCE)
  * @param {string|number} dateInput 
  * @returns {number} Year in Holocene Era
  */
@@ -71,22 +81,48 @@ function parseDateToHE(dateInput) {
     
     const str = String(dateInput).trim().toUpperCase();
     
-    // Check for "HE" prefix/suffix
+    // Check for "HE" prefix/suffix - already in HE
     const heMatch = str.match(/^(?:HE\s*)?(\d+)(?:\s*HE)?$/);
     if (heMatch && str.includes('HE')) {
         return parseInt(heMatch[1], 10);
     }
     
-    // Check for BCE/BC
+    // Check for BCE/BC - needs conversion
     const bceMatch = str.match(/^(\d+)\s*(?:BCE|BC)$/);
     if (bceMatch) {
-        return toHoloceneYear(parseInt(bceMatch[1], 10), 'BCE');
+        const year = parseInt(bceMatch[1], 10);
+        // 0 BCE and 1 BCE both map to 10000 HE
+        if (year === 0 || year === 1) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'BCE');
     }
     
-    // Check for CE/AD
-    const ceMatch = str.match(/^(\d+)\s*(?:CE|AD)?$/);
+    // Check for explicit CE/AD - needs conversion
+    const ceMatch = str.match(/^(\d+)\s*(?:CE|AD)$/);
     if (ceMatch) {
-        return toHoloceneYear(parseInt(ceMatch[1], 10), 'CE');
+        const year = parseInt(ceMatch[1], 10);
+        // 0 CE maps to 10000 HE (same as 1 BCE)
+        if (year === 0) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'CE');
+    }
+    
+    // Check for negative number - treat as BCE
+    const negativeMatch = str.match(/^-(\d+)$/);
+    if (negativeMatch) {
+        const year = parseInt(negativeMatch[1], 10);
+        if (year === 0 || year === 1) {
+            return 10000;
+        }
+        return toHoloceneYear(year, 'BCE');
+    }
+    
+    // Plain number without era marker - treat as HE
+    const plainMatch = str.match(/^(\d+)$/);
+    if (plainMatch) {
+        return parseInt(plainMatch[1], 10);
     }
     
     console.warn(`Could not parse date: "${dateInput}"`);
@@ -216,10 +252,10 @@ function renderTimeline() {
     
     track.innerHTML = '';
     
-    const currentYear = getCurrentHoloceneYear();
+    const endYear = getTimelineEndYear();
     
-    // Set track height
-    const totalHeight = yearToPixels(currentYear);
+    // Set track height (includes future buffer)
+    const totalHeight = yearToPixels(endYear);
     track.style.height = totalHeight + 'px';
     
     // Update scale display
@@ -239,13 +275,13 @@ function renderTimeline() {
         scaleValue.textContent = `${CONFIG.pxPerYear}px/yr`;
     }
     
-    // Create century markers
-    for (let year = 0; year <= currentYear; year += CONFIG.centuryInterval) {
+    // Create century markers (include future)
+    for (let year = 0; year <= endYear; year += CONFIG.centuryInterval) {
         track.appendChild(createCenturyMarker(year));
     }
     
     // Create decade ticks (skip centuries)
-    for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
+    for (let year = CONFIG.decadeInterval; year <= endYear; year += CONFIG.decadeInterval) {
         if (year % CONFIG.centuryInterval !== 0) {
             track.appendChild(createDecadeTick(year));
         }
@@ -261,29 +297,163 @@ function renderTimeline() {
 
 // ============ SCROLL TRACKING ============
 
-function updateYearDisplay() {
+// Track if user is currently editing the year input
+let isEditingYear = false;
+
+/**
+ * Get the offset from the top of the page to the top of the timeline track
+ * @returns {number} Pixels from page top to track top
+ */
+function getTrackOffset() {
     const track = document.getElementById('timelineTrack');
-    const yearDisplay = document.getElementById('currentYear');
+    if (!track) return 0;
+    
+    // Get the track's position relative to the document (not viewport)
+    const rect = track.getBoundingClientRect();
+    return rect.top + window.scrollY;
+}
+
+/**
+ * Get the reference point (in viewport pixels from top) where we measure/scroll to years
+ * This is 50% of viewport height, but clamped to not go below where year 0 lands on first load
+ * @returns {number} Pixels from top of viewport to the reference line
+ */
+function getReferencePoint() {
+    const viewportHalf = window.innerHeight / 2;
+    const trackOffset = getTrackOffset();
+    
+    // Where would year 0 be on first load (no scrolling)?
+    // That's just trackOffset pixels from the top of the page
+    // On first load, scrollY = 0, so year 0 is at trackOffset in viewport
+    // But we want the reference point relative to current viewport
+    // The reference should be min(50% viewport, trackOffset) from viewport top
+    // But trackOffset is page-relative... we need viewport-relative.
+    
+    // Actually simpler: the reference line should be at a fixed viewport position
+    // that is the minimum of (50% viewport height) and (where track starts when at top of page)
+    // Since trackOffset is where the track starts on the page, if we're scrolled to top (scrollY=0),
+    // the track top is at trackOffset from viewport top.
+    
+    // Reference = min(viewportHalf, trackOffset)
+    // This ensures we never set a reference point below where year 0 can physically be
+    return Math.min(viewportHalf, trackOffset);
+}
+
+/**
+ * Get the year at the reference point in the viewport
+ * @returns {number} Year in HE at the reference line
+ */
+function getYearAtReference() {
+    const track = document.getElementById('timelineTrack');
+    if (!track) return 0;
+    
+    const trackOffset = getTrackOffset();
+    const referencePoint = getReferencePoint();
+    
+    // How many pixels into the track is our reference point?
+    // Reference point is referencePoint pixels from viewport top
+    // Track starts at (trackOffset - scrollY) from viewport top
+    // So pixels into track = referencePoint - (trackOffset - scrollY)
+    //                      = referencePoint - trackOffset + scrollY
+    const pixelsIntoTrack = window.scrollY + referencePoint - trackOffset;
+    
+    return Math.max(0, pixelsToYear(pixelsIntoTrack));
+}
+
+function updateYearDisplay() {
+    const yearInput = document.getElementById('currentYear');
     const scrollProgress = document.getElementById('scrollProgress');
     
-    if (!track || !yearDisplay) return;
+    if (!yearInput) return;
     
-    const currentYear = getCurrentHoloceneYear();
-    const rect = track.getBoundingClientRect();
-    const header = document.querySelector('header');
-    const headerHeight = header ? header.offsetHeight : 0;
+    // Don't update if user is editing
+    if (isEditingYear) return;
     
-    const scrolledIntoTimeline = (headerHeight + 100) - rect.top;
+    const endYear = getTimelineEndYear();
+    let displayYear = getYearAtReference();
+    displayYear = Math.min(endYear, displayYear);
     
-    let displayYear = pixelsToYear(scrolledIntoTimeline);
-    displayYear = Math.max(0, Math.min(currentYear, displayYear));
-    
-    yearDisplay.textContent = displayYear.toLocaleString();
+    yearInput.value = displayYear.toLocaleString();
     
     if (scrollProgress) {
-        const scrollPercent = (displayYear / currentYear) * 100;
+        const scrollPercent = (displayYear / endYear) * 100;
         scrollProgress.style.width = scrollPercent + '%';
     }
+}
+
+/**
+ * Scroll to a specific year on the timeline
+ * @param {number} year - Year in HE to scroll to
+ */
+function scrollToYear(year) {
+    const endYear = getTimelineEndYear();
+    const clampedYear = Math.max(0, Math.min(endYear, year));
+    
+    const trackOffset = getTrackOffset();
+    const referencePoint = getReferencePoint();
+    
+    // We want the year to land at the reference point
+    // Reference point is referencePoint pixels from viewport top
+    // Year is at yearToPixels(year) pixels into the track
+    // Track starts at trackOffset from page top
+    // So year is at (trackOffset + yearToPixels(year)) from page top
+    // We want that to be at referencePoint from viewport top
+    // So: scrollY + referencePoint = trackOffset + yearToPixels(year)
+    // scrollY = trackOffset + yearToPixels(year) - referencePoint
+    const targetScroll = trackOffset + yearToPixels(clampedYear) - referencePoint;
+    
+    window.scrollTo({
+        top: Math.max(0, targetScroll),
+        behavior: 'smooth'
+    });
+}
+
+/**
+ * Setup the year input for user interaction
+ */
+function setupYearInput() {
+    const yearInput = document.getElementById('currentYear');
+    if (!yearInput) return;
+    
+    // When user focuses the input
+    yearInput.addEventListener('focus', () => {
+        isEditingYear = true;
+        yearInput.select(); // Select all text for easy replacement
+    });
+    
+    // When user leaves the input without pressing Enter
+    yearInput.addEventListener('blur', () => {
+        isEditingYear = false;
+        updateYearDisplay(); // Reset to current scroll position
+    });
+    
+    // When user presses Enter
+    yearInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            
+            // Parse the input value (remove commas)
+            // Plain numbers are treated as HE, no conversion
+            const inputValue = yearInput.value.replace(/,/g, '').trim();
+            const targetYear = parseDateToHE(inputValue);
+            
+            if (!isNaN(targetYear)) {
+                isEditingYear = false;
+                yearInput.blur();
+                scrollToYear(targetYear);
+            } else {
+                // Invalid input - flash red briefly
+                yearInput.style.color = '#d4442e';
+                setTimeout(() => {
+                    yearInput.style.color = '';
+                }, 500);
+            }
+        } else if (e.key === 'Escape') {
+            isEditingYear = false;
+            yearInput.blur();
+            updateYearDisplay();
+        }
+    });
 }
 
 // ============ SCALE CONTROL ============
@@ -301,11 +471,7 @@ function setupScaleControl() {
         const newScale = parseFloat(e.target.value);
         
         // Remember scroll position as a year
-        const track = document.getElementById('timelineTrack');
-        const rect = track.getBoundingClientRect();
-        const header = document.querySelector('header');
-        const headerHeight = header ? header.offsetHeight : 0;
-        const currentScrollYear = pixelsToYear((headerHeight + 100) - rect.top);
+        const currentScrollYear = getYearAtReference();
         
         // Update scale
         CONFIG.pxPerYear = newScale;
@@ -314,8 +480,10 @@ function setupScaleControl() {
         renderTimeline();
         
         // Restore scroll position
-        const newScrollTop = yearToPixels(currentScrollYear) + headerHeight - 100;
-        window.scrollTo(0, newScrollTop);
+        const trackOffset = getTrackOffset();
+        const referencePoint = getReferencePoint();
+        const newScrollTop = trackOffset + yearToPixels(currentScrollYear) - referencePoint;
+        window.scrollTo(0, Math.max(0, newScrollTop));
         
         // Update display
         updateYearDisplay();
@@ -341,12 +509,7 @@ window.timelineAPI = {
         
         // Scroll to the new event
         setTimeout(() => {
-            const header = document.querySelector('header');
-            const headerHeight = header ? header.offsetHeight : 0;
-            window.scrollTo({
-                top: yearToPixels(newEvent.year) + headerHeight - 100,
-                behavior: 'smooth'
-            });
+            scrollToYear(newEvent.year);
         }, 100);
         
         return newEvent;
@@ -370,12 +533,16 @@ window.timelineAPI = {
     getDatasets: () => [...STATE.datasets],
     getConfig: () => ({ ...CONFIG }),
     getCurrentYear: getCurrentHoloceneYear,
+    getTimelineEndYear,
     
     // Set scale
     setScale(pxPerYear) {
         CONFIG.pxPerYear = Math.max(CONFIG.minPxPerYear, Math.min(CONFIG.maxPxPerYear, pxPerYear));
         renderTimeline();
     },
+    
+    // Scroll to a year
+    scrollToYear,
     
     // Date conversion utilities
     toHoloceneYear,
@@ -388,6 +555,7 @@ window.timelineAPI = {
 async function init() {
     console.log('Initializing timeline...');
     console.log('Current Holocene Year:', getCurrentHoloceneYear());
+    console.log('Timeline ends at:', getTimelineEndYear());
     
     // Load core dataset
     await loadAllDatasets(['events/core.json']);
@@ -397,6 +565,7 @@ async function init() {
     
     // Setup controls
     setupScaleControl();
+    setupYearInput();
     
     // Setup scroll tracking
     updateYearDisplay();

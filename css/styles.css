@@ -122,12 +122,32 @@ h1 span {
     border: 1px solid #1a1a1f;
     font-family: 'JetBrains Mono', monospace;
     z-index: 1001;
+    min-width: 120px;
 }
 
 .year-display .current-year {
     font-size: 1.5rem;
     color: var(--gold);
     letter-spacing: 2px;
+    background: transparent;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    width: 100%;
+    max-width: 120px;
+    text-align: right;
+    outline: none;
+    cursor: text;
+    padding: 0;
+}
+
+.year-display .current-year:focus {
+    color: var(--bone);
+    border-bottom: 1px solid var(--gold);
+}
+
+.year-display .current-year::selection {
+    background: var(--gold);
+    color: var(--bg-dark);
 }
 
 .year-display .he-label {
@@ -223,7 +243,7 @@ h1 span {
     width: 20px;
     height: 1px;
     background: var(--timeline-line);
-    opacity: 0.9;
+    opacity: 1;
 }
 
 /* ============ EVENTS (ALTERNATING LEFT/RIGHT) ============ */
