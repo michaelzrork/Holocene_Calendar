@@ -269,16 +269,17 @@ async function loadAllDatasets(urls) {
 // ============ RENDER FUNCTIONS ============
 
 // Color palette for ranges - NO GOLD (reserved for single events)
+// Shuffled so adjacent ranges have contrasting colors
 const RANGE_COLORS = [
-    { bg: 'rgba(212, 68, 46, 0.3)', border: '#a33322', text: '#d4442e' },    // red
-    { bg: 'rgba(255, 100, 50, 0.3)', border: '#cc5020', text: '#ff6432' },   // burnt orange (more distinct from gold)
-    { bg: 'rgba(255, 220, 50, 0.3)', border: '#ccaa20', text: '#ffdc32' },   // yellow (bright, saturated)
-    { bg: 'rgba(144, 238, 144, 0.3)', border: '#5a9a5a', text: '#90ee90' },  // green
-    { bg: 'rgba(64, 224, 208, 0.3)', border: '#2a9a8a', text: '#40e0d0' },   // turquoise
     { bg: 'rgba(100, 149, 237, 0.3)', border: '#4a7dc4', text: '#6495ed' },  // blue
-    { bg: 'rgba(138, 43, 226, 0.3)', border: '#6a20b0', text: '#8a2be2' },   // purple (blueviolet)
-    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
+    { bg: 'rgba(255, 100, 50, 0.3)', border: '#cc5020', text: '#ff6432' },   // burnt orange
+    { bg: 'rgba(138, 43, 226, 0.3)', border: '#6a20b0', text: '#8a2be2' },   // purple
+    { bg: 'rgba(144, 238, 144, 0.3)', border: '#5a9a5a', text: '#90ee90' },  // green
     { bg: 'rgba(255, 105, 180, 0.3)', border: '#cc5090', text: '#ff69b4' },  // hot pink
+    { bg: 'rgba(64, 224, 208, 0.3)', border: '#2a9a8a', text: '#40e0d0' },   // turquoise
+    { bg: 'rgba(212, 68, 46, 0.3)', border: '#a33322', text: '#d4442e' },    // red
+    { bg: 'rgba(255, 220, 50, 0.3)', border: '#ccaa20', text: '#ffdc32' },   // yellow
+    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
 ];
 
 /**
