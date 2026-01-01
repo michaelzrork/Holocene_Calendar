@@ -130,6 +130,10 @@ function pixelsToYear(px) {
     return Math.floor(px / CONFIG.pxPerYear);
 }
 
+function yearToCE(year) {
+    return Math.floor(year - 10000);
+}
+
 // ============ FORMATTING ============
 
 function formatYear(year, approximate = false) {
@@ -221,7 +225,6 @@ function createEvent(eventData, index) {
         <div class="dot" style="border-color: ${dotColor}"></div>
         <div class="content">
             <div class="event-header">
-                ${eventData.color ? `<span class="category-dot" style="${colorStyle}"></span>` : ''}
                 <span class="event-year">${formatYear(eventData.year, eventData.approximate)}</span>
                 <span class="event-title">${eventData.title}</span>
             </div>
@@ -345,6 +348,8 @@ function getYearAtReference() {
 
 function updateYearDisplay() {
     const yearInput = document.getElementById('currentYear');
+    const yearInputCE = document.getElementById('currentYearCE')
+    const setBCE = document.getElementById('set-bce')
     const scrollProgress = document.getElementById('scrollProgress');
     
     if (!yearInput) return;
@@ -357,6 +362,16 @@ function updateYearDisplay() {
     displayYear = Math.min(currentYear, displayYear);
     
     yearInput.value = displayYear.toLocaleString();
+    yearInputCE.value = (displayYear - 10000);
+
+    if (displayYear - 10000 <= 0) {
+        yearInputCE.value = Math.abs(yearInputCE.value) + 1;
+        setBCE.textContent = "BCE";
+    }
+
+    if (displayYear - 10000 > 0) {
+        setBCE.textContent = "CE";
+    }
     
     if (scrollProgress) {
         const scrollPercent = (displayYear / currentYear) * 100;

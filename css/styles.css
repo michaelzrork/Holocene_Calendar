@@ -123,18 +123,18 @@ h1 span {
     border: 1px solid #1a1a1f;
     font-family: 'JetBrains Mono', monospace;
     z-index: 1001;
-    min-width: 120px;
+    min-width: 110px;
 }
 
 .year-display .current-year {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     color: var(--gold);
     letter-spacing: 2px;
     background: transparent;
     border: none;
     font-family: 'JetBrains Mono', monospace;
     width: 100%;
-    max-width: 120px;
+    max-width: 110px;
     text-align: right;
     outline: none;
     cursor: text;
@@ -151,19 +151,43 @@ h1 span {
     color: var(--bg-dark);
 }
 
+.year-display .ce-year  {
+    font-size: 0.85rem;
+    color: var(--bone-dim);
+    letter-spacing: 2px;
+    background: transparent;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    width: 100%;
+    max-width: 110px;
+    text-align: right;
+    outline: none;
+    cursor: text;
+    padding: 0;
+}
+
 .year-display .he-label {
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 2px;
+    text-align: right;
+}
+
+.year-display .ce-label {
     font-size: 0.65rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
     margin-top: 2px;
+    text-align: right;
 }
 
 /* ============ SCALE CONTROL ============ */
 .scale-control {
     position: fixed;
-    top: 100px;
+    top: 140px;
     right: 20px;
-    padding: 15px 20px;
+    padding: 15px 25px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     z-index: 1001;
@@ -171,6 +195,7 @@ h1 span {
     flex-direction: column;
     gap: 10px;
     align-items: center;
+    min-width: 110px;
 }
 
 .scale-control label {
@@ -395,6 +420,7 @@ h1 span {
 }
 
 /* Category color indicator */
+/* To Use: ${eventData.color ? `<span class="category-dot" style="${colorStyle}"></span>` : ''} */
 .event .category-dot {
     width: 6px;
     height: 6px;

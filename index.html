@@ -12,14 +12,23 @@
     <div class="scroll-progress" id="scrollProgress"></div>
     
     <div class="year-display">
-        <input type="text" class="current-year" id="currentYear" value="0" title="Type a year and press Enter to jump">
-        <div class="he-label">Human Era</div>
+        <div>
+            <input type="text" class="current-year" id="currentYear" value="0" title="Type a year and press Enter to jump">
+            <div class="he-label">Holocene Era</div>
+        </div>
+        
+        <div>
+            <input type="text" class="ce-year" id="currentYearCE" value="0">
+            <span class="ce-label" id="set-bce"></span>
+        </div>
     </div>
+
+    
     
     <div class="scale-control">
         <label for="scaleSlider">Scale</label>
         <input type="range" id="scaleSlider" min="0.5" max="100" step="0.5" value="4">
-        <span class="scale-value" id="scaleValue">4px/yr</span>
+        <span class="scale-value" id="scaleValue"></span>
     </div>
     
     <header>
