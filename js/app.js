@@ -245,6 +245,18 @@ async function loadAllDatasets(urls) {
         .flatMap(dataset => dataset.events || [])
         .sort((a, b) => a.year - b.year);
     
+    // Add dynamic "Today" event
+    const todayEvent = {
+        year: getCurrentHoloceneYear(),
+        title: "Today",
+        desc: "You are here!",
+        isToday: true
+    };
+    STATE.allEvents.push(todayEvent);
+    
+    // Re-sort after adding Today
+    STATE.allEvents.sort((a, b) => a.year - b.year);
+    
     console.log(`Loaded ${STATE.datasets.length} datasets with ${STATE.allEvents.length} total events`);
 }
 
