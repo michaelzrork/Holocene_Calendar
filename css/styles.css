@@ -356,6 +356,14 @@ h1 span {
     display: none;
     padding: 0 15px 15px;
     border-top: 1px solid #1a1a1f;
+    max-height: calc(100vh - 350px); /* Leave room for year display, scale, and filter toggle */
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.filter-panel::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
 }
 
 .filter-panel.open {

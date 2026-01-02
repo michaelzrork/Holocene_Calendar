@@ -1,8 +1,8 @@
 // ============ CONFIGURATION ============
 const CONFIG = {
-    pxPerYear: 4,           // Scale: pixels per year (adjustable via UI)
+    pxPerYear: 5,           // Scale: pixels per year (adjustable via UI)
     minPxPerYear: 0.5,      // Minimum scale
-    maxPxPerYear: 50,       // Maximum scale
+    maxPxPerYear: 20,       // Maximum scale
     centuryInterval: 100,   // Label every N years
     decadeInterval: 10,     // Tick every N years
 };
@@ -607,9 +607,10 @@ function handleEventClick(eventEl, originalZIndex) {
         return;
     }
     
-    // Unlock any previously locked event
+    // Unlock any previously locked event (and remove hovered class too)
     if (STATE.lockedEvent) {
         STATE.lockedEvent.classList.remove('locked');
+        STATE.lockedEvent.classList.remove('hovered');
         STATE.lockedEvent.style.zIndex = '';
     }
     
@@ -796,14 +797,20 @@ function renderTimeline() {
     track.appendChild(todayMarker);
     
     // Create decade markers/ticks (skip centuries)
-    // At high zoom (>10px/yr), show labeled decade markers; otherwise just ticks
+    // At high zoom (>10px/yr), show labeled decade markers
+    // At medium zoom (>=1px/yr), show ticks
+    // At low zoom (<1px/yr), hide decade ticks entirely
     const useDecadeMarkers = CONFIG.pxPerYear > 10;
-    for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
-        if (year % CONFIG.centuryInterval !== 0) {
-            if (useDecadeMarkers) {
-                track.appendChild(createDecadeMarker(year));
-            } else {
-                track.appendChild(createDecadeTick(year));
+    const showDecadeTicks = CONFIG.pxPerYear >= 1;
+    
+    if (showDecadeTicks) {
+        for (let year = CONFIG.decadeInterval; year <= currentYear; year += CONFIG.decadeInterval) {
+            if (year % CONFIG.centuryInterval !== 0) {
+                if (useDecadeMarkers) {
+                    track.appendChild(createDecadeMarker(year));
+                } else {
+                    track.appendChild(createDecadeTick(year));
+                }
             }
         }
     }
