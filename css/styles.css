@@ -114,6 +114,33 @@ h1 span {
     width: 0%;
 }
 
+.controls-toggle {
+    display: none; /* Hidden on desktop */
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1002;
+    width: 44px;
+    height: 44px;
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-size: 1.4rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.controls-toggle:hover {
+    background: var(--gold);
+    color: var(--bg-dark);
+}
+
+.controls-toggle.active {
+    background: var(--gold);
+    color: var(--bg-dark);
+}
+
 .controls-wrapper {
     position: fixed;
     top: 20px;
@@ -504,7 +531,7 @@ h1 span {
     transform: translateY(-50%);
 }
 
-.event:hover {
+.event.hovered {
     z-index: 100;
     opacity: 1;
 }
@@ -567,13 +594,13 @@ h1 span {
     transform: translate(-50%, -50%);
 }
 
-/* Connector line */
 .event .connector {
     background: var(--gold-dim);
     transition: background 0.3s ease;
 }
 
-.event:hover .connector {
+.event.hovered .connector,
+.event.locked .connector {
     background: var(--gold);
 }
 
@@ -595,23 +622,22 @@ h1 span {
     transition: all 0.3s ease;
 }
 
-.event:hover .event-year-marker span {
+.event.hovered .event-year-marker span,
+.event.locked .event-year-marker span {
     background: var(--gold);
     color: var(--bg-dark);
     border-color: var(--gold);
     box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
 }
 
-/* Event dot - gold circle on timeline */
+/* Event dot - colored circle on timeline */
 .event-dot {
     position: absolute;
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--gold-dim);
     border: 2px solid var(--bg-dark);
-    box-shadow: 0 0 0 1px var(--gold-dim);
-    z-index: 4; /* Above range bars, below date labels (5) */
+    z-index: 4; /* Above range bars (3), below date labels (10) */
     transition: all 0.3s ease;
 }
 
@@ -627,11 +653,22 @@ h1 span {
     transform: translate(-50%, -50%);
 }
 
-.event:hover .event-dot {
-    background: var(--gold);
+.event.hovered .event-dot,
+.event.locked .event-dot {
     border: none;
-    box-shadow: 0 0 20px rgba(201, 162, 39, 0.8);
-    z-index: 200; /* On hover, go to top */
+    box-shadow: 0 0 20px currentColor;
+    z-index: 200; /* On hover/locked, go to top */
+}
+
+/* Locked state - persistent focus */
+.event.locked {
+    z-index: 500 !important;
+}
+
+.event.locked .content {
+    border-color: var(--gold);
+    background: #1a1a1d;
+    box-shadow: 0 0 30px rgba(201, 162, 39, 0.3);
 }
 
 /* Year text inside content box */
@@ -659,7 +696,8 @@ h1 span {
     transition: all 0.3s ease;
 }
 
-.event:hover .event-source {
+.event.hovered .event-source,
+.event.locked .event-source {
     opacity: 1;
     max-height: 30px;
 }
@@ -679,7 +717,8 @@ h1 span {
     position: relative;
 }
 
-.event:hover .content {
+.event.hovered .content,
+.event.locked .content {
     border-color: var(--gold-dim);
     background: #151517;
 }
@@ -726,13 +765,15 @@ h1 span {
     transition: all 0.3s ease;
 }
 
-.event:hover .event-desc {
+.event.hovered .event-desc,
+.event.locked .event-desc {
     max-height: 200px;
     opacity: 1;
     margin-top: 8px;
 }
 
-.event:hover .event-title {
+.event.hovered .event-title,
+.event.locked .event-title {
     white-space: normal;
 }
 
@@ -747,7 +788,7 @@ h1 span {
     height: var(--bar-height);
     border-radius: 6px;
     border: 1px solid;
-    /* Below dots (4) and date labels (5), above ticks */
+    /* Below dots (4) and date labels (10), above ticks */
     z-index: 3;
     /* Completely static - no transitions on position */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -766,7 +807,8 @@ h1 span {
 }
 
 /* Brighter + glow on hover */
-.event.range:hover .range-bar-indicator {
+.event.range.hovered .range-bar-indicator,
+.event.range.locked .range-bar-indicator {
     background-color: var(--bar-bg-hover) !important;
     box-shadow: 0 0 20px var(--bar-border);
 }
@@ -780,8 +822,17 @@ h1 span {
     margin-top: 2px;
 }
 
-.event.range:hover {
+.event.range.hovered {
     z-index: 200 !important;
+}
+
+.event.range.locked {
+    z-index: 500 !important;
+}
+
+.event.range.locked .range-bar-indicator {
+    background-color: var(--bar-bg-hover) !important;
+    box-shadow: 0 0 20px var(--bar-border);
 }
 
 /* ============ FOOTER ============ */
@@ -840,9 +891,28 @@ footer p {
         width: 200px;
     }
     
+    /* Settings toggle under nav buttons on right side */
+    .controls-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+    }
+    
+    /* Nav buttons stay above settings toggle */
+    .nav-buttons {
+        bottom: 70px;
+    }
+    
+    /* Year display moves to bottom-left on mobile */
     .controls-wrapper {
-        top: 10px;
-        right: 10px;
+        top: auto;
+        bottom: 20px;
+        right: auto;
+        left: 15px;
     }
     
     .year-display {
@@ -851,6 +921,20 @@ footer p {
     
     .year-display .current-year {
         font-size: 1.2rem;
+    }
+    
+    /* Scale and filter controls hidden by default, shown via toggle */
+    .controls-wrapper .scale-control,
+    .controls-wrapper .filter-control {
+        display: none;
+    }
+    
+    .controls-wrapper.open .scale-control {
+        display: flex;
+    }
+    
+    .controls-wrapper.open .filter-control {
+        display: block;
     }
     
     .scale-control {

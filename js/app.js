@@ -16,6 +16,8 @@ const STATE = {
     categories: {},         // Category definitions from datasets
     activeFilters: new Set(), // Currently active category filters (empty = show all)
     filterMode: 'all',      // 'all' = show all, 'filtered' = show only active
+    lockedEvent: null,      // Currently locked/focused event element
+    hoveredEvent: null,     // Currently hovered event element (smart hover)
 };
 
 // ============ DATE CONVERSION UTILITIES ============
@@ -259,17 +261,7 @@ async function loadAllDatasets(urls) {
         .sort((a, b) => a.year - b.year);
     
     // Add dynamic "Today" event
-    const todayEvent = {
-        year: getCurrentHoloceneYear(),
-        title: "Today",
-        desc: "You are here!",
-        isToday: true,
-        categories: []
-    };
-    STATE.allEvents.push(todayEvent);
-    
-    // Re-sort after adding Today
-    STATE.allEvents.sort((a, b) => a.year - b.year);
+    // (Removed - just using a marker instead)
     
     // Separate point events and range events
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
@@ -395,9 +387,6 @@ function setupFilterControls() {
  * @returns {boolean} True if event should be shown
  */
 function eventPassesFilter(event) {
-    // Always show Today
-    if (event.isToday) return true;
-    
     // If no categories defined on event, show it (uncategorized)
     if (!event.categories || event.categories.length === 0) return true;
     
@@ -514,13 +503,13 @@ function createRangeBar(rangeData, index, maxDuration) {
     const heightPx = endPx - startPx;
     const midPx = startPx + (heightPx / 2);
     
-    // All range bars start at z-index 4 (above ticks, below date labels)
-    const zIndex = 4;
+    // Base z-index is 9 (set via CSS), DOM order handles stacking
+    const zIndex = 9;
     
     // Position at midpoint like point events
     range.style.top = midPx + 'px';
-    range.style.zIndex = zIndex;
     range.dataset.zIndex = zIndex;
+    range.dataset.year = rangeData.sortYear || (rangeData.year + (rangeData.endYear - rangeData.year) / 2);
     
     const yearLabel = `${rangeData.year.toLocaleString()} – ${rangeData.endYear.toLocaleString()} HE`;
     
@@ -529,6 +518,7 @@ function createRangeBar(rangeData, index, maxDuration) {
     const color = RANGE_COLORS[colorIndex];
     const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
     const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
+    const borderColor = color.border; // For card top border
     
     // Build source link if available
     const sourceLink = rangeData.source 
@@ -536,7 +526,7 @@ function createRangeBar(rangeData, index, maxDuration) {
         : '';
     
     range.innerHTML = `
-        <div class="content">
+        <div class="content" style="border-top: 5px solid ${borderColor}">
             <div class="connector" style="background: ${color.border}"></div>
             <div class="range-bar-indicator" 
                  style="--bar-height: ${heightPx}px; 
@@ -554,13 +544,13 @@ function createRangeBar(rangeData, index, maxDuration) {
         </div>
     `;
     
-    // Hover behavior - bring to top, handled via CSS for the bar glow
-    range.addEventListener('mouseenter', () => {
-        range.style.zIndex = 200;
+    // Click-to-lock behavior
+    range.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleEventClick(range, zIndex);
     });
-    range.addEventListener('mouseleave', () => {
-        range.style.zIndex = zIndex;
-    });
+    
+    // Hover is handled globally by setupSmartHover()
     
     return range;
 }
@@ -600,33 +590,199 @@ function createYearTick(year) {
 
 function createEvent(eventData, index) {
     const event = document.createElement('div');
+    
     // Use pre-assigned side from data loading
     const side = eventData.side || (index % 2 === 0 ? 'left' : 'right');
     event.className = `event ${side}`;
     event.style.top = yearToPixels(eventData.year) + 'px';
     
-    const dotColor = eventData.color || 'var(--gold)';
+    // Base z-index is 9 (set via CSS), DOM order handles stacking
+    const zIndex = 9;
+    event.dataset.zIndex = zIndex;
+    event.dataset.year = eventData.year;
+    
+    // Use pre-assigned colorIndex from data loading (same as ranges)
+    const colorIndex = (eventData.colorIndex !== undefined ? eventData.colorIndex : index) % RANGE_COLORS.length;
+    const color = RANGE_COLORS[colorIndex];
+    const borderColor = color.border;
+    const textColor = color.text;
+    
     const yearLabel = formatYear(eventData.year, eventData.approximate);
     
     // Build source link if available
     const sourceLink = eventData.source 
-        ? `<a href="${eventData.source}" target="_blank" rel="noopener noreferrer" class="event-source">Learn more →</a>`
+        ? `<a href="${eventData.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${textColor}">Learn more →</a>`
         : '';
     
     event.innerHTML = `
-        <div class="content">
-            <div class="connector" style="background: ${dotColor}"></div>
-            <div class="event-dot"></div>
+        <div class="content" style="border-top: 5px solid ${borderColor}">
+            <div class="connector" style="background: ${borderColor}"></div>
+            <div class="event-dot" style="background: ${borderColor}; box-shadow: 0 0 0 1px ${borderColor}"></div>
             <div class="event-header">
                 <span class="event-title">${eventData.title}</span>
             </div>
-            <span class="event-year-text">${yearLabel}</span>
+            <span class="event-year-text" style="color: ${textColor}">${yearLabel}</span>
             <p class="event-desc">${eventData.desc || ''}</p>
             ${sourceLink}
         </div>
     `;
     
+    // Store color for hover state
+    event.dataset.color = borderColor;
+    
+    // Click-to-lock behavior
+    event.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleEventClick(event, zIndex);
+    });
+    
+    // Hover is handled globally by setupSmartHover()
+    
     return event;
+}
+
+/**
+ * Handle click-to-lock behavior for events
+ */
+function handleEventClick(eventEl, originalZIndex) {
+    // If clicking the already-locked event, unlock it and collapse
+    if (STATE.lockedEvent === eventEl) {
+        eventEl.classList.remove('locked');
+        eventEl.classList.remove('hovered');
+        eventEl.style.zIndex = '';
+        STATE.lockedEvent = null;
+        // Also clear from hoveredEvent so it doesn't immediately re-hover
+        STATE.hoveredEvent = null;
+        return;
+    }
+    
+    // Unlock any previously locked event
+    if (STATE.lockedEvent) {
+        STATE.lockedEvent.classList.remove('locked');
+        STATE.lockedEvent.style.zIndex = '';
+    }
+    
+    // Lock this event
+    eventEl.classList.add('locked');
+    eventEl.style.zIndex = 500;
+    STATE.lockedEvent = eventEl;
+}
+
+/**
+ * Setup click-away-to-unlock on the document
+ */
+function setupClickAwayUnlock() {
+    document.addEventListener('click', (e) => {
+        if (STATE.lockedEvent && !STATE.lockedEvent.contains(e.target)) {
+            STATE.lockedEvent.classList.remove('locked');
+            STATE.lockedEvent.classList.remove('hovered');
+            STATE.lockedEvent.style.zIndex = '';
+            STATE.lockedEvent = null;
+            STATE.hoveredEvent = null;
+        }
+    });
+}
+
+/**
+ * Setup smart hover - when mouse moves over stacked events, creates a sweep-through
+ * effect in both directions. Moving down reveals newer cards (later in DOM),
+ * moving up reveals older cards (earlier in DOM).
+ */
+function setupSmartHover() {
+    const track = document.getElementById('timelineTrack');
+    if (!track) return;
+    
+    let lastY = null;
+    
+    document.addEventListener('mousemove', (e) => {
+        // Don't change hover if an event is locked
+        if (STATE.lockedEvent) return;
+        
+        // Determine direction of mouse movement
+        const movingDown = lastY !== null && e.clientY > lastY;
+        const movingUp = lastY !== null && e.clientY < lastY;
+        lastY = e.clientY;
+        
+        // Get all event elements in the track
+        const allEvents = track.querySelectorAll('.event');
+        
+        // Find which events contain the mouse point
+        const eventsUnderCursor = [];
+        
+        allEvents.forEach(eventEl => {
+            const rect = eventEl.getBoundingClientRect();
+            const isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
+                            e.clientY >= rect.top && e.clientY <= rect.bottom);
+            
+            if (isUnder) {
+                eventsUnderCursor.push(eventEl);
+            }
+        });
+        
+        // If no events under cursor, clear hover
+        if (eventsUnderCursor.length === 0) {
+            if (STATE.hoveredEvent) {
+                STATE.hoveredEvent.classList.remove('hovered');
+                STATE.hoveredEvent.style.zIndex = '';
+                STATE.hoveredEvent = null;
+            }
+            return;
+        }
+        
+        // Determine which event to show based on direction
+        let topmostEvent = null;
+        
+        if (eventsUnderCursor.length === 1) {
+            // Only one event, show it
+            topmostEvent = eventsUnderCursor[0];
+        } else {
+            // Multiple events - pick based on movement direction
+            const currentIdx = STATE.hoveredEvent ? eventsUnderCursor.indexOf(STATE.hoveredEvent) : -1;
+            
+            if (currentIdx === -1) {
+                // Not currently hovering any in this stack - show topmost (last in DOM)
+                topmostEvent = eventsUnderCursor[eventsUnderCursor.length - 1];
+            } else if (movingDown) {
+                // Moving down through timeline - go to next in DOM order (newer)
+                const nextIdx = Math.min(currentIdx + 1, eventsUnderCursor.length - 1);
+                topmostEvent = eventsUnderCursor[nextIdx];
+            } else if (movingUp) {
+                // Moving up through timeline - go to previous in DOM order (older)
+                const prevIdx = Math.max(currentIdx - 1, 0);
+                topmostEvent = eventsUnderCursor[prevIdx];
+            } else {
+                // No movement, keep current
+                topmostEvent = STATE.hoveredEvent;
+            }
+        }
+        
+        // If same as current hover, do nothing
+        if (topmostEvent === STATE.hoveredEvent) return;
+        
+        // Remove hover from previous
+        if (STATE.hoveredEvent) {
+            STATE.hoveredEvent.classList.remove('hovered');
+            STATE.hoveredEvent.style.zIndex = '';
+        }
+        
+        // Add hover to new
+        if (topmostEvent) {
+            topmostEvent.classList.add('hovered');
+            topmostEvent.style.zIndex = topmostEvent.classList.contains('range') ? 200 : 100;
+        }
+        
+        STATE.hoveredEvent = topmostEvent;
+    });
+    
+    // Clear hover when mouse leaves the document
+    document.addEventListener('mouseleave', () => {
+        if (STATE.hoveredEvent && !STATE.lockedEvent) {
+            STATE.hoveredEvent.classList.remove('hovered');
+            STATE.hoveredEvent.style.zIndex = '';
+            STATE.hoveredEvent = null;
+        }
+        lastY = null;
+    });
 }
 
 // ============ MAIN RENDER ============
@@ -681,6 +837,13 @@ function renderTimeline() {
         track.appendChild(createCenturyMarker(year));
     }
     
+    // Add "Today" marker at current year (styled like millennium)
+    const todayMarker = document.createElement('div');
+    todayMarker.className = 'century-marker millennium today-marker';
+    todayMarker.style.top = yearToPixels(currentYear) + 'px';
+    todayMarker.innerHTML = `<span>${currentYear.toLocaleString()} HE</span>`;
+    track.appendChild(todayMarker);
+    
     // Create decade markers/ticks (skip centuries)
     // At high zoom (>10px/yr), show labeled decade markers; otherwise just ticks
     const useDecadeMarkers = CONFIG.pxPerYear > 10;
@@ -705,7 +868,7 @@ function renderTimeline() {
     }
     
     // Create all events together (point + range) for proper alternation
-    // Sort by midpoint year for ranges, year for points
+    // Sort by midpoint year for ranges (visual position determines stacking)
     // Use filtered events
     const { pointEvents, rangeEvents } = getFilteredEvents();
     
@@ -719,6 +882,13 @@ function renderTimeline() {
         : 1;
     
     console.log(`Rendering ${allEventsForRender.length} total events (${pointEvents.length} point, ${rangeEvents.length} range)`);
+    
+    // Clear locked event since we're re-rendering
+    STATE.lockedEvent = null;
+    
+    // Events are rendered in chronological order (already sorted by sortYear)
+    // DOM order determines stacking: later elements (newer events) appear on top
+    // Base z-index is 9 (below markers at 10), hover/locked go higher
     
     allEventsForRender.forEach((eventData, index) => {
         if (eventData.isRange) {
@@ -1057,6 +1227,8 @@ async function init() {
     setupYearInput();
     setupNavButtons();
     setupFilterControls();
+    setupClickAwayUnlock();
+    setupSmartHover();
     
     // Setup scroll tracking
     updateYearDisplay();
@@ -1069,6 +1241,8 @@ async function init() {
 function setupNavButtons() {
     const jumpToTop = document.getElementById('jumpToTop');
     const jumpToBottom = document.getElementById('jumpToBottom');
+    const controlsToggle = document.getElementById('controlsToggle');
+    const controlsWrapper = document.getElementById('controlsWrapper');
     
     if (jumpToTop) {
         jumpToTop.addEventListener('click', () => {
@@ -1079,6 +1253,14 @@ function setupNavButtons() {
     if (jumpToBottom) {
         jumpToBottom.addEventListener('click', () => {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+    }
+    
+    // Mobile controls toggle
+    if (controlsToggle && controlsWrapper) {
+        controlsToggle.addEventListener('click', () => {
+            controlsToggle.classList.toggle('active');
+            controlsWrapper.classList.toggle('open');
         });
     }
 }
