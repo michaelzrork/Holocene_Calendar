@@ -220,6 +220,22 @@
       "categories": ["science", "culture", "civilization"]
     },
     {
+      "year": 5000,
+      "endYear": 6850,
+      "title": "Ancient Egypt",
+      "desc": "One of the longest-lasting civilizations. Pyramids, hieroglyphs, pharaohs, and the Nile defined 3,000 years of history.",
+      "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
+      "categories": ["civilization"]
+    },
+    {
+      "year": 8000,
+      "endYear": 10250,
+      "title": "Maya Preclassic Period",
+      "desc": "Maya civilization emerges in Mesoamerica. First cities, monumental architecture, and hieroglyphic writing develop.",
+      "source": "https://en.wikipedia.org/wiki/Preclassic_Maya",
+      "categories": ["civilization"]
+    },
+    {
       "year": 5450,
       "title": "Great Pyramid of Giza",
       "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
@@ -260,14 +276,6 @@
       "desc": "Traditional date for Moses leading the Israelites out of Egypt. The Ten Commandments given.",
       "source": "https://en.wikipedia.org/wiki/Moses",
       "categories": ["religion", "figure"]
-    },
-    {
-      "year": 7000,
-      "endYear": 9000,
-      "title": "Ancient Egypt",
-      "desc": "From the Early Dynastic Period through the New Kingdom. Pyramids, pharaohs, and hieroglyphs.",
-      "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
-      "categories": ["civilization"]
     },
     {
       "year": 7224,
@@ -449,6 +457,14 @@
       "categories": ["disaster", "geological"]
     },
     {
+      "year": 10250,
+      "endYear": 10900,
+      "title": "Classic Maya Period",
+      "desc": "Golden age of Maya civilization. 40+ city-states including Tikal, Palenque, and Copán. Advanced astronomy, mathematics, and the Long Count calendar.",
+      "source": "https://en.wikipedia.org/wiki/Classic_Maya_civilization",
+      "categories": ["civilization", "culture", "science"]
+    },
+    {
       "year": 10313,
       "title": "Edict of Milan",
       "desc": "Constantine legalizes Christianity throughout the Roman Empire. Faith goes mainstream.",
@@ -505,6 +521,13 @@
       "desc": "William the Conqueror defeats Harold at Hastings. English history forever changed.",
       "source": "https://en.wikipedia.org/wiki/Norman_Conquest",
       "categories": ["war", "politics"]
+    },
+    {
+      "year": 10900,
+      "title": "Classic Maya Collapse",
+      "desc": "Major city-states abandoned over decades. Drought, warfare, and deforestation devastate the southern lowlands. Civilization shifts north to Yucatán.",
+      "source": "https://en.wikipedia.org/wiki/Classic_Maya_collapse",
+      "categories": ["civilization", "disaster"]
     },
     {
       "year": 10950,
