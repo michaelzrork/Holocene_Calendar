@@ -192,7 +192,7 @@ function yearToPixels(year) {
 }
 
 function pixelsToYear(px) {
-    return Math.floor(px / CONFIG.pxPerYear);
+    return Math.round(px / CONFIG.pxPerYear);
 }
 
 function yearToCE(year) {
@@ -1046,14 +1046,31 @@ function setupYearInput() {
     const yearInput = document.getElementById('currentYear');
     const yearInputCE = document.getElementById('currentYearCE');
     
+    // Track the value when focus started, to detect changes
+    let heValueOnFocus = '';
+    let ceValueOnFocus = '';
+    
     // ===== HE Year Input =====
     if (yearInput) {
         yearInput.addEventListener('focus', () => {
             isEditingYear = true;
+            heValueOnFocus = yearInput.value;
             yearInput.select();
         });
         
         yearInput.addEventListener('blur', () => {
+            // Only navigate if value changed
+            const currentValue = yearInput.value;
+            if (currentValue !== heValueOnFocus) {
+                const inputValue = currentValue.replace(/,/g, '').trim();
+                const targetYear = parseDateToHE(inputValue);
+                
+                if (!isNaN(targetYear)) {
+                    isEditingYear = false;
+                    scrollToYear(targetYear);
+                    return;
+                }
+            }
             isEditingYear = false;
             updateYearDisplay();
         });
@@ -1061,21 +1078,11 @@ function setupYearInput() {
         yearInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const inputValue = yearInput.value.replace(/,/g, '').trim();
-                const targetYear = parseDateToHE(inputValue);
-                
-                if (!isNaN(targetYear)) {
-                    isEditingYear = false;
-                    yearInput.blur();
-                    scrollToYear(targetYear);
-                } else {
-                    yearInput.style.color = '#d4442e';
-                    setTimeout(() => { yearInput.style.color = ''; }, 500);
-                }
+                yearInput.blur(); // Let blur handler do the navigation
             } else if (e.key === 'Escape') {
+                yearInput.value = heValueOnFocus; // Restore original
                 isEditingYear = false;
                 yearInput.blur();
-                updateYearDisplay();
             }
         });
     }
@@ -1087,11 +1094,24 @@ function setupYearInput() {
             // Append the current era to the value so user knows context
             const currentEra = document.getElementById('set-bce').textContent.trim();
             const currentValue = yearInputCE.value.replace(/,/g, '');
-            yearInputCE.value = `${currentValue} ${currentEra}`;
+            ceValueOnFocus = `${currentValue} ${currentEra}`;
+            yearInputCE.value = ceValueOnFocus;
             yearInputCE.select();
         });
         
         yearInputCE.addEventListener('blur', () => {
+            // Only navigate if value changed
+            const currentValue = yearInputCE.value;
+            if (currentValue !== ceValueOnFocus) {
+                const inputValue = currentValue.replace(/,/g, '').trim();
+                const targetYear = parseCEDateToHE(inputValue);
+                
+                if (!isNaN(targetYear)) {
+                    isEditingYear = false;
+                    scrollToYear(targetYear);
+                    return;
+                }
+            }
             isEditingYear = false;
             updateYearDisplay();
         });
@@ -1099,21 +1119,11 @@ function setupYearInput() {
         yearInputCE.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const inputValue = yearInputCE.value.replace(/,/g, '').trim();
-                const targetYear = parseCEDateToHE(inputValue);
-                
-                if (!isNaN(targetYear)) {
-                    isEditingYear = false;
-                    yearInputCE.blur();
-                    scrollToYear(targetYear);
-                } else {
-                    yearInputCE.style.color = '#d4442e';
-                    setTimeout(() => { yearInputCE.style.color = ''; }, 500);
-                }
+                yearInputCE.blur(); // Let blur handler do the navigation
             } else if (e.key === 'Escape') {
+                yearInputCE.value = ceValueOnFocus; // Restore original
                 isEditingYear = false;
                 yearInputCE.blur();
-                updateYearDisplay();
             }
         });
     }
@@ -1259,6 +1269,12 @@ async function init() {
     
     // Ensure page starts at top (fixes mobile scroll issues)
     window.scrollTo(0, 0);
+    
+    // Update the current year display in the header
+    const currentYearDisplay = document.getElementById('currentYearDisplay');
+    if (currentYearDisplay) {
+        currentYearDisplay.textContent = getCurrentHoloceneYear().toLocaleString();
+    }
     
     // Load core dataset
     await loadAllDatasets(['events/core.json']);
