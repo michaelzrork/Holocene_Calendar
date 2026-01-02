@@ -15,6 +15,11 @@
     box-sizing: border-box;
 }
 
+html {
+    /* Fix for mobile viewport issues */
+    scroll-behavior: smooth;
+}
+
 body {
     background: var(--bg-dark);
     color: var(--bone);
@@ -22,6 +27,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     padding-bottom: 50px; /* Space for sticky footer */
+    /* Ensure page starts at top */
+    position: relative;
 }
 
 /* ============ NOISE OVERLAY ============ */
@@ -83,7 +90,7 @@ h1 span {
 }
 
 .scale-note {
-    max-width: 500px;
+    max-width: 750px;
     margin: 40px auto 0;
     padding: 20px 30px;
     background: var(--bg-card);
@@ -112,6 +119,9 @@ h1 span {
     background: var(--gold);
     z-index: 1001;
     width: 0%;
+    /* Ensure it stays at the very top on mobile */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .controls-toggle {
@@ -627,6 +637,41 @@ h1 span {
     z-index: 15;
 }
 
+/* Event category icons */
+.event-category-icons {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+/* Event footer - icons and source link */
+.event-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+/* Always: link left, icons right */
+.event-footer .event-source {
+    order: 1;
+}
+
+.event-footer .event-category-icons {
+    order: 2;
+    margin-left: auto;
+}
+
+.event.hovered .event-footer,
+.event.locked .event-footer {
+    max-height: 30px;
+    opacity: 1;
+}
+
 .event .event-year-marker span {
     display: block;
     font-family: 'JetBrains Mono', monospace;
@@ -695,23 +740,11 @@ h1 span {
 
 /* Source link */
 .event-source {
-    display: block;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
     color: var(--gold);
     letter-spacing: 1px;
-    margin-top: 8px;
     text-decoration: none;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.event.hovered .event-source,
-.event.locked .event-source {
-    opacity: 1;
-    max-height: 30px;
 }
 
 .event-source:hover {
@@ -780,6 +813,7 @@ h1 span {
     overflow: hidden;
     opacity: 0;
     transition: all 0.3s ease;
+    text-align: left; /* Always left-align description text */
 }
 
 .event.hovered .event-desc,

@@ -464,6 +464,25 @@ function getEventColor(event) {
     return DEFAULT_COLOR;
 }
 
+/**
+ * Get the category icons for an event
+ * @param {object} event - The event object
+ * @returns {string} HTML string of icons
+ */
+function getCategoryIcons(event) {
+    if (!event.categories || event.categories.length === 0) {
+        return '';
+    }
+    
+    const icons = event.categories
+        .map(catKey => STATE.categories[catKey]?.icon || '')
+        .filter(icon => icon !== '');
+    
+    if (icons.length === 0) return '';
+    
+    return `<span class="event-category-icons">${icons.join('')}</span>`;
+}
+
 // ============ RENDER FUNCTIONS ============
 
 function createRangeBar(rangeData, index, maxDuration) {
@@ -502,6 +521,9 @@ function createRangeBar(rangeData, index, maxDuration) {
         ? `<a href="${rangeData.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${color.text}">Learn more →</a>`
         : '';
     
+    // Get category icons
+    const categoryIcons = getCategoryIcons(rangeData);
+    
     range.innerHTML = `
         <div class="content" style="border-top: 5px solid ${borderColor}">
             <div class="connector" style="background: ${color.border}"></div>
@@ -517,7 +539,10 @@ function createRangeBar(rangeData, index, maxDuration) {
             </div>
             <span class="range-dates" style="color: ${color.text}">${yearLabel}</span>
             <p class="event-desc">${rangeData.desc || ''}</p>
-            ${sourceLink}
+            <div class="event-footer">
+                ${categoryIcons}
+                ${sourceLink}
+            </div>
         </div>
     `;
     
@@ -594,6 +619,9 @@ function createEvent(eventData, index) {
         ? `<a href="${eventData.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${textColor}">Learn more →</a>`
         : '';
     
+    // Get category icons
+    const categoryIcons = getCategoryIcons(eventData);
+    
     event.innerHTML = `
         <div class="content" style="border-top: 5px solid ${borderColor}">
             <div class="connector" style="background: ${borderColor}"></div>
@@ -603,7 +631,10 @@ function createEvent(eventData, index) {
             </div>
             <span class="event-year-text" style="color: ${textColor}">${yearLabel}</span>
             <p class="event-desc">${eventData.desc || ''}</p>
-            ${sourceLink}
+            <div class="event-footer">
+                ${categoryIcons}
+                ${sourceLink}
+            </div>
         </div>
     `;
     
@@ -942,6 +973,8 @@ function updateYearDisplay() {
     const yearInputCE = document.getElementById('currentYearCE');
     const setBCE = document.getElementById('set-bce');
     const scrollProgress = document.getElementById('scrollProgress');
+    const yearDisplay = document.getElementById('yearDisplay');
+    const navButtons = document.querySelector('.nav-buttons');
     
     if (!yearInput) return;
     
@@ -962,6 +995,27 @@ function updateYearDisplay() {
     if (scrollProgress) {
         const scrollPercent = (displayYear / currentYear) * 100;
         scrollProgress.style.width = scrollPercent + '%';
+    }
+    
+    // Mobile footer avoidance - check if we're on mobile and near bottom
+    if (window.innerWidth <= 800) {
+        const footer = document.querySelector('footer');
+        if (footer && yearDisplay && navButtons) {
+            const footerRect = footer.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            
+            // If footer is visible in viewport
+            if (footerRect.top < viewportHeight) {
+                const footerVisibleHeight = viewportHeight - footerRect.top;
+                const offset = Math.max(0, footerVisibleHeight + 15); // 15px buffer
+                
+                yearDisplay.style.bottom = (15 + offset) + 'px';
+                navButtons.style.bottom = (15 + offset) + 'px';
+            } else {
+                yearDisplay.style.bottom = '15px';
+                navButtons.style.bottom = '15px';
+            }
+        }
     }
 }
 
@@ -1202,6 +1256,9 @@ window.timelineAPI = {
 async function init() {
     console.log('Initializing timeline...');
     console.log('Current Holocene Year:', getCurrentHoloceneYear());
+    
+    // Ensure page starts at top (fixes mobile scroll issues)
+    window.scrollTo(0, 0);
     
     // Load core dataset
     await loadAllDatasets(['events/core.json']);
