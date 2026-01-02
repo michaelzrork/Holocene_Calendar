@@ -956,7 +956,7 @@ footer p {
     
     /* Collapsed cards are narrower on mobile */
     .event {
-        width: 130px;
+        width: 300px;
     }
     
     /* Bring cards closer to timeline */
@@ -1114,7 +1114,7 @@ footer p {
 
 @media (max-width: 600px) {
     .event {
-        width: 110px;
+        width: 150px;
     }
     
     .event .event-title {
