@@ -472,6 +472,10 @@ function createRangeBar(rangeData, index, maxDuration) {
     const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
     const borderColor = color.border; // For card top border
     
+    // Set CSS custom properties for hover/lock glow
+    range.style.setProperty('--event-border', borderColor);
+    range.style.setProperty('--event-glow', color.bg.replace('0.3', '0.5'));
+    
     // Build source link if available
     const sourceLink = rangeData.source 
         ? `<a href="${rangeData.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${color.text}">Learn more →</a>`
@@ -557,6 +561,10 @@ function createEvent(eventData, index) {
     const color = getEventColor(eventData);
     const borderColor = color.border;
     const textColor = color.text;
+    
+    // Set CSS custom properties for hover/lock glow
+    event.style.setProperty('--event-border', borderColor);
+    event.style.setProperty('--event-glow', color.bg.replace('0.3', '0.5'));
     
     const yearLabel = formatYear(eventData.year, eventData.approximate);
     

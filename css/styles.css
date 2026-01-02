@@ -683,12 +683,6 @@ h1 span {
     z-index: 500 !important;
 }
 
-.event.locked .content {
-    border-color: var(--gold);
-    background: #1a1a1d;
-    box-shadow: 0 0 30px rgba(201, 162, 39, 0.3);
-}
-
 /* Year text inside content box */
 .event-year-text {
     display: block;
@@ -737,8 +731,13 @@ h1 span {
 
 .event.hovered .content,
 .event.locked .content {
-    border-color: var(--gold-dim);
+    border-color: var(--event-border, var(--gold-dim));
     background: #151517;
+}
+
+.event.locked .content {
+    background: #1a1a1d;
+    box-shadow: 0 0 30px var(--event-glow, rgba(201, 162, 39, 0.3));
 }
 
 .event .event-header {

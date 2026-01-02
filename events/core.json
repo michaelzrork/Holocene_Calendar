@@ -36,7 +36,7 @@
     "disaster": { 
       "name": "Disasters & Plagues", 
       "icon": "💀",
-      "color": { "bg": "rgba(255, 100, 50, 0.3)", "border": "#cc5020", "text": "#ff6432" }
+      "color": { "bg": "rgba(210, 180, 140, 0.3)", "border": "#b8956c", "text": "#d2b48c" }
     },
     "exploration": { 
       "name": "Exploration & Discovery", 
@@ -52,6 +52,11 @@
       "name": "Religion & Philosophy", 
       "icon": "✝️",
       "color": { "bg": "rgba(255, 255, 255, 0.3)", "border": "#aaaaaa", "text": "#e5e3de" }
+    },
+    "geological": { 
+      "name": "Geological Events", 
+      "icon": "🌋",
+      "color": { "bg": "rgba(34, 139, 34, 0.3)", "border": "#228b22", "text": "#32cd32" }
     }
   },
   "events": [
@@ -63,11 +68,48 @@
       "categories": ["civilization", "science"]
     },
     {
+      "year": 50,
+      "endYear": 3500,
+      "title": "Greenlandian Age",
+      "desc": "First age of the Holocene. Rapid warming following the Ice Age. Sea levels rise dramatically as glaciers melt.",
+      "source": "https://en.wikipedia.org/wiki/Greenlandian",
+      "categories": ["geological"]
+    },
+    {
+      "year": 200,
+      "title": "Domestication of Sheep",
+      "desc": "Sheep become the first livestock animals domesticated for wool, milk, and meat in Mesopotamia.",
+      "source": "https://en.wikipedia.org/wiki/Domestic_sheep",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 300,
+      "endYear": 700,
+      "title": "Preboreal Oscillation",
+      "desc": "Major climate oscillation at the start of the Holocene. Temporary return to colder conditions before sustained warming.",
+      "source": "https://en.wikipedia.org/wiki/Preboreal_Oscillation",
+      "categories": ["geological"]
+    },
+    {
       "year": 500,
       "title": "Göbekli Tepe",
       "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
       "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
       "categories": ["civilization", "religion", "culture"]
+    },
+    {
+      "year": 500,
+      "title": "First Cereal Cultivation",
+      "desc": "Wild wheat and barley first cultivated in the Fertile Crescent. Initially used for beer and gruel, later bread.",
+      "source": "https://en.wikipedia.org/wiki/Neolithic_founder_crops",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 800,
+      "title": "Domestication of Pigs",
+      "desc": "Pigs domesticated independently in Anatolia and China. Efficient converters of scraps to protein.",
+      "source": "https://en.wikipedia.org/wiki/Domestic_pig",
+      "categories": ["science", "civilization"]
     },
     {
       "year": 1000,
@@ -77,11 +119,98 @@
       "categories": ["civilization"]
     },
     {
+      "year": 1500,
+      "title": "Domestication of Cattle",
+      "desc": "Aurochs domesticated in the Near East and South Asia. Cattle provide meat, milk, leather, and labor.",
+      "source": "https://en.wikipedia.org/wiki/Cattle",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 1800,
+      "title": "8.2 Kiloyear Event",
+      "desc": "Most severe climate event of the Holocene. Sudden cooling lasting 400 years caused by catastrophic drainage of glacial Lake Agassiz into the Atlantic.",
+      "source": "https://en.wikipedia.org/wiki/8.2-kiloyear_event",
+      "categories": ["geological", "disaster"]
+    },
+    {
+      "year": 2000,
+      "endYear": 6000,
+      "title": "African Humid Period",
+      "desc": "The 'Green Sahara' era. North Africa was a lush savanna with large lakes, supporting abundant wildlife and early pastoralist cultures.",
+      "source": "https://en.wikipedia.org/wiki/African_humid_period",
+      "categories": ["geological"]
+    },
+    {
+      "year": 2000,
+      "title": "Pottery Invented",
+      "desc": "Fired clay pottery emerges in multiple regions. Enables food storage, cooking, and fermentation.",
+      "source": "https://en.wikipedia.org/wiki/Pottery",
+      "categories": ["science", "culture"]
+    },
+    {
+      "year": 2500,
+      "title": "Çatalhöyük",
+      "desc": "One of the world's first proto-cities in Anatolia. Up to 10,000 residents live in densely packed mudbrick houses entered through rooftop holes.",
+      "source": "https://en.wikipedia.org/wiki/%C3%87atalh%C3%B6y%C3%BCk",
+      "categories": ["civilization"]
+    },
+    {
+      "year": 2800,
+      "title": "'Ain Ghazal Settlement",
+      "desc": "One of the largest Neolithic settlements, near modern Amman, Jordan. Famous for its plaster statues and ancestor worship practices.",
+      "source": "https://en.wikipedia.org/wiki/%27Ain_Ghazal",
+      "categories": ["civilization", "religion"]
+    },
+    {
       "year": 3000,
       "title": "Wheel Invented",
       "desc": "The wheel appears in Mesopotamia, revolutionizing transportation and pottery-making.",
       "source": "https://en.wikipedia.org/wiki/Wheel",
       "categories": ["science"]
+    },
+    {
+      "year": 3500,
+      "title": "Copper Smelting Begins",
+      "desc": "Humans learn to extract copper from ore using fire. The Chalcolithic (Copper Age) begins, ending the Stone Age.",
+      "source": "https://en.wikipedia.org/wiki/Chalcolithic",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 3500,
+      "endYear": 5800,
+      "title": "Northgrippian Age",
+      "desc": "Second age of the Holocene. Cooling caused by disrupted ocean circulation from glacial meltwater. Includes the Holocene Climatic Optimum.",
+      "source": "https://en.wikipedia.org/wiki/Northgrippian",
+      "categories": ["geological"]
+    },
+    {
+      "year": 4000,
+      "endYear": 6000,
+      "title": "Holocene Climatic Optimum",
+      "desc": "Warmest period of the Holocene. Global temperatures 1-2°C warmer than today. Sea levels stabilize, civilizations flourish.",
+      "source": "https://en.wikipedia.org/wiki/Holocene_climatic_optimum",
+      "categories": ["geological"]
+    },
+    {
+      "year": 4000,
+      "title": "Domestication of the Horse",
+      "desc": "Horses domesticated on the Eurasian steppes. Revolutionizes transportation, warfare, and communication.",
+      "source": "https://en.wikipedia.org/wiki/Domestication_of_the_horse",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 4300,
+      "title": "Bronze Age Begins",
+      "desc": "Copper-tin alloy creates bronze—harder than copper alone. Weapons, tools, and trade networks transform society.",
+      "source": "https://en.wikipedia.org/wiki/Bronze_Age",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": 4500,
+      "title": "First Cities in Mesopotamia",
+      "desc": "Uruk, Ur, and Eridu emerge in southern Iraq. Urban planning, specialized labor, and social hierarchy develop.",
+      "source": "https://en.wikipedia.org/wiki/Uruk",
+      "categories": ["civilization"]
     },
     {
       "year": 4700,
@@ -96,6 +225,20 @@
       "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
       "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
       "categories": ["civilization", "culture"]
+    },
+    {
+      "year": 5800,
+      "title": "Meghalayan Age Begins",
+      "desc": "Current geological age begins with a 200-year megadrought that collapsed civilizations across Egypt, Mesopotamia, and the Indus Valley.",
+      "source": "https://en.wikipedia.org/wiki/Meghalayan",
+      "categories": ["geological", "disaster"]
+    },
+    {
+      "year": 5800,
+      "title": "4.2 Kiloyear Event",
+      "desc": "Severe aridification event lasting centuries. Contributed to the collapse of the Egyptian Old Kingdom and Akkadian Empire.",
+      "source": "https://en.wikipedia.org/wiki/4.2-kiloyear_event",
+      "categories": ["geological", "disaster"]
     },
     {
       "year": 6000,
@@ -303,7 +446,7 @@
       "title": "Eruption of Vesuvius",
       "desc": "Mount Vesuvius buries Pompeii and Herculaneum. Preserved forever in volcanic ash.",
       "source": "https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD",
-      "categories": ["disaster"]
+      "categories": ["disaster", "geological"]
     },
     {
       "year": 10313,
@@ -364,6 +507,14 @@
       "categories": ["war", "politics"]
     },
     {
+      "year": 10950,
+      "endYear": 11250,
+      "title": "Medieval Warm Period",
+      "desc": "Climate similar to modern times. Vikings colonize Greenland, agriculture expands northward, and European population booms.",
+      "source": "https://en.wikipedia.org/wiki/Medieval_Warm_Period",
+      "categories": ["geological"]
+    },
+    {
       "year": 11096,
       "endYear": 11099,
       "title": "First Crusade",
@@ -407,6 +558,14 @@
       "desc": "Rebirth of art, science, and humanism. Da Vinci, Michelangelo, and the printing press.",
       "source": "https://en.wikipedia.org/wiki/Renaissance",
       "categories": ["civilization", "culture", "science"]
+    },
+    {
+      "year": 11300,
+      "endYear": 11850,
+      "title": "Little Ice Age",
+      "desc": "Coldest period of the past two millennia. Rivers freeze, crops fail, glaciers advance. Ends with the Industrial Revolution.",
+      "source": "https://en.wikipedia.org/wiki/Little_Ice_Age",
+      "categories": ["geological"]
     },
     {
       "year": 11347,
@@ -495,6 +654,14 @@
       "categories": ["civilization", "science", "economics"]
     },
     {
+      "year": 11775,
+      "endYear": 11783,
+      "title": "American Revolutionary War",
+      "desc": "Thirteen colonies fight for independence from Britain. Birth of the United States.",
+      "source": "https://en.wikipedia.org/wiki/American_Revolutionary_War",
+      "categories": ["war", "politics"]
+    },
+    {
       "year": 11776,
       "title": "American Independence",
       "desc": "Declaration signed. Democratic self-governance becomes reality.",
@@ -514,6 +681,13 @@
       "desc": "Charles Darwin born. Will revolutionize biology with theory of evolution by natural selection.",
       "source": "https://en.wikipedia.org/wiki/Charles_Darwin",
       "categories": ["figure", "science"]
+    },
+    {
+      "year": 11815,
+      "title": "Mount Tambora Eruption",
+      "desc": "Largest volcanic eruption in recorded history. Causes 'Year Without a Summer' in 1816—global crop failures and famine.",
+      "source": "https://en.wikipedia.org/wiki/1815_eruption_of_Mount_Tambora",
+      "categories": ["geological", "disaster"]
     },
     {
       "year": 11837,
@@ -551,6 +725,13 @@
       "desc": "Albert Einstein born in Ulm, Germany. Will redefine space, time, and reality itself.",
       "source": "https://en.wikipedia.org/wiki/Albert_Einstein",
       "categories": ["figure", "science"]
+    },
+    {
+      "year": 11883,
+      "title": "Krakatoa Eruption",
+      "desc": "Catastrophic eruption heard 3,000 miles away. Triggers tsunamis killing 36,000. Global temperatures drop for years.",
+      "source": "https://en.wikipedia.org/wiki/1883_eruption_of_Krakatoa",
+      "categories": ["geological", "disaster"]
     },
     {
       "year": 11905,
@@ -621,11 +802,27 @@
       "categories": ["war", "politics"]
     },
     {
+      "year": 11950,
+      "endYear": 11953,
+      "title": "Korean War",
+      "desc": "North Korea invades South. UN forces intervene. Armistice signed but war never officially ended.",
+      "source": "https://en.wikipedia.org/wiki/Korean_War",
+      "categories": ["war"]
+    },
+    {
       "year": 11963,
       "title": "JFK Assassinated",
       "desc": "President Kennedy shot in Dallas. End of Camelot, birth of conspiracy theories.",
       "source": "https://en.wikipedia.org/wiki/Assassination_of_John_F._Kennedy",
       "categories": ["figure", "politics"]
+    },
+    {
+      "year": 11955,
+      "endYear": 11975,
+      "title": "Vietnam War",
+      "desc": "America's longest war until Afghanistan. 58,000 Americans and 2 million Vietnamese dead. First televised war.",
+      "source": "https://en.wikipedia.org/wiki/Vietnam_War",
+      "categories": ["war"]
     },
     {
       "year": 11969,
@@ -649,11 +846,35 @@
       "categories": ["science"]
     },
     {
+      "year": 11990,
+      "endYear": 11991,
+      "title": "Gulf War",
+      "desc": "Coalition forces liberate Kuwait from Iraqi invasion. 'Operation Desert Storm' showcases modern warfare.",
+      "source": "https://en.wikipedia.org/wiki/Gulf_War",
+      "categories": ["war"]
+    },
+    {
       "year": 12001,
       "title": "September 11 Attacks",
       "desc": "Terrorist attacks kill nearly 3,000 in New York, Washington, and Pennsylvania. World changed forever.",
       "source": "https://en.wikipedia.org/wiki/September_11_attacks",
       "categories": ["disaster", "war"]
+    },
+    {
+      "year": 12001,
+      "endYear": 12021,
+      "title": "War in Afghanistan",
+      "desc": "America's longest war. Response to 9/11. Taliban overthrown then returns after US withdrawal.",
+      "source": "https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)",
+      "categories": ["war"]
+    },
+    {
+      "year": 12003,
+      "endYear": 12011,
+      "title": "Iraq War",
+      "desc": "US-led invasion topples Saddam Hussein. Controversial 'weapons of mass destruction' justification.",
+      "source": "https://en.wikipedia.org/wiki/Iraq_War",
+      "categories": ["war"]
     },
     {
       "year": 12020,
@@ -669,6 +890,13 @@
       "desc": "Large language models enter public use. The nature of knowledge work shifts.",
       "source": "https://en.wikipedia.org/wiki/ChatGPT",
       "categories": ["science"]
+    },
+    {
+      "year": 12022,
+      "title": "Russia Invades Ukraine",
+      "desc": "Largest European war since WWII. Russia's full-scale invasion reshapes global politics and alliances.",
+      "source": "https://en.wikipedia.org/wiki/Russian_invasion_of_Ukraine",
+      "categories": ["war", "politics"]
     }
   ]
 }
