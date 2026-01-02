@@ -414,9 +414,9 @@ function getFilteredEvents() {
 // ============ COLOR FUNCTIONS ============
 
 /**
- * Get the color for an event based on its first ACTIVE category
- * Falls back through categories until finding one that's active
- * Returns default gold if no categories or none active
+ * Get the color for an event based on its categories and current filter state
+ * When viewing all categories: use first active category's color
+ * When viewing a single category: use a DIFFERENT category's color for variety
  * @param {object} event - The event object
  * @returns {object} Color object with bg, border, text properties
  */
@@ -426,17 +426,38 @@ function getEventColor(event) {
         return DEFAULT_COLOR;
     }
     
-    // Find first category that's currently active in filters
-    for (const catKey of event.categories) {
-        if (STATE.activeFilters.has(catKey) && STATE.categories[catKey]?.color) {
-            return STATE.categories[catKey].color;
-        }
-    }
+    const totalCategories = Object.keys(STATE.categories).length;
+    const activeCount = STATE.activeFilters.size;
     
-    // No active categories found, use first category's color anyway (shouldn't happen if filtered properly)
-    const firstCat = event.categories[0];
-    if (STATE.categories[firstCat]?.color) {
-        return STATE.categories[firstCat].color;
+    // Check if we're in "single category" mode (only one filter active)
+    const singleCategoryMode = activeCount === 1;
+    
+    if (singleCategoryMode) {
+        // Find a category that's NOT the active filter (for visual variety)
+        const activeCategory = [...STATE.activeFilters][0];
+        
+        for (const catKey of event.categories) {
+            if (catKey !== activeCategory && STATE.categories[catKey]?.color) {
+                return STATE.categories[catKey].color;
+            }
+        }
+        // Fall back to the active category if it's the only one
+        if (STATE.categories[activeCategory]?.color) {
+            return STATE.categories[activeCategory].color;
+        }
+    } else {
+        // Normal mode: find first category that's currently active in filters
+        for (const catKey of event.categories) {
+            if (STATE.activeFilters.has(catKey) && STATE.categories[catKey]?.color) {
+                return STATE.categories[catKey].color;
+            }
+        }
+        
+        // No active categories found, use first category's color anyway
+        const firstCat = event.categories[0];
+        if (STATE.categories[firstCat]?.color) {
+            return STATE.categories[firstCat].color;
+        }
     }
     
     // Fallback to default
