@@ -151,13 +151,23 @@ h1 span {
     gap: 10px;
 }
 
+/* Year display - fixed position, separate from controls-wrapper */
 .year-display {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
     padding: 15px 20px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     font-family: 'JetBrains Mono', monospace;
     width: 150px;
     text-align: right;
+}
+
+/* On desktop, controls-wrapper sits below year-display */
+.controls-wrapper {
+    top: 145px; /* Below year-display */
 }
 
 .year-display .current-year {
@@ -401,7 +411,7 @@ h1 span {
     appearance: none;
     width: 14px;
     height: 14px;
-    border: 1px solid #1a1a1f;
+    border: 1px solid var(--checkbox-color, #1a1a1f);
     background: transparent;
     cursor: pointer;
     position: relative;
@@ -409,8 +419,8 @@ h1 span {
 }
 
 .filter-option input[type="checkbox"]:checked {
-    background: var(--gold);
-    border-color: var(--gold);
+    background: var(--checkbox-color, var(--gold));
+    border-color: var(--checkbox-color, var(--gold));
 }
 
 .filter-option input[type="checkbox"]:checked::after {
@@ -891,54 +901,73 @@ footer p {
         width: 200px;
     }
     
-    /* Settings toggle under nav buttons on right side */
+    /* Footer NOT sticky on mobile */
+    footer {
+        position: relative;
+        margin-top: 60px;
+    }
+    
+    body {
+        padding-bottom: 0; /* Remove footer spacing since not sticky */
+    }
+    
+    /* Nav buttons on LEFT side */
+    .nav-buttons {
+        left: 15px;
+        right: auto;
+        bottom: 15px;
+    }
+    
+    /* Settings gear in upper right */
     .controls-toggle {
         display: flex;
         align-items: center;
         justify-content: center;
-        top: auto;
-        bottom: 20px;
-        right: 20px;
+        top: 15px;
+        right: 15px;
+        bottom: auto;
         left: auto;
+        border-color: var(--gold-dim); /* Gold outline on mobile */
     }
     
-    /* Nav buttons stay above settings toggle */
-    .nav-buttons {
-        bottom: 70px;
-    }
-    
-    /* Year display moves to bottom-left on mobile */
+    /* Scale and filters wrapper - upper right, opens from gear */
     .controls-wrapper {
-        top: auto;
-        bottom: 20px;
-        right: auto;
-        left: 15px;
+        top: 70px;
+        right: 15px;
+        bottom: auto;
+        left: auto;
+        display: none; /* Hidden by default on mobile */
     }
     
+    .controls-wrapper.open {
+        display: flex;
+    }
+    
+    /* Year display - lower right on mobile */
     .year-display {
+        top: auto;
+        bottom: 15px;
+        right: 15px;
         padding: 10px 15px;
+        border-color: var(--gold-dim); /* Gold outline on mobile */
     }
     
     .year-display .current-year {
         font-size: 1.2rem;
     }
     
-    /* Scale and filter controls hidden by default, shown via toggle */
-    .controls-wrapper .scale-control,
-    .controls-wrapper .filter-control {
-        display: none;
-    }
-    
-    .controls-wrapper.open .scale-control {
-        display: flex;
-    }
-    
-    .controls-wrapper.open .filter-control {
-        display: block;
+    /* Gold outline on mobile control boxes */
+    .scale-control,
+    .filter-control {
+        border-color: var(--gold-dim);
     }
     
     .scale-control {
         padding: 10px 15px;
+    }
+    
+    .nav-btn {
+        border-color: var(--gold-dim); /* Gold outline on mobile */
     }
 }
 

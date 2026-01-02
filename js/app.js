@@ -2,7 +2,7 @@
 const CONFIG = {
     pxPerYear: 4,           // Scale: pixels per year (adjustable via UI)
     minPxPerYear: 0.5,      // Minimum scale
-    maxPxPerYear: 100,      // Maximum scale
+    maxPxPerYear: 50,       // Maximum scale
     centuryInterval: 100,   // Label every N years
     decadeInterval: 10,     // Tick every N years
 };
@@ -267,15 +267,14 @@ async function loadAllDatasets(urls) {
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
     STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
     
-    // Pre-assign colors and sides to all events based on their position in the FULL sorted list
-    // This ensures colors don't change when filtering
+    // Pre-assign sides to all events based on their position in the FULL sorted list
+    // This ensures sides don't change when filtering
     const allSorted = [...STATE.allEvents].map(e => ({
         event: e,
         sortYear: e.endYear ? e.year + (e.endYear - e.year) / 2 : e.year
     })).sort((a, b) => a.sortYear - b.sortYear);
     
     allSorted.forEach(({ event }, index) => {
-        event.colorIndex = index;
         event.side = index % 2 === 0 ? 'left' : 'right';
     });
     
@@ -291,6 +290,9 @@ async function loadAllDatasets(urls) {
 
 // ============ FILTER FUNCTIONS ============
 
+// Default color for uncategorized events (gold) - defined here so buildFilterUI can use it
+const DEFAULT_COLOR = { bg: 'rgba(201, 162, 39, 0.3)', border: '#8a7019', text: '#c9a227' };
+
 /**
  * Build the filter UI checkboxes
  */
@@ -301,12 +303,14 @@ function buildFilterUI() {
     filterOptions.innerHTML = '';
     
     Object.entries(STATE.categories).forEach(([key, category]) => {
+        const color = category.color || DEFAULT_COLOR;
         const label = document.createElement('label');
         label.className = 'filter-option';
         label.innerHTML = `
-            <input type="checkbox" value="${key}" checked>
+            <input type="checkbox" value="${key}" checked 
+                   style="--checkbox-color: ${color.border}; --checkbox-bg: ${color.bg}">
             <span class="filter-option-icon">${category.icon || ''}</span>
-            <span class="filter-option-label">${category.name}</span>
+            <span class="filter-option-label" style="color: ${color.text}">${category.name}</span>
         `;
         
         const checkbox = label.querySelector('input');
@@ -407,90 +411,39 @@ function getFilteredEvents() {
     };
 }
 
-// ============ RENDER FUNCTIONS ============
-
-// Color palette for ranges - NO GOLD (reserved for single events)
-// Shuffled so adjacent ranges have contrasting colors
-const RANGE_COLORS = [
-    { bg: 'rgba(100, 149, 237, 0.3)', border: '#4a7dc4', text: '#6495ed' },  // blue
-    { bg: 'rgba(255, 100, 50, 0.3)', border: '#cc5020', text: '#ff6432' },   // burnt orange
-    { bg: 'rgba(138, 43, 226, 0.3)', border: '#6a20b0', text: '#8a2be2' },   // purple
-    { bg: 'rgba(144, 238, 144, 0.3)', border: '#5a9a5a', text: '#90ee90' },  // green
-    { bg: 'rgba(255, 105, 180, 0.3)', border: '#cc5090', text: '#ff69b4' },  // hot pink
-    { bg: 'rgba(64, 224, 208, 0.3)', border: '#2a9a8a', text: '#40e0d0' },   // turquoise
-    { bg: 'rgba(212, 68, 46, 0.3)', border: '#a33322', text: '#d4442e' },    // red
-    { bg: 'rgba(255, 220, 50, 0.3)', border: '#ccaa20', text: '#ffdc32' },   // yellow
-    { bg: 'rgba(221, 160, 221, 0.3)', border: '#9a6a9a', text: '#dda0dd' },  // plum
-];
+// ============ COLOR FUNCTIONS ============
 
 /**
- * Assign ranges to tracks (left or right side) to minimize overlap
- * Returns array of ranges with track assignments
+ * Get the color for an event based on its first ACTIVE category
+ * Falls back through categories until finding one that's active
+ * Returns default gold if no categories or none active
+ * @param {object} event - The event object
+ * @returns {object} Color object with bg, border, text properties
  */
-function assignRangeTracks(ranges) {
-    // Sort by start year
-    const sorted = [...ranges].sort((a, b) => a.year - b.year);
+function getEventColor(event) {
+    // No categories = default gold
+    if (!event.categories || event.categories.length === 0) {
+        return DEFAULT_COLOR;
+    }
     
-    // Track end years for each side
-    const leftTracks = [];   // Array of track end years
-    const rightTracks = [];  // Array of track end years
+    // Find first category that's currently active in filters
+    for (const catKey of event.categories) {
+        if (STATE.activeFilters.has(catKey) && STATE.categories[catKey]?.color) {
+            return STATE.categories[catKey].color;
+        }
+    }
     
-    return sorted.map((range, index) => {
-        // Assign color based on index
-        const colorIndex = index % RANGE_COLORS.length;
-        const color = RANGE_COLORS[colorIndex];
-        
-        // Calculate duration for z-index (shorter = higher z-index)
-        const duration = range.endYear - range.year;
-        
-        // Try to find a track on the left that's free
-        let assignedSide = 'left';
-        let assignedTrack = -1;
-        
-        // Check left tracks
-        for (let i = 0; i < leftTracks.length; i++) {
-            if (leftTracks[i] < range.year) {
-                assignedTrack = i;
-                leftTracks[i] = range.endYear;
-                break;
-            }
-        }
-        
-        // If no free left track, check right
-        if (assignedTrack === -1) {
-            assignedSide = 'right';
-            for (let i = 0; i < rightTracks.length; i++) {
-                if (rightTracks[i] < range.year) {
-                    assignedTrack = i;
-                    rightTracks[i] = range.endYear;
-                    break;
-                }
-            }
-        }
-        
-        // If still no track, create new one
-        if (assignedTrack === -1) {
-            // Prefer the side with fewer tracks
-            if (leftTracks.length <= rightTracks.length) {
-                assignedSide = 'left';
-                assignedTrack = leftTracks.length;
-                leftTracks.push(range.endYear);
-            } else {
-                assignedSide = 'right';
-                assignedTrack = rightTracks.length;
-                rightTracks.push(range.endYear);
-            }
-        }
-        
-        return {
-            ...range,
-            side: assignedSide,
-            track: assignedTrack,
-            color,
-            duration
-        };
-    });
+    // No active categories found, use first category's color anyway (shouldn't happen if filtered properly)
+    const firstCat = event.categories[0];
+    if (STATE.categories[firstCat]?.color) {
+        return STATE.categories[firstCat].color;
+    }
+    
+    // Fallback to default
+    return DEFAULT_COLOR;
 }
+
+// ============ RENDER FUNCTIONS ============
 
 function createRangeBar(rangeData, index, maxDuration) {
     const range = document.createElement('div');
@@ -513,9 +466,8 @@ function createRangeBar(rangeData, index, maxDuration) {
     
     const yearLabel = `${rangeData.year.toLocaleString()} – ${rangeData.endYear.toLocaleString()} HE`;
     
-    // Use pre-assigned colorIndex from data loading
-    const colorIndex = (rangeData.colorIndex !== undefined ? rangeData.colorIndex : index) % RANGE_COLORS.length;
-    const color = RANGE_COLORS[colorIndex];
+    // Get color from first active category
+    const color = getEventColor(rangeData);
     const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
     const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
     const borderColor = color.border; // For card top border
@@ -601,9 +553,8 @@ function createEvent(eventData, index) {
     event.dataset.zIndex = zIndex;
     event.dataset.year = eventData.year;
     
-    // Use pre-assigned colorIndex from data loading (same as ranges)
-    const colorIndex = (eventData.colorIndex !== undefined ? eventData.colorIndex : index) % RANGE_COLORS.length;
-    const color = RANGE_COLORS[colorIndex];
+    // Get color from first active category
+    const color = getEventColor(eventData);
     const borderColor = color.border;
     const textColor = color.text;
     
