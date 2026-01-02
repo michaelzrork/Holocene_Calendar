@@ -657,7 +657,9 @@ function createEvent(eventData, index) {
  */
 function handleEventClick(eventEl, originalZIndex) {
     const backdrop = document.getElementById('mobileBackdrop');
-    const isMobile = window.innerWidth <= 800;
+    
+    // Get the year from the event's data attribute
+    const eventYear = parseFloat(eventEl.dataset.year);
     
     // If clicking the already-locked event, unlock it and collapse
     if (STATE.lockedEvent === eventEl) {
@@ -668,8 +670,8 @@ function handleEventClick(eventEl, originalZIndex) {
         // Also clear from hoveredEvent so it doesn't immediately re-hover
         STATE.hoveredEvent = null;
         
-        // Hide backdrop on mobile
-        if (isMobile && backdrop) {
+        // Hide backdrop
+        if (backdrop) {
             backdrop.classList.remove('active');
         }
         return;
@@ -687,9 +689,14 @@ function handleEventClick(eventEl, originalZIndex) {
     eventEl.style.zIndex = 500;
     STATE.lockedEvent = eventEl;
     
-    // Show backdrop on mobile
-    if (isMobile && backdrop) {
+    // Show backdrop
+    if (backdrop) {
         backdrop.classList.add('active');
+    }
+    
+    // Scroll to the event's year
+    if (!isNaN(eventYear)) {
+        scrollToYear(eventYear);
     }
 }
 
@@ -724,7 +731,7 @@ function setupClickAwayUnlock() {
             STATE.lockedEvent = null;
             STATE.hoveredEvent = null;
             
-            // Hide backdrop on mobile
+            // Hide backdrop
             if (backdrop) {
                 backdrop.classList.remove('active');
             }

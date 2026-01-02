@@ -886,6 +886,11 @@ h1 span {
     box-shadow: 0 0 20px var(--bar-border);
 }
 
+/* ============ LIGHTBOX BACKDROP (Mobile only) ============ */
+.mobile-backdrop {
+    display: none;
+}
+
 /* ============ FOOTER ============ */
 footer {
     position: fixed;
@@ -1005,7 +1010,7 @@ footer p {
         padding: 6px 10px;
     }
     
-    /* Mobile expanded/locked state - lightbox style */
+    /* Mobile locked state adjustments */
     .event.locked {
         position: fixed !important;
         left: 5% !important;
