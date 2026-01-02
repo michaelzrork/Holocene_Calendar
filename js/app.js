@@ -656,6 +656,9 @@ function createEvent(eventData, index) {
  * Handle click-to-lock behavior for events
  */
 function handleEventClick(eventEl, originalZIndex) {
+    const backdrop = document.getElementById('mobileBackdrop');
+    const isMobile = window.innerWidth <= 800;
+    
     // If clicking the already-locked event, unlock it and collapse
     if (STATE.lockedEvent === eventEl) {
         eventEl.classList.remove('locked');
@@ -664,6 +667,11 @@ function handleEventClick(eventEl, originalZIndex) {
         STATE.lockedEvent = null;
         // Also clear from hoveredEvent so it doesn't immediately re-hover
         STATE.hoveredEvent = null;
+        
+        // Hide backdrop on mobile
+        if (isMobile && backdrop) {
+            backdrop.classList.remove('active');
+        }
         return;
     }
     
@@ -678,19 +686,48 @@ function handleEventClick(eventEl, originalZIndex) {
     eventEl.classList.add('locked');
     eventEl.style.zIndex = 500;
     STATE.lockedEvent = eventEl;
+    
+    // Show backdrop on mobile
+    if (isMobile && backdrop) {
+        backdrop.classList.add('active');
+    }
 }
 
 /**
  * Setup click-away-to-unlock on the document
  */
 function setupClickAwayUnlock() {
+    const backdrop = document.getElementById('mobileBackdrop');
+    
+    // Click on backdrop closes the lightbox
+    if (backdrop) {
+        backdrop.addEventListener('click', () => {
+            if (STATE.lockedEvent) {
+                STATE.lockedEvent.classList.remove('locked');
+                STATE.lockedEvent.classList.remove('hovered');
+                STATE.lockedEvent.style.zIndex = '';
+                STATE.lockedEvent = null;
+                STATE.hoveredEvent = null;
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+    
     document.addEventListener('click', (e) => {
+        // Don't close if clicking on backdrop (handled above)
+        if (e.target === backdrop) return;
+        
         if (STATE.lockedEvent && !STATE.lockedEvent.contains(e.target)) {
             STATE.lockedEvent.classList.remove('locked');
             STATE.lockedEvent.classList.remove('hovered');
             STATE.lockedEvent.style.zIndex = '';
             STATE.lockedEvent = null;
             STATE.hoveredEvent = null;
+            
+            // Hide backdrop on mobile
+            if (backdrop) {
+                backdrop.classList.remove('active');
+            }
         }
     });
 }

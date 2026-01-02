@@ -938,8 +938,108 @@ footer p {
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 800px) {
+    /* Mobile lightbox backdrop */
+    .mobile-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 400;
+    }
+    
+    .mobile-backdrop.active {
+        display: block;
+    }
+    
+    /* Collapsed cards are narrower on mobile */
     .event {
-        width: 200px;
+        width: 130px;
+    }
+    
+    /* Bring cards closer to timeline */
+    .event.left {
+        right: calc(50% + 35px);
+    }
+    
+    .event.right {
+        left: calc(50% + 35px);
+    }
+    
+    /* Shorter connectors */
+    .event.left .content .connector {
+        right: -35px;
+        width: 35px;
+    }
+    
+    .event.right .content .connector {
+        left: -35px;
+        width: 35px;
+    }
+    
+    /* Adjust dot positions */
+    .event.left .content .event-dot {
+        right: -36px;
+    }
+    
+    .event.right .content .event-dot {
+        left: -36px;
+    }
+    
+    /* Adjust range bar positions */
+    .event.left .content .range-bar-indicator {
+        right: -36px;
+    }
+    
+    .event.right .content .range-bar-indicator {
+        left: -36px;
+    }
+    
+    .event .event-title {
+        font-size: 0.85rem;
+    }
+    
+    .event .content {
+        padding: 6px 10px;
+    }
+    
+    /* Mobile expanded/locked state - lightbox style */
+    .event.locked {
+        position: fixed !important;
+        left: 5% !important;
+        right: 5% !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 90% !important;
+        text-align: left !important;
+        z-index: 501 !important;
+    }
+    
+    .event.locked .content {
+        display: block;
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .event.locked .event-header {
+        justify-content: flex-start;
+    }
+    
+    .event.locked .event-title {
+        font-size: 1.1rem;
+    }
+    
+    .event.locked .event-desc {
+        font-size: 0.9rem;
+    }
+    
+    /* Hide connector and dot when expanded */
+    .event.locked .connector,
+    .event.locked .event-dot,
+    .event.locked .range-bar-indicator {
+        display: none;
     }
     
     /* Footer NOT sticky on mobile */
@@ -1014,10 +1114,15 @@ footer p {
 
 @media (max-width: 600px) {
     .event {
-        width: 150px;
+        width: 110px;
     }
     
     .event .event-title {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+    }
+    
+    .event-year-text,
+    .range-dates {
+        font-size: 0.55rem;
     }
 }
