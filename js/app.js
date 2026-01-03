@@ -323,14 +323,12 @@ async function loadAllDatasets(urls) {
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
     STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
     
-    // Pre-assign sides to all events based on their position in the FULL sorted list
-    // This ensures sides don't change when filtering
-    const allSorted = [...STATE.allEvents].map(e => ({
-        event: e,
-        sortYear: e.endYear ? e.year + (e.endYear - e.year) / 2 : e.year
-    })).sort((a, b) => a.sortYear - b.sortYear);
+    // Pre-assign sides to all events based on their START year position
+    // Since all events (including ranges) now display at their start year,
+    // we sort by start year for proper left/right alternation
+    const allSorted = [...STATE.allEvents].sort((a, b) => a.year - b.year);
     
-    allSorted.forEach(({ event }, index) => {
+    allSorted.forEach((event, index) => {
         event.side = index % 2 === 0 ? 'left' : 'right';
     });
     
@@ -541,24 +539,47 @@ function getCategoryIcons(event) {
 
 // ============ RENDER FUNCTIONS ============
 
+/**
+ * Determine if an event should show a range bar on hover/click
+ * @param {object} eventData - The event object
+ * @returns {boolean} True if range bar should be shown
+ */
+function shouldShowRangeBar(eventData) {
+    // No endYear = no range bar
+    if (!eventData.endYear) return false;
+    
+    // If explicitly set to "event" type, suppress range bar
+    if (eventData.type === 'event') return false;
+    
+    // All other cases with endYear show the range bar:
+    // - type: "range" (explicit range)
+    // - type: "person" (lifespan)
+    // - type: "approximate" (uncertain range)
+    // - no type (defaults to range when endYear exists)
+    return true;
+}
+
 function createRangeBar(rangeData, index, maxDuration) {
     const range = document.createElement('div');
     // Use pre-assigned side from data loading
     const side = rangeData.side || (index % 2 === 0 ? 'left' : 'right');
-    range.className = `event range ${side}`;
+    
+    // Determine if this should show a range bar
+    const showRangeBar = shouldShowRangeBar(rangeData);
+    range.className = `event ${showRangeBar ? 'range' : ''} ${side}`;
     
     const startPx = yearToPixels(rangeData.year);
     const endPx = yearToPixels(rangeData.endYear);
     const heightPx = endPx - startPx;
-    const midPx = startPx + (heightPx / 2);
     
     // Base z-index is 9 (set via CSS), DOM order handles stacking
     const zIndex = 9;
     
-    // Position at midpoint like point events
-    range.style.top = midPx + 'px';
+    // Position at START year (not midpoint) - same as point events
+    range.style.top = startPx + 'px';
     range.dataset.zIndex = zIndex;
-    range.dataset.year = rangeData.sortYear || (rangeData.year + (rangeData.endYear - rangeData.year) / 2);
+    // Store the start year for sorting/scrolling purposes
+    range.dataset.year = rangeData.year;
     
     const yearLabel = formatYearDisplay(rangeData);
     
@@ -580,16 +601,22 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Get category icons
     const categoryIcons = getCategoryIcons(rangeData);
     
-    range.innerHTML = `
-        <div class="content" style="border-top: 5px solid ${borderColor}">
-            <div class="connector" style="background: ${color.border}"></div>
+    // Build the range bar HTML only if it should be shown
+    // The bar extends DOWN from the dot position to the end year
+    const rangeBarHtml = showRangeBar ? `
             <div class="range-bar-indicator" 
                  style="--bar-height: ${heightPx}px; 
                         --bar-bg: ${barBgColor}; 
                         --bar-bg-hover: ${barBgColorHover}; 
                         --bar-border: ${color.border};
                         background-color: var(--bar-bg); 
-                        border-color: var(--bar-border);"></div>
+                        border-color: var(--bar-border);"></div>` : '';
+    
+    range.innerHTML = `
+        <div class="content" style="border-top: 5px solid ${borderColor}">
+            <div class="connector" style="background: ${color.border}"></div>
+            <div class="event-dot" style="background: ${borderColor}; box-shadow: 0 0 0 1px ${borderColor}"></div>
+            ${rangeBarHtml}
             <div class="event-header">
                 <span class="event-title">${rangeData.title}</span>
             </div>
@@ -986,13 +1013,13 @@ function renderTimeline() {
     }
     
     // Create all events together (point + range) for proper alternation
-    // Sort by midpoint year for ranges (visual position determines stacking)
+    // Sort by start year since all events (including ranges) display at start position
     // Use filtered events
     const { pointEvents, rangeEvents } = getFilteredEvents();
     
     const allEventsForRender = [
         ...pointEvents.map(e => ({ ...e, isRange: false, sortYear: e.year })),
-        ...rangeEvents.map(e => ({ ...e, isRange: true, sortYear: e.year + (e.endYear - e.year) / 2 }))
+        ...rangeEvents.map(e => ({ ...e, isRange: true, sortYear: e.year }))
     ].sort((a, b) => a.sortYear - b.sortYear);
     
     const maxDuration = rangeEvents.length > 0 

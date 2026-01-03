@@ -76,11 +76,13 @@
       "categories": ["geological"]
     },
     {
-      "year": 200,
+      "year": "11000 BC",
+      "endYear": "8000 BC",
       "title": "Domestication of Sheep",
       "desc": "Sheep become the first livestock animals domesticated for wool, milk, and meat in Mesopotamia.",
       "source": "https://en.wikipedia.org/wiki/Domestic_sheep",
-      "categories": ["science", "civilization"]
+      "categories": ["science", "civilization"],
+      "type": "approximate"
     },
     {
       "year": 300,
@@ -95,7 +97,8 @@
       "title": "Göbekli Tepe",
       "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
       "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
-      "categories": ["civilization", "religion", "culture"]
+      "categories": ["civilization", "religion", "culture"],
+      "wikipedia": "Göbekli_Tepe"
     },
     {
       "year": 500,
@@ -199,10 +202,27 @@
       "categories": ["science", "civilization"]
     },
     {
-      "year": 4300,
-      "title": "Bronze Age Begins",
+      "year": "10001 BC",
+      "endYear": "3301 BC",
+      "title": "Stone Age",
+      "desc": "Lasting for 3.4 million years, the stone age started long before the Holocene Era and ended at the rise of the Bronze Age.",
+      "source": "https://en.wikipedia.org/wiki/Stone_Age",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": "3301 BC",
+      "endYear": "1201 BC",
+      "title": "Bronze Age",
       "desc": "Copper-tin alloy creates bronze—harder than copper alone. Weapons, tools, and trade networks transform society.",
       "source": "https://en.wikipedia.org/wiki/Bronze_Age",
+      "categories": ["science", "civilization"]
+    },
+    {
+      "year": "1201 BC",
+      "endYear": "551 BC",
+      "title": "Iron Age",
+      "desc": "",
+      "source": "https://en.wikipedia.org/wiki/Iron_Age",
       "categories": ["science", "civilization"]
     },
     {
@@ -445,11 +465,12 @@
       "type": "person"
     },
     {
-      "year": 10030,
+      "year": "33 AD",
       "title": "Crucifixion of Jesus",
       "desc": "Jesus crucified in Jerusalem under Pontius Pilate. Christians believe he rose three days later.",
       "source": "https://en.wikipedia.org/wiki/Crucifixion_of_Jesus",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "event"
     },
     {
       "year": 10079,

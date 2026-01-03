@@ -818,7 +818,7 @@ h1 span {
 /* ============ RANGE BARS ============ */
 /* Ranges use .event class, bar is like year-marker but taller */
 
-/* Range bar indicator - positioned exactly like event-year-marker */
+/* Range bar indicator - extends downward from event dot position */
 .range-bar-indicator {
     position: absolute;
     top: 50%;
@@ -828,25 +828,28 @@ h1 span {
     border: 1px solid;
     /* Below dots (4) and date labels (10), above ticks */
     z-index: 3;
-    /* Completely static - no transitions on position */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    transform: translateY(-50%); /* Center vertically on the midpoint */
+    /* Hidden by default, shown on hover/lock */
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Extend downward from the dot position (top of the range) */
+    transform: translateY(0); /* Start from the event's position, extend down */
 }
 
-/* Position like event-year-marker */
+/* Position like event-dot but extend downward */
 .event.left .content .range-bar-indicator {
     right: -61px;
-    transform: translate(50%, -50%);
+    transform: translate(50%, 0);
 }
 
 .event.right .content .range-bar-indicator {
     left: -61px;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
-/* Brighter + glow on hover */
+/* Show range bar on hover/lock */
 .event.range.hovered .range-bar-indicator,
 .event.range.locked .range-bar-indicator {
+    opacity: 1;
     background-color: var(--bar-bg-hover) !important;
     box-shadow: 0 0 20px var(--bar-border);
 }
