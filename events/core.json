@@ -121,12 +121,13 @@
       "type": "event"
     },
     {
-      "year": "c. 8500 BCE",
+      "year": "c. 10000 BCE",
+      "endYear": "c. 8000 BCE",
       "title": "Domestication of Cattle",
       "desc": "Aurochs domesticated in the Near East and South Asia. Cattle provide meat, milk, leather, and labor.",
       "source": "https://en.wikipedia.org/wiki/Cattle",
       "categories": ["science", "civilization"],
-      "type": "event"
+      "type": "approximate"
     },
     {
       "year": "c. 8200 BCE",
@@ -188,11 +189,12 @@
     },
     {
       "year": "c. 4000 BCE",
+      "endYear": "c. 2000 BCE",
       "title": "Domestication of the Horse",
-      "desc": "Horses domesticated on the Eurasian steppes. Revolutionizes transportation, warfare, and communication.",
+      "desc": "Horses domesticated on the Eurasian steppes. Early management at Botai (~3500 BCE), modern domestic lineage spreads from Volga-Don region (~2200 BCE). Revolutionizes transportation, warfare, and communication.",
       "source": "https://en.wikipedia.org/wiki/Domestication_of_the_horse",
       "categories": ["science"],
-      "type": "event"
+      "type": "approximate"
     },
     {
       "year": "c. 3300 BCE",
@@ -202,6 +204,22 @@
       "source": "https://en.wikipedia.org/wiki/Bronze_Age",
       "categories": ["science", "civilization"],
       "type": "range"
+    },
+    {
+      "year": "c. 3200 BCE",
+      "title": "Newgrange",
+      "desc": "Massive prehistoric monument built in Ireland. The passage tomb is older than Stonehenge and the Egyptian pyramids, aligned to the winter solstice sunrise.",
+      "source": "https://en.wikipedia.org/wiki/Newgrange",
+      "categories": ["civilization", "culture", "religion"],
+      "type": "event"
+    },
+    {
+      "year": "c. 3000 BCE",
+      "title": "Stonehenge",
+      "desc": "Iconic prehistoric monument built on Salisbury Plain, England. Purpose debated—likely astronomical observatory and ceremonial site.",
+      "source": "https://en.wikipedia.org/wiki/Stonehenge",
+      "categories": ["civilization", "culture", "religion"],
+      "type": "event"
     },
     {
       "year": "c. 3500 BCE",
@@ -226,6 +244,15 @@
       "desc": "One of the longest-lasting civilizations. Pyramids, hieroglyphs, pharaohs, and the Nile defined 3,000 years of history.",
       "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
       "categories": ["civilization"],
+      "type": "range"
+    },
+    {
+      "year": "c. 2600 BCE",
+      "endYear": "c. 1100 BCE",
+      "title": "Minoan Civilization",
+      "desc": "Bronze Age civilization on Crete and other Aegean islands. Built elaborate palaces at Knossos, developed Linear A script, and influenced Greek mythology.",
+      "source": "https://en.wikipedia.org/wiki/Minoan_civilization",
+      "categories": ["civilization", "culture"],
       "type": "range"
     },
     {
@@ -407,6 +434,23 @@
       "type": "range"
     },
     {
+      "year": "c. 280 BCE",
+      "title": "Library of Alexandria Founded",
+      "desc": "One of the largest and most significant libraries of the ancient world. Center of classical learning under the Ptolemaic dynasty of Egypt.",
+      "source": "https://en.wikipedia.org/wiki/Library_of_Alexandria",
+      "categories": ["culture", "science", "civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 275 BCE",
+      "endYear": "c. 195 BCE",
+      "title": "Eratosthenes",
+      "desc": "Greek polymath who calculated Earth's circumference with remarkable accuracy using shadows and geometry.",
+      "source": "https://en.wikipedia.org/wiki/Eratosthenes",
+      "categories": ["figure", "science"],
+      "type": "person"
+    },
+    {
       "year": "c. 221 BCE",
       "title": "Great Wall Construction Begins",
       "desc": "Qin Shi Huang unifies China and begins the Great Wall. First Emperor of unified China.",
@@ -558,6 +602,24 @@
       "source": "https://en.wikipedia.org/wiki/Hijra",
       "categories": ["religion"],
       "type": "event"
+    },
+    {
+      "year": "c. 750 CE",
+      "endYear": "c. 1300 CE",
+      "title": "Islamic Golden Age",
+      "desc": "Era of cultural, scientific, and economic flourishing in the Islamic world. Preservation of Greek knowledge, advances in mathematics, astronomy, medicine, and philosophy.",
+      "source": "https://en.wikipedia.org/wiki/Islamic_Golden_Age",
+      "categories": ["civilization", "science", "culture"],
+      "type": "range"
+    },
+    {
+      "year": "c. 793 CE",
+      "endYear": "c. 1066 CE",
+      "title": "Viking Age",
+      "desc": "Scandinavian seafarers explore, trade, and raid across Europe, reaching Iceland, Greenland, and North America centuries before Columbus.",
+      "source": "https://en.wikipedia.org/wiki/Viking_Age",
+      "categories": ["exploration", "civilization", "war"],
+      "type": "range"
     },
     {
       "year": "800 CE",
