@@ -436,11 +436,13 @@
       "categories": ["religion", "culture"]
     },
     {
-      "year": 10004,
-      "title": "Birth of Jesus",
+      "year": "4 bce",
+      "endYear": "33 ad",
+      "title": "Jesus of Nazareth",
       "desc": "Traditional date for the birth of Jesus of Nazareth in Bethlehem. Christianity's founding figure.",
       "source": "https://en.wikipedia.org/wiki/Jesus",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "person"
     },
     {
       "year": 10030,

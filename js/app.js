@@ -201,8 +201,53 @@ function yearToCE(year) {
 
 // ============ FORMATTING ============
 
-function formatYear(year, approximate = false) {
+function formatYear(year) {
     return `${year.toLocaleString()} HE`;
+}
+
+/**
+ * Format the year display based on event type
+ * @param {object} eventData - The event object with year, endYear, and optional type
+ * @returns {string} Formatted year string
+ * 
+ * Type logic:
+ * - "person": "b. X - d. Y HE" (birth to death)
+ * - "approximate": "Between X - Y HE" (uncertain range)
+ * - "range": "X - Y HE" (definite range like empires, wars)
+ * - "event" or default: "X HE" (single date)
+ * 
+ * If type is not specified:
+ * - Has endYear -> defaults to "range"
+ * - No endYear -> defaults to "event"
+ */
+function formatYearDisplay(eventData) {
+    const year = eventData.year;
+    const endYear = eventData.endYear;
+    const type = eventData.type || (endYear ? 'range' : 'event');
+    
+    switch (type) {
+        case 'person':
+            if (endYear) {
+                return `b. ${year.toLocaleString()} – d. ${endYear.toLocaleString()} HE`;
+            }
+            return `b. ${year.toLocaleString()} HE`;
+        
+        case 'approximate':
+            if (endYear) {
+                return `Between ${year.toLocaleString()} – ${endYear.toLocaleString()} HE`;
+            }
+            return `c. ${year.toLocaleString()} HE`; // "circa" for single approximate date
+        
+        case 'range':
+            if (endYear) {
+                return `${year.toLocaleString()} – ${endYear.toLocaleString()} HE`;
+            }
+            return `${year.toLocaleString()} HE`;
+        
+        case 'event':
+        default:
+            return `${year.toLocaleString()} HE`;
+    }
 }
 
 // ============ DATA LOADING ============
@@ -222,12 +267,23 @@ async function loadDataset(url) {
         
         // Normalize events (ensure all years are in HE)
         if (data.events) {
-            data.events = data.events.map(event => ({
-                ...event,
-                year: typeof event.year === 'number' ? event.year : parseDateToHE(event.year),
-                sourceDataset: data.id,
-                color: data.color || '#c9a227'
-            }));
+            data.events = data.events.map(event => {
+                const normalizedEvent = {
+                    ...event,
+                    year: typeof event.year === 'number' ? event.year : parseDateToHE(event.year),
+                    sourceDataset: data.id,
+                    color: data.color || '#c9a227'
+                };
+                
+                // Also parse endYear if present
+                if (event.endYear !== undefined) {
+                    normalizedEvent.endYear = typeof event.endYear === 'number' 
+                        ? event.endYear 
+                        : parseDateToHE(event.endYear);
+                }
+                
+                return normalizedEvent;
+            });
         }
         
         console.log(`Loaded dataset "${data.id}" with ${data.events?.length || 0} events`);
@@ -504,7 +560,7 @@ function createRangeBar(rangeData, index, maxDuration) {
     range.dataset.zIndex = zIndex;
     range.dataset.year = rangeData.sortYear || (rangeData.year + (rangeData.endYear - rangeData.year) / 2);
     
-    const yearLabel = `${rangeData.year.toLocaleString()} – ${rangeData.endYear.toLocaleString()} HE`;
+    const yearLabel = formatYearDisplay(rangeData);
     
     // Get color from first active category
     const color = getEventColor(rangeData);
@@ -612,7 +668,7 @@ function createEvent(eventData, index) {
     event.style.setProperty('--event-border', borderColor);
     event.style.setProperty('--event-glow', color.bg.replace('0.3', '0.5'));
     
-    const yearLabel = formatYear(eventData.year, eventData.approximate);
+    const yearLabel = formatYearDisplay(eventData);
     
     // Build source link if available
     const sourceLink = eventData.source 
