@@ -173,7 +173,7 @@
       "desc": "Lasting for 3.3 million years, the Stone Age began with the first stone tools and ended with the rise of metalworking. The vast majority occurred before the Holocene Era.",
       "source": "https://en.wikipedia.org/wiki/Stone_Age",
       "categories": ["science", "civilization"],
-      "type": "approximate"
+      "type": "range"
     },
     {
       "year": "c. 3300 BC",

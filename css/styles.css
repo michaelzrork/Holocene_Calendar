@@ -979,10 +979,13 @@ body.show-ranges .event.range.locked .range-bar-indicator {
     box-shadow: 0 0 20px var(--bar-border);
 }
 
-/* ============ LIGHTBOX BACKDROP (Mobile only) ============ */
+/* ============ LIGHTBOX BACKDROP (Mobile only - currently disabled) ============ */
 .mobile-backdrop {
     display: none;
 }
+
+/* Backdrop no longer used since mobile cards stay in flow */
+/* .mobile-backdrop.active kept for potential future use */
 
 /* ============ FOOTER ============ */
 footer {
@@ -1103,41 +1106,11 @@ footer p {
         padding: 6px 10px;
     }
     
-    /* Mobile locked state adjustments */
-    .event.locked {
-        position: fixed !important;
-        left: 5% !important;
-        right: 5% !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        width: 90% !important;
-        text-align: left !important;
-        z-index: 501 !important;
-    }
-    
-    .event.locked .content {
-        display: block;
-        max-width: 100%;
-        width: 100%;
-    }
-    
-    .event.locked .event-header {
-        justify-content: flex-start;
-    }
-    
-    .event.locked .event-title {
-        font-size: 1.1rem;
-    }
-    
-    .event.locked .event-desc {
-        font-size: 0.9rem;
-    }
-    
-    /* Hide connector and dot when expanded */
-    .event.locked .connector,
-    .event.locked .event-dot,
-    .event.locked .range-bar-indicator {
-        display: none;
+    /* No special mobile locked state - cards expand naturally in place */
+    /* Backdrop disabled */
+    .mobile-backdrop,
+    .mobile-backdrop.active {
+        display: none !important;
     }
     
     /* Footer NOT sticky on mobile */
