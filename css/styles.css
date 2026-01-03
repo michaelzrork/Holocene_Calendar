@@ -160,6 +160,11 @@ h1 span {
     font-family: 'JetBrains Mono', monospace;
     width: 150px;
     text-align: right;
+    transition: border-color 0.3s ease;
+}
+
+.year-display:hover {
+    border-color: var(--gold-dim);
 }
 
 /* On desktop, controls-wrapper sits below year-display */
@@ -253,6 +258,11 @@ h1 span {
     gap: 10px;
     align-items: center;
     width: 150px;
+    transition: border-color 0.3s ease;
+}
+
+.scale-control:hover {
+    border-color: var(--gold-dim);
 }
 
 .scale-control label {
@@ -316,6 +326,11 @@ h1 span {
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     width: 150px;
+    transition: border-color 0.3s ease;
+}
+
+.filter-control:hover {
+    border-color: var(--gold-dim);
 }
 
 .filter-toggle {
@@ -451,6 +466,80 @@ h1 span {
     color: var(--bone-dim);
 }
 
+/* ============ RANGE TOGGLE CONTROL ============ */
+.range-toggle-control {
+    padding: 12px 15px;
+    background: var(--bg-card);
+    border: 1px solid #1a1a1f;
+    width: 150px;
+    transition: border-color 0.3s ease;
+}
+
+.range-toggle-control:hover {
+    border-color: var(--gold-dim);
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--bone-dim);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 32px;
+    height: 18px;
+    background: #1a1a1f;
+    border-radius: 9px;
+    border: 1px solid #2a2a2f;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    background: var(--bone-dim);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-switch {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-switch::after {
+    left: 16px;
+    background: var(--gold);
+}
+
+.toggle-text {
+    transition: color 0.3s ease;
+}
+
+.toggle-label:hover .toggle-text {
+    color: var(--gold);
+}
+
+.toggle-label input[type="checkbox"]:checked ~ .toggle-text {
+    color: var(--gold);
+}
+
 /* ============ TIMELINE CONTAINER ============ */
 .timeline-container {
     max-width: 1000px;
@@ -544,6 +633,8 @@ h1 span {
     transition: z-index 0s;
     z-index: 9;
     transform: translateY(-50%);
+    /* Prevent Chrome from auto-scrolling when this element is found via CTRL+F */
+    scroll-margin: 50vh;
 }
 
 .event.hovered {
@@ -799,7 +890,7 @@ h1 span {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
     text-align: left; /* Always left-align description text */
 }
 
@@ -850,6 +941,18 @@ h1 span {
 .event.range.hovered .range-bar-indicator,
 .event.range.locked .range-bar-indicator {
     opacity: 1;
+    background-color: var(--bar-bg-hover) !important;
+    box-shadow: 0 0 20px var(--bar-border);
+}
+
+/* Show ALL range bars when toggle is on */
+body.show-ranges .event.range .range-bar-indicator {
+    opacity: 1;
+}
+
+/* On hover/lock with toggle on, still show enhanced style */
+body.show-ranges .event.range.hovered .range-bar-indicator,
+body.show-ranges .event.range.locked .range-bar-indicator {
     background-color: var(--bar-bg-hover) !important;
     box-shadow: 0 0 20px var(--bar-border);
 }
@@ -905,20 +1008,20 @@ footer p {
 .nav-buttons {
     position: fixed;
     bottom: 60px;
-    right: 20px;
+    left: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     z-index: 1001;
 }
 
 .nav-btn {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background: var(--bg-card);
     border: 1px solid #1a1a1f;
     color: var(--bone-dim);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -1047,11 +1150,17 @@ footer p {
         padding-bottom: 0; /* Remove footer spacing since not sticky */
     }
     
-    /* Nav buttons on LEFT side */
+    /* Nav buttons on LEFT side, smaller on mobile */
     .nav-buttons {
         left: 15px;
         right: auto;
         bottom: 15px;
+    }
+    
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
     }
     
     /* Settings gear in upper right */
@@ -1094,7 +1203,8 @@ footer p {
     
     /* Gold outline on mobile control boxes */
     .scale-control,
-    .filter-control {
+    .filter-control,
+    .range-toggle-control {
         border-color: var(--gold-dim);
     }
     

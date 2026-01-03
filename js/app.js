@@ -74,68 +74,108 @@ function fromHoloceneYear(heYear) {
  * Parse a date string - treats plain numbers as HE years
  * Only converts if explicitly marked as CE/AD/BCE/BC
  * Supports: "12025", "2025 CE", "500 BCE", "44 BC", "HE 12025", "-2025" (as BCE)
+ * Also supports "c. " prefix for circa/approximate dates (e.g., "c. 3150 BCE")
+ * When circa prefix is used on round BCE numbers, adds 1 for clean HE conversion
  * @param {string|number} dateInput 
- * @returns {number} Year in Holocene Era
+ * @returns {object} { year: number, circa: boolean } - year in HE, circa flag
  */
-function parseDateToHE(dateInput) {
+function parseDateToHEWithCirca(dateInput) {
     if (typeof dateInput === 'number') {
-        return dateInput; // Assume already in HE
+        return { year: dateInput, circa: false }; // Assume already in HE
     }
     
-    const str = String(dateInput).trim().toUpperCase();
+    let str = String(dateInput).trim();
+    
+    // Check for "c." or "circa" prefix (case insensitive)
+    let isCirca = false;
+    const circaMatch = str.match(/^(?:c\.?|circa)\s*/i);
+    if (circaMatch) {
+        isCirca = true;
+        str = str.slice(circaMatch[0].length).trim();
+    }
+    
+    const strUpper = str.toUpperCase();
     
     // Check for "HE" prefix/suffix - already in HE
-    const heMatch = str.match(/^(?:HE\s*)?(\d+)(?:\s*HE)?$/);
-    if (heMatch && str.includes('HE')) {
-        return parseInt(heMatch[1], 10);
+    const heMatch = strUpper.match(/^(?:HE\s*)?(\d+)(?:\s*HE)?$/);
+    if (heMatch && strUpper.includes('HE')) {
+        return { year: parseInt(heMatch[1], 10), circa: isCirca };
     }
     
-    // Check for BCE/BC - needs conversion
-    const bceMatch = str.match(/^(\d+)\s*(?:BCE|BC)$/);
+    // Check for BCE/BC/B.C.E./B.C. - needs conversion (handles dots)
+    // Match: BCE, BC, B.C.E., B.C.E, B.C., B.C (any combo of dots)
+    const bceMatch = strUpper.match(/^(\d+)\s*B\.?\s*C\.?\s*(?:E\.?)?$/);
     if (bceMatch) {
-        const year = parseInt(bceMatch[1], 10);
+        let year = parseInt(bceMatch[1], 10);
+        
+        // If circa and the BCE year is a round number, add 1 for clean HE display
+        // Round = divisible by 10 (catches 10, 100, 1000, etc)
+        // BUT don't round 10000 BCE since that would give 0 HE (we want 1 HE)
+        if (isCirca && year % 10 === 0 && year !== 10000) {
+            year += 1; // e.g., 3150 BCE -> 3151 BCE -> 6850 HE (clean)
+        }
+        
         // 0 BCE and 1 BCE both map to 10000 HE
         if (year === 0 || year === 1) {
-            return 10000;
+            return { year: 10000, circa: isCirca };
         }
-        return toHoloceneYear(year, 'BCE');
+        return { year: toHoloceneYear(year, 'BCE'), circa: isCirca };
     }
     
-    // Check for explicit CE/AD - needs conversion
-    const ceMatch = str.match(/^(\d+)\s*(?:CE|AD)$/);
+    // Check for explicit CE/AD/C.E./A.D. - needs conversion (handles dots)
+    // Match: CE, AD, C.E., C.E, A.D., A.D (any combo of dots)
+    const ceMatch = strUpper.match(/^(\d+)\s*(?:C\.?\s*E\.?|A\.?\s*D\.?)$/);
     if (ceMatch) {
         const year = parseInt(ceMatch[1], 10);
         // 0 CE maps to 10000 HE (same as 1 BCE)
         if (year === 0) {
-            return 10000;
+            return { year: 10000, circa: isCirca };
         }
-        return toHoloceneYear(year, 'CE');
+        return { year: toHoloceneYear(year, 'CE'), circa: isCirca };
     }
     
     // Check for negative number - treat as BCE
-    const negativeMatch = str.match(/^-(\d+)$/);
+    const negativeMatch = strUpper.match(/^-(\d+)$/);
     if (negativeMatch) {
-        const year = parseInt(negativeMatch[1], 10);
-        if (year === 0 || year === 1) {
-            return 10000;
+        let year = parseInt(negativeMatch[1], 10);
+        
+        // If circa and round, add 1 (but not for 10000 which would give 0 HE)
+        if (isCirca && year % 10 === 0 && year !== 10000) {
+            year += 1;
         }
-        return toHoloceneYear(year, 'BCE');
+        
+        if (year === 0 || year === 1) {
+            return { year: 10000, circa: isCirca };
+        }
+        return { year: toHoloceneYear(year, 'BCE'), circa: isCirca };
     }
     
     // Plain number without era marker - treat as HE
-    const plainMatch = str.match(/^(\d+)$/);
+    const plainMatch = strUpper.match(/^(\d+)$/);
     if (plainMatch) {
-        return parseInt(plainMatch[1], 10);
+        return { year: parseInt(plainMatch[1], 10), circa: isCirca };
     }
     
     console.warn(`Could not parse date: "${dateInput}"`);
-    return NaN;
+    return { year: NaN, circa: false };
+}
+
+/**
+ * Parse a date string - treats plain numbers as HE years
+ * Only converts if explicitly marked as CE/AD/BCE/BC
+ * Supports: "12025", "2025 CE", "500 BCE", "44 BC", "HE 12025", "-2025" (as BCE)
+ * Also supports "c. " prefix for circa/approximate dates
+ * @param {string|number} dateInput 
+ * @returns {number} Year in Holocene Era
+ */
+function parseDateToHE(dateInput) {
+    return parseDateToHEWithCirca(dateInput).year;
 }
 
 /**
  * Parse a CE/BCE date string - assumes CE unless marked BCE/BC or negative
  * Does NOT accept HE years - use parseDateToHE for that
- * Supports: "2025", "2025 CE", "500 BCE", "44 BC", "-500" (as BCE)
+ * Supports: "2025", "2025 CE", "500 BCE", "44 BC", "44 B.C.", "-500" (as BCE)
  * @param {string|number} dateInput 
  * @returns {number} Year in Holocene Era
  */
@@ -146,8 +186,9 @@ function parseCEDateToHE(dateInput) {
     
     const str = String(dateInput).trim().toUpperCase();
     
-    // Check for BCE/BC - needs conversion
-    const bceMatch = str.match(/^(\d+)\s*(?:BCE|BC)$/);
+    // Check for BCE/BC/B.C.E./B.C. - needs conversion (handles dots)
+    // Match: BCE, BC, B.C.E., B.C.E, B.C., B.C (any combo of dots)
+    const bceMatch = str.match(/^(\d+)\s*B\.?\s*C\.?\s*(?:E\.?)?$/);
     if (bceMatch) {
         const year = parseInt(bceMatch[1], 10);
         if (year === 0 || year === 1) {
@@ -156,8 +197,9 @@ function parseCEDateToHE(dateInput) {
         return toHoloceneYear(year, 'BCE');
     }
     
-    // Check for explicit CE/AD
-    const ceMatch = str.match(/^(\d+)\s*(?:CE|AD)$/);
+    // Check for explicit CE/AD/C.E./A.D. (handles dots)
+    // Match: CE, AD, C.E., C.E, A.D., A.D (any combo of dots)
+    const ceMatch = str.match(/^(\d+)\s*(?:C\.?\s*E\.?|A\.?\s*D\.?)$/);
     if (ceMatch) {
         const year = parseInt(ceMatch[1], 10);
         if (year === 0) {
@@ -231,9 +273,17 @@ function formatYear(year) {
  * 
  * Type logic:
  * - "person": "b. X - d. Y HE" (birth to death)
- * - "approximate": "Between X - Y HE" (uncertain range)
+ * - "approximate": "Between X - Y HE" (uncertain range) or "c. X HE" (single approximate)
  * - "range": "X - Y HE" (definite range like empires, wars)
  * - "event" or default: "X HE" (single date)
+ * 
+ * Circa flags:
+ * - eventData.circa: if true, shows "c." prefix on start year
+ * - eventData.endCirca: if true, shows "c." prefix on end year
+ * 
+ * Range formatting:
+ * - For ranges, only show era (HE/BHE) on the end year to reduce redundancy
+ * - Exception: if start is BHE and end is HE, show both eras
  * 
  * If type is not specified:
  * - Has endYear -> defaults to "range"
@@ -242,30 +292,58 @@ function formatYear(year) {
 function formatYearDisplay(eventData) {
     const year = eventData.year;
     const endYear = eventData.endYear;
+    const circa = eventData.circa || false;
+    const endCirca = eventData.endCirca || false;
     const type = eventData.type || (endYear ? 'range' : 'event');
+    
+    // Check if start and end have different eras (one BHE, one HE)
+    const startIsBHE = year < 0;
+    const endIsBHE = endYear < 0;
+    const sameEra = startIsBHE === endIsBHE;
+    
+    // Format number with commas but no era suffix
+    const formatNumberOnly = (y) => {
+        if (y < 0) return Math.abs(y).toLocaleString();
+        return y.toLocaleString();
+    };
+    
+    // Helpers to format with optional circa prefix
+    // For ranges: start year gets no era suffix (unless eras differ), end year always gets suffix
+    const formatStartInRange = () => {
+        const num = formatNumberOnly(year);
+        const c = circa ? 'c. ' : '';
+        // Only add era if it differs from end year's era
+        if (!sameEra) {
+            return `${c}${num} ${startIsBHE ? 'BHE' : 'HE'}`;
+        }
+        return `${c}${num}`;
+    };
+    
+    const formatStart = () => circa ? `c. ${formatSingleYear(year)}` : formatSingleYear(year);
+    const formatEnd = () => endCirca ? `c. ${formatSingleYear(endYear)}` : formatSingleYear(endYear);
     
     switch (type) {
         case 'person':
             if (endYear) {
-                return `b. ${formatSingleYear(year)} – d. ${formatSingleYear(endYear)}`;
+                return `b. ${formatStartInRange()} – d. ${formatEnd()}`;
             }
-            return `b. ${formatSingleYear(year)}`;
+            return `b. ${formatStart()}`;
         
         case 'approximate':
             if (endYear) {
-                return `Between ${formatSingleYear(year)} – ${formatSingleYear(endYear)}`;
+                return `Between ${formatStartInRange()} – ${formatEnd()}`;
             }
-            return `c. ${formatSingleYear(year)}`; // "circa" for single approximate date
+            return `c. ${formatSingleYear(year)}`; // Always show c. for single approximate
         
         case 'range':
             if (endYear) {
-                return `${formatSingleYear(year)} – ${formatSingleYear(endYear)}`;
+                return `${formatStartInRange()} – ${formatEnd()}`;
             }
-            return formatSingleYear(year);
+            return formatStart();
         
         case 'event':
         default:
-            return formatSingleYear(year);
+            return formatStart();
     }
 }
 
@@ -287,18 +365,34 @@ async function loadDataset(url) {
         // Normalize events (ensure all years are in HE)
         if (data.events) {
             data.events = data.events.map(event => {
+                // Parse year with circa detection
+                let yearValue, yearCirca = false;
+                if (typeof event.year === 'number') {
+                    yearValue = event.year;
+                } else {
+                    const parsed = parseDateToHEWithCirca(event.year);
+                    yearValue = parsed.year;
+                    yearCirca = parsed.circa;
+                }
+                
                 const normalizedEvent = {
                     ...event,
-                    year: typeof event.year === 'number' ? event.year : parseDateToHE(event.year),
+                    year: yearValue,
+                    circa: yearCirca,  // Store circa flag on the event
                     sourceDataset: data.id,
                     color: data.color || '#c9a227'
                 };
                 
-                // Also parse endYear if present
+                // Also parse endYear if present (with circa detection)
                 if (event.endYear !== undefined) {
-                    normalizedEvent.endYear = typeof event.endYear === 'number' 
-                        ? event.endYear 
-                        : parseDateToHE(event.endYear);
+                    if (typeof event.endYear === 'number') {
+                        normalizedEvent.endYear = event.endYear;
+                        normalizedEvent.endCirca = false;
+                    } else {
+                        const endParsed = parseDateToHEWithCirca(event.endYear);
+                        normalizedEvent.endYear = endParsed.year;
+                        normalizedEvent.endCirca = endParsed.circa;
+                    }
                 }
                 
                 return normalizedEvent;
@@ -456,6 +550,22 @@ function setupFilterControls() {
             renderTimeline();
         });
     }
+}
+
+/**
+ * Setup the "Show Ranges" toggle
+ */
+function setupRangeToggle() {
+    const toggle = document.getElementById('showRangesToggle');
+    if (!toggle) return;
+    
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            document.body.classList.add('show-ranges');
+        } else {
+            document.body.classList.remove('show-ranges');
+        }
+    });
 }
 
 /**
@@ -845,6 +955,9 @@ function setupClickAwayUnlock() {
  * Setup smart hover - when mouse moves over stacked events, creates a sweep-through
  * effect in both directions. Moving down reveals newer cards (later in DOM),
  * moving up reveals older cards (earlier in DOM).
+ * 
+ * When an event is locked, hovering still works on OTHER events for comparison.
+ * The locked event stays visible while you can preview others.
  */
 function setupSmartHover() {
     const track = document.getElementById('timelineTrack');
@@ -853,9 +966,6 @@ function setupSmartHover() {
     let lastY = null;
     
     document.addEventListener('mousemove', (e) => {
-        // Don't change hover if an event is locked
-        if (STATE.lockedEvent) return;
-        
         // Determine direction of mouse movement
         const movingDown = lastY !== null && e.clientY > lastY;
         const movingUp = lastY !== null && e.clientY < lastY;
@@ -877,9 +987,13 @@ function setupSmartHover() {
             }
         });
         
-        // If no events under cursor, clear hover
-        if (eventsUnderCursor.length === 0) {
-            if (STATE.hoveredEvent) {
+        // Filter out the locked event from hover candidates
+        // (locked event stays locked, we hover OTHER events)
+        const hoverCandidates = eventsUnderCursor.filter(el => el !== STATE.lockedEvent);
+        
+        // If no events under cursor (excluding locked), clear hover
+        if (hoverCandidates.length === 0) {
+            if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
                 STATE.hoveredEvent.classList.remove('hovered');
                 STATE.hoveredEvent.style.zIndex = '';
                 STATE.hoveredEvent = null;
@@ -890,24 +1004,24 @@ function setupSmartHover() {
         // Determine which event to show based on direction
         let topmostEvent = null;
         
-        if (eventsUnderCursor.length === 1) {
+        if (hoverCandidates.length === 1) {
             // Only one event, show it
-            topmostEvent = eventsUnderCursor[0];
+            topmostEvent = hoverCandidates[0];
         } else {
             // Multiple events - pick based on movement direction
-            const currentIdx = STATE.hoveredEvent ? eventsUnderCursor.indexOf(STATE.hoveredEvent) : -1;
+            const currentIdx = STATE.hoveredEvent ? hoverCandidates.indexOf(STATE.hoveredEvent) : -1;
             
             if (currentIdx === -1) {
                 // Not currently hovering any in this stack - show topmost (last in DOM)
-                topmostEvent = eventsUnderCursor[eventsUnderCursor.length - 1];
+                topmostEvent = hoverCandidates[hoverCandidates.length - 1];
             } else if (movingDown) {
                 // Moving down through timeline - go to next in DOM order (newer)
-                const nextIdx = Math.min(currentIdx + 1, eventsUnderCursor.length - 1);
-                topmostEvent = eventsUnderCursor[nextIdx];
+                const nextIdx = Math.min(currentIdx + 1, hoverCandidates.length - 1);
+                topmostEvent = hoverCandidates[nextIdx];
             } else if (movingUp) {
                 // Moving up through timeline - go to previous in DOM order (older)
                 const prevIdx = Math.max(currentIdx - 1, 0);
-                topmostEvent = eventsUnderCursor[prevIdx];
+                topmostEvent = hoverCandidates[prevIdx];
             } else {
                 // No movement, keep current
                 topmostEvent = STATE.hoveredEvent;
@@ -917,8 +1031,8 @@ function setupSmartHover() {
         // If same as current hover, do nothing
         if (topmostEvent === STATE.hoveredEvent) return;
         
-        // Remove hover from previous
-        if (STATE.hoveredEvent) {
+        // Remove hover from previous (but not if it's the locked event)
+        if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
             STATE.hoveredEvent.classList.remove('hovered');
             STATE.hoveredEvent.style.zIndex = '';
         }
@@ -926,6 +1040,7 @@ function setupSmartHover() {
         // Add hover to new
         if (topmostEvent) {
             topmostEvent.classList.add('hovered');
+            // Hovered events go below locked (z-index 500) but above normal
             topmostEvent.style.zIndex = topmostEvent.classList.contains('range') ? 200 : 100;
         }
         
@@ -934,7 +1049,7 @@ function setupSmartHover() {
     
     // Clear hover when mouse leaves the document
     document.addEventListener('mouseleave', () => {
-        if (STATE.hoveredEvent && !STATE.lockedEvent) {
+        if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
             STATE.hoveredEvent.classList.remove('hovered');
             STATE.hoveredEvent.style.zIndex = '';
             STATE.hoveredEvent = null;
@@ -1433,6 +1548,7 @@ async function init() {
     setupYearInput();
     setupNavButtons();
     setupFilterControls();
+    setupRangeToggle();
     setupClickAwayUnlock();
     setupSmartHover();
     

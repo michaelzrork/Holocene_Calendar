@@ -61,7 +61,7 @@
   },
   "events": [
     {
-      "year": 0,
+      "year": "c. 10000 BCE",
       "title": "Neolithic Revolution Begins",
       "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently.",
       "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution",
@@ -69,8 +69,8 @@
     },
 
     {
-      "year": "11000 BC",
-      "endYear": "8000 BC",
+      "year": "c. 11000 BC",
+      "endYear": "c. 8000 BC",
       "title": "Domestication of Sheep",
       "desc": "Sheep become the first livestock animals domesticated for wool, milk, and meat in Mesopotamia.",
       "source": "https://en.wikipedia.org/wiki/Domestic_sheep",
@@ -101,7 +101,7 @@
       "categories": ["science", "civilization"]
     },
     {
-      "year": 1000,
+      "year": "c. 9000 BCE",
       "title": "Jericho Settlement",
       "desc": "One of humanity's first permanent settlements builds defensive walls and a tower.",
       "source": "https://en.wikipedia.org/wiki/Jericho",
@@ -167,8 +167,8 @@
       "categories": ["science", "civilization"]
     },
     {
-      "year": "3300001 BCE",
-      "endYear": "3301 BCE",
+      "year": "c. 3300000 BCE",
+      "endYear": "c. 3300 BCE",
       "title": "Stone Age",
       "desc": "Lasting for 3.3 million years, the Stone Age began with the first stone tools and ended with the rise of metalworking. The vast majority occurred before the Holocene Era.",
       "source": "https://en.wikipedia.org/wiki/Stone_Age",
@@ -176,16 +176,16 @@
       "type": "approximate"
     },
     {
-      "year": "3301 BC",
-      "endYear": "1201 BC",
+      "year": "c. 3300 BC",
+      "endYear": "c. 1200 BC",
       "title": "Bronze Age",
       "desc": "Copper-tin alloy creates bronze—harder than copper alone. Weapons, tools, and trade networks transform society.",
       "source": "https://en.wikipedia.org/wiki/Bronze_Age",
       "categories": ["science", "civilization"]
     },
     {
-      "year": "1201 BC",
-      "endYear": "551 BC",
+      "year": "c. 1200 BC",
+      "endYear": "c. 550 BC",
       "title": "Iron Age",
       "desc": "",
       "source": "https://en.wikipedia.org/wiki/Iron_Age",
@@ -206,7 +206,7 @@
       "categories": ["science", "culture", "civilization"]
     },
     {
-      "year": "3150 BCE",
+      "year": "c. 3150 BCE",
       "endYear": "332 BCE",
       "title": "Ancient Egypt",
       "desc": "One of the longest-lasting civilizations. Pyramids, hieroglyphs, pharaohs, and the Nile defined 3,000 years of history.",
@@ -323,11 +323,13 @@
       "categories": ["war"]
     },
     {
-      "year": 9530,
-      "title": "Socrates Born",
+      "year": "c. 470 BCE",
+      "endYear": "399 BC",
+      "title": "Socrates",
       "desc": "The father of Western philosophy born in Athens. Will teach Plato and die for his beliefs.",
       "source": "https://en.wikipedia.org/wiki/Socrates",
-      "categories": ["figure", "religion", "culture"]
+      "categories": ["figure", "religion", "culture"],
+      "type":"person"
     },
     {
       "year": 9550,
@@ -344,18 +346,21 @@
       "categories": ["culture", "religion"]
     },
     {
-      "year": 9601,
-      "title": "Death of Socrates",
+      "year": "399 BC",
+      "title": "Trial of Socrates",
       "desc": "Socrates drinks hemlock after being condemned for corrupting Athens' youth. Philosophy's first martyr.",
       "source": "https://en.wikipedia.org/wiki/Trial_of_Socrates",
-      "categories": ["figure", "religion"]
+      "categories": ["figure", "religion"],
+      "type": "event"
     },
     {
-      "year": 9616,
-      "title": "Aristotle Born",
+      "year": "384 BC",
+      "endYear": "322 BC",
+      "title": "Aristotle",
       "desc": "The polymath who will tutor Alexander the Great and systematize Western knowledge.",
       "source": "https://en.wikipedia.org/wiki/Aristotle",
-      "categories": ["figure", "science", "culture"]
+      "categories": ["figure", "science", "culture"],
+      "type": "person"
     },
     {
       "year": 9677,
@@ -366,7 +371,7 @@
       "categories": ["civilization", "war", "figure"]
     },
     {
-      "year": 9779,
+      "year": "c. 220 BCE",
       "title": "Great Wall Construction Begins",
       "desc": "Qin Shi Huang unifies China and begins the Great Wall. First Emperor of unified China.",
       "source": "https://en.wikipedia.org/wiki/Great_Wall_of_China",
@@ -395,11 +400,13 @@
       "categories": ["politics", "figure"]
     },
     {
-      "year": 9970,
-      "title": "Cleopatra Dies",
+      "year": "c. 70 BCE",
+      "endYear": "30 BCE",
+      "title": "Cleopatra",
       "desc": "Last pharaoh of Egypt takes her own life. Egypt becomes a Roman province.",
       "source": "https://en.wikipedia.org/wiki/Cleopatra",
-      "categories": ["figure", "politics"]
+      "categories": ["figure", "politics"],
+      "type":"person"
     },
     {
       "year": 9973,
@@ -417,8 +424,8 @@
       "categories": ["religion", "culture"]
     },
     {
-      "year": "4 bce",
-      "endYear": "33 ad",
+      "year": "c. 4 bce",
+      "endYear": "c. 33 ce",
       "title": "Jesus of Nazareth",
       "desc": "Traditional date for the birth of Jesus of Nazareth in Bethlehem. Christianity's founding figure.",
       "source": "https://en.wikipedia.org/wiki/Jesus",
@@ -426,7 +433,7 @@
       "type": "person"
     },
     {
-      "year": "33 AD",
+      "year": "c. 33 CE",
       "title": "Crucifixion of Jesus",
       "desc": "Jesus crucified in Jerusalem under Pontius Pilate. Christians believe he rose three days later.",
       "source": "https://en.wikipedia.org/wiki/Crucifixion_of_Jesus",
@@ -441,8 +448,8 @@
       "categories": ["disaster", "geological"]
     },
     {
-      "year": 10250,
-      "endYear": 10900,
+      "year": "c. 250 CE",
+      "endYear": "1697 CE",
       "title": "Classic Maya Period",
       "desc": "Golden age of Maya civilization. 40+ city-states including Tikal, Palenque, and Copán. Advanced astronomy, mathematics, and the Long Count calendar.",
       "source": "https://en.wikipedia.org/wiki/Classic_Maya_civilization",
@@ -653,8 +660,8 @@
       "categories": ["science", "figure"]
     },
     {
-      "year": 11760,
-      "endYear": 11840,
+      "year": "1760 CE",
+      "endYear": "1840 CE",
       "title": "Industrial Revolution",
       "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
       "source": "https://en.wikipedia.org/wiki/Industrial_Revolution",
