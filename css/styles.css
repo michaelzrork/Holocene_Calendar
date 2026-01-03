@@ -1,12 +1,13 @@
 :root {
     --bg-dark: #0a0a0b;
     --bg-card: #111113;
+    --border-gray: #1a1a1f;
+    --timeline-gray: #2a2a2f;
     --gold: #c9a227;
     --gold-dim: #8a7019;
     --bone: #e5e3de;
     --bone-dim: #d6d3c7;
     --accent: #d4442e;
-    --timeline-line: #2a2a2f;
 }
 
 * {
@@ -81,7 +82,7 @@ h1 span {
     margin: 40px auto 0;
     padding: 20px 30px;
     background: var(--bg-card);
-    border: 1px solid #1a1a1f;
+    border: 1px solid var(--border-gray);
     text-align: center;
 }
 
@@ -292,17 +293,17 @@ h1 span {
     justify-content: center;
 }
 
-.scale-control .scale-input {
+.scale-input {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.8rem;
     color: var(--gold);
-    background: transparent;
+    background: var(--border-gray);
     border: none;
-    border-bottom: 1px solid transparent;
-    width: 40px;
-    text-align: right;
+    border-bottom: 1px solid var(--timeline-gray);
+    width: 50px;
+    text-align: center;
     outline: none;
-    padding: 0;
+    padding: 4px 0;
 }
 
 .scale-control .scale-input:focus {
@@ -489,6 +490,7 @@ h1 span {
     color: var(--bone-dim);
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    justify-content: space-between;
 }
 
 .toggle-label input[type="checkbox"] {
@@ -501,9 +503,10 @@ h1 span {
     height: 18px;
     background: #1a1a1f;
     border-radius: 9px;
-    border: 1px solid #2a2a2f;
+    border: 1px solid var(--timeline-gray);
     transition: all 0.3s ease;
     flex-shrink: 0;
+    order: 1;
 }
 
 .toggle-switch::after {
@@ -525,7 +528,6 @@ h1 span {
 
 .toggle-label input[type="checkbox"]:checked + .toggle-switch::after {
     left: 16px;
-    background: var(--gold);
 }
 
 .toggle-text {
@@ -540,6 +542,13 @@ h1 span {
     color: var(--gold);
 }
 
+/* ============ MOBILE HEADER & PANEL (hidden on desktop) ============ */
+.mobile-header,
+.mobile-panel,
+.mobile-panel-overlay {
+    display: none;
+}
+
 /* ============ TIMELINE CONTAINER ============ */
 .timeline-container {
     max-width: 1000px;
@@ -552,7 +561,7 @@ h1 span {
     position: relative;
     margin: 0 auto;
     width: 2px;
-    background: var(--timeline-line);
+    background: var(--timeline-gray);
 }
 
 /* ============ CENTURY MARKERS ============ */
@@ -572,7 +581,7 @@ h1 span {
     letter-spacing: 1px;
     white-space: nowrap;
     background: var(--bg-dark);
-    border: 1px solid var(--timeline-line);
+    border: 1px solid var(--timeline-gray);
     padding: 4px 10px;
 }
 
@@ -589,7 +598,7 @@ h1 span {
     transform: translateX(-50%);
     width: 20px;
     height: 1px;
-    background: var(--timeline-line);
+    background: var(--timeline-gray);
     opacity: 1;
 }
 
@@ -609,7 +618,7 @@ h1 span {
     letter-spacing: 1px;
     white-space: nowrap;
     background: var(--bg-dark);
-    border: 1px solid var(--timeline-line);
+    border: 1px solid var(--timeline-gray);
     padding: 4px 10px;
     opacity: 1;
 }
@@ -621,7 +630,7 @@ h1 span {
     transform: translateX(-50%);
     width: 20px;
     height: 1px;
-    background: var(--timeline-line);
+    background: var(--timeline-gray);
     opacity: 1;
 }
 
@@ -1038,7 +1047,7 @@ footer p {
 }
 
 /* ============ RESPONSIVE ============ */
-@media (max-width: 800px) {
+@media (max-width: 1400px) {
     /* Mobile lightbox backdrop */
     .mobile-backdrop {
         display: none;
@@ -1050,7 +1059,12 @@ footer p {
         background: rgba(0, 0, 0, 0.7);
         z-index: 400;
     }
-    
+
+    header {
+        padding: 120px 20px 60px;
+        position: relative;
+    }
+     
     .mobile-backdrop.active {
         display: block;
     }
@@ -1131,80 +1145,453 @@ footer p {
         text-align: left;
     }
     
-    /* Footer NOT sticky on mobile */
+    /* ============ MOBILE HEADER (now at top) ============ */
+    .mobile-header {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1005; /* Higher than footer and nav buttons */
+        background: var(--bg-card);
+        border-bottom: 1px solid #1a1a1f;
+        padding: 14px 15px; /* Taller padding */
+    }
+    
+    .mobile-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    /* Menu button on LEFT */
+    .mobile-menu-btn {
+        order: 1;
+        width: 44px;
+        height: 44px;
+        background: transparent;
+        border: 1px solid #1a1a1f;
+        color: var(--gold);
+        font-size: 1.4rem;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .mobile-menu-btn:active {
+        background: var(--gold);
+        color: var(--bg-dark);
+    }
+    
+    /* Year display - HE featured on left, CE secondary on right */
+    .mobile-year-display {
+        order: 2;
+        display: flex;
+        align-items: flex-end; /* Align items to bottom */
+        gap: 12px;
+        flex: 1;
+        justify-content: flex-end; /* Push to right edge */
+    }
+    
+    /* HE year - larger, primary, with label underneath */
+    .mobile-year-he {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    .mobile-year-he .mobile-year-input {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.6rem; /* Larger */
+        color: var(--gold);
+        background: transparent;
+        border: none;
+        width: 130px; /* Even wider for full numbers like 12,026 */
+        text-align: right;
+        outline: none;
+        padding: 0;
+    }
+    
+    .mobile-year-he .mobile-year-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem; /* Slightly larger */
+        letter-spacing: 1px;
+        color: var(--gold);
+        margin-top: 2px;
+    }
+    
+    .mobile-year-divider {
+        width: 1px;
+        height: 35px;
+        background: var(--timeline-gray);
+        align-self: center;
+    }
+    
+    /* CE year - smaller, secondary, aligned to bottom */
+    .mobile-year-ce {
+        display: flex;
+        align-items: baseline;
+        gap: 3px;
+        padding-bottom: 2px; /* Align with bottom of HE */
+    }
+    
+    .mobile-year-ce .mobile-year-input {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: var(--bone-dim);
+        background: transparent;
+        border: none;
+        width: 50px;
+        text-align: right;
+        outline: none;
+        padding: 0;
+    }
+    
+    .mobile-year-ce .mobile-year-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: var(--bone-dim);
+    }
+    
+    .mobile-year-input:focus {
+        color: var(--bone);
+        border-bottom: 1px solid var(--gold);
+    }
+    
+    /* ============ MOBILE SLIDE-OUT PANEL (from LEFT) ============ */
+    .mobile-panel {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 300px;
+        height: 100%;
+        background: var(--bg-card);
+        border-right: 1px solid #1a1a1f;
+        z-index: 1010; /* Above everything */
+        transition: left 0.3s ease, background 0.2s ease;
+        overflow: hidden; /* Let content scroll, not panel */
+    }
+    
+    .mobile-panel.open {
+        left: 0;
+    }
+    
+    /* Panel transparency during scale adjustment - show page behind */
+    
+    .mobile-panel.adjusting-scale .mobile-panel-header {
+        opacity: 0;
+        width: 300px;
+    }
+    
+    .mobile-panel.adjusting-scale .mobile-panel-content > *:not(:first-child) {
+        opacity: 0;
+        width: 300px;
+    }
+    
+    .mobile-panel.adjusting-scale {
+        background: transparent;
+        border: transparent;
+        width: 100%;
+    }
+    
+    .mobile-panel.adjusting-scale .mobile-panel-content > :first-child {
+        opacity: 1.0;
+        background: var(--bg-card);
+        border: 2px solid var(--timeline-gray);
+        width: 300px;
+    }
+
+    .mobile-panel-overlay.adjusting-scale {
+        opacity: 0;
+    }
+    
+    
+    /* Sticky panel header */
+    .mobile-panel-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: var(--bg-card);
+        border-bottom: 1px solid #1a1a1f;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: var(--gold);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: opacity 0.2s ease;
+    }
+    
+    .mobile-panel-close {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: 1px solid #1a1a1f;
+        color: var(--bone-dim);
+        font-size: 1.2rem;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .mobile-panel-close:active {
+        background: var(--gold);
+        color: var(--bg-dark);
+    }
+    
+    .mobile-panel-content {
+        padding: 0px 0px;
+        height: calc(100% - 60px); /* Account for header */
+        overflow-y: auto;
+    }
+    
+    .mobile-range-toggle-control {
+        padding: 20px 20px;
+        width: 100%;      
+        border-bottom: 1px solid #1a1a1f;
+        transition: opacity 0.2s ease;
+    }
+
+    .mobile-panel-section {
+        padding: 20px 20px;
+        border-bottom: 1px solid #1a1a1f;
+        transition: opacity 0.2s ease;
+    }
+    
+    .mobile-panel-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .mobile-panel-section > label:first-child {
+        display: block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--bone-dim);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    
+    .mobile-panel-section input[type="range"] {
+        width: 100%;
+        accent-color: var(--gold);
+        margin-bottom: 10px;
+    }
+    
+    /* Scale input row styling */
+    .mobile-panel-section .scale-input-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        justify-content:center;
+    }
+    
+    .scale-input {
+        font-size: 1rem;
+    }
+    
+    .mobile-panel-section .scale-input:focus {
+        border-bottom-color: var(--gold);
+    }
+    
+    .mobile-panel-section .scale-unit {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--bone-dim);
+    }
+    
+    /* Show Ranges toggle in panel - FIXED LAYOUT */
+    
+    .toggle-text {
+        font-size: .85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    
+    .toggle-switch {
+        width: 48px;
+        min-width: 48px;
+        height: 26px;
+    }
+    
+    .toggle-switch::after {
+        width: 20px;
+        height: 20px;
+        top: 2px;
+        left: 3px;
+    }
+    
+    .toggle-label input[type="checkbox"]:checked + .toggle-switch::after {
+        left: 24px;    
+    }
+
+    .toggle-label:hover .toggle-text {
+        color: var(--bone);
+    }
+    
+    
+    /* Filter section header */
+    .mobile-panel-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .mobile-panel-section-header > span {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--bone-dim);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    
+    .mobile-panel-section-header .filter-actions {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 0;
+        padding-top: 0;
+    }
+    
+    /* All/None buttons - more button-like */
+    .mobile-panel-section-header .filter-action {
+        padding: 8px 14px;
+        font-size: 0.7rem;
+        background: #1a1a1f;
+        border: 1px solid var(--timeline-gray);
+        color: var(--bone-dim);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .mobile-panel-section-header .filter-action:active {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--bg-dark);
+    }
+    
+    /* Mobile filter options - full width solid color pills */
+    .mobile-filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mobile-filter-options .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 15px;
+        background: #1a1a1f;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .mobile-filter-options .filter-option.active {
+        background: var(--filter-color, var(--gold));
+    }
+    
+    .mobile-filter-options .filter-option input[type="checkbox"] {
+        display: none;
+    }
+    
+    .mobile-filter-options .filter-option-icon {
+        font-size: 1.2rem;
+        width: 26px;
+        text-align: center;
+    }
+    
+    .mobile-filter-options .filter-option-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        color: var(--bone-dim);
+        flex: 1;
+    }
+    
+    .mobile-filter-options .filter-option.active .filter-option-label {
+        color: var(--bg-dark);
+        font-weight: 500;
+    }
+    
+    /* No checkmark - just color indicates state */
+    .mobile-filter-options .filter-option::after {
+        display: none;
+    }
+    
+    /* Panel overlay */
+    .mobile-panel-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1008;
+    }
+    
+    .mobile-panel-overlay.active {
+        display: block;
+    }
+    
+    /* Hide desktop controls on mobile */
+    .controls-toggle,
+    .year-display,
+    .controls-wrapper {
+        display: none !important;
+    }
+    
+    /* Adjust body padding for fixed footer */
+    body {
+        padding-top: 0;
+    }
+    
+    /* Progress bar stays at very top */
+    .scroll-progress {
+        top: 0;
+        z-index: 1009;
+    }
+
+    
+    /* Footer */
     footer {
-        position: relative;
-        margin-top: 60px;
+        position: fixed;
+        z-index: 1001; /* Above everything fixed */
+    }
+    
+    /* Footer text wrapping for mobile */
+    footer p {
+        line-height: 1.6;
+    }
+    
+    footer a {
+        white-space: nowrap;
     }
     
     body {
         padding-bottom: 0; /* Remove footer spacing since not sticky */
     }
     
-    /* Nav buttons on LEFT side, smaller on mobile */
-    .nav-buttons {
-        left: 15px;
-        right: auto;
-        bottom: 15px;
-    }
-    
     .nav-btn {
         width: 40px;
         height: 40px;
         font-size: 1.2rem;
-    }
-    
-    /* Settings gear in upper right */
-    .controls-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        top: 15px;
-        right: 15px;
-        bottom: auto;
-        left: auto;
-        border-color: var(--gold-dim); /* Gold outline on mobile */
-    }
-    
-    /* Scale and filters wrapper - upper right, opens from gear */
-    .controls-wrapper {
-        top: 70px;
-        right: 15px;
-        bottom: auto;
-        left: auto;
-        display: none; /* Hidden by default on mobile */
-    }
-    
-    .controls-wrapper.open {
-        display: flex;
-    }
-    
-    /* Year display - lower right on mobile */
-    .year-display {
-        top: auto;
-        bottom: 15px;
-        right: 15px;
-        padding: 10px 15px;
-        border-color: var(--gold-dim); /* Gold outline on mobile */
-    }
-    
-    .year-display .current-year {
-        font-size: 1.2rem;
-    }
-    
-    /* Gold outline on mobile control boxes */
-    .scale-control,
-    .filter-control,
-    .range-toggle-control {
         border-color: var(--gold-dim);
-    }
-    
-    .scale-control {
-        padding: 10px 15px;
-    }
-    
-    .nav-btn {
-        border-color: var(--gold-dim); /* Gold outline on mobile */
     }
 }
 

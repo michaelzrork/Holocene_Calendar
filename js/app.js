@@ -474,7 +474,7 @@ function buildFilterUI() {
         const label = document.createElement('label');
         label.className = 'filter-option';
         label.innerHTML = `
-            <input type="checkbox" value="${key}" checked 
+            <input type="checkbox" value="${key}" checked data-category="${key}"
                    style="--checkbox-color: ${color.border}; --checkbox-bg: ${color.bg}">
             <span class="filter-option-icon">${category.icon || ''}</span>
             <span class="filter-option-label" style="color: ${color.text}">${category.name}</span>
@@ -489,12 +489,17 @@ function buildFilterUI() {
             }
             updateFilterCount();
             renderTimeline();
+            // Sync mobile filters
+            populateMobileFilters();
         });
         
         filterOptions.appendChild(label);
     });
     
     updateFilterCount();
+    
+    // Also populate mobile filters
+    populateMobileFilters();
 }
 
 /**
@@ -557,14 +562,289 @@ function setupFilterControls() {
  */
 function setupRangeToggle() {
     const toggle = document.getElementById('showRangesToggle');
-    if (!toggle) return;
+    const mobileToggle = document.getElementById('mobileShowRangesToggle');
     
-    toggle.addEventListener('change', () => {
-        if (toggle.checked) {
+    const handleToggle = (checked) => {
+        if (checked) {
             document.body.classList.add('show-ranges');
         } else {
             document.body.classList.remove('show-ranges');
         }
+        // Sync both toggles
+        if (toggle) toggle.checked = checked;
+        if (mobileToggle) mobileToggle.checked = checked;
+    };
+    
+    if (toggle || mobileToggle) {
+        toggle.addEventListener('change', () => handleToggle(toggle.checked));
+        mobileToggle.addEventListener('change', () => handleToggle(mobileToggle.checked));
+    }
+
+}
+
+/**
+ * Setup mobile header, panel, and sync with desktop controls
+ */
+function setupMobileControls() {
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const panel = document.getElementById('mobilePanel');
+    const panelClose = document.getElementById('mobilePanelClose');
+    const panelOverlay = document.getElementById('mobilePanelOverlay');
+    
+    // Mobile year inputs
+    const mobileYearHE = document.getElementById('mobileYearHE');
+    const mobileYearCE = document.getElementById('mobileYearCE');
+    const mobileYearCELabel = document.getElementById('mobileYearCELabel');
+    
+    // Mobile scale controls
+    const mobileScaleSlider = document.getElementById('mobileScaleSlider');
+    const mobileScaleInput = document.getElementById('mobileScaleInput');
+    
+    // Mobile filter controls
+    const mobileFilterAll = document.getElementById('mobileFilterAll');
+    const mobileFilterNone = document.getElementById('mobileFilterNone');
+    const mobileFilterOptions = document.getElementById('mobileFilterOptions');
+    
+    // Panel open/close
+    const openPanel = () => {
+        panel?.classList.add('open');
+        panelOverlay?.classList.add('active');
+    };
+    
+    const closePanel = () => {
+        panel?.classList.remove('open');
+        panelOverlay?.classList.remove('active');
+    };
+    
+    menuBtn?.addEventListener('click', openPanel);
+    panelClose?.addEventListener('click', closePanel);
+    panelOverlay?.addEventListener('click', closePanel);
+    
+    // Track if user is editing mobile inputs
+    let isEditingMobileYear = false;
+    
+    // Sync mobile year displays with scroll
+    const updateMobileYearDisplay = () => {
+        // Don't update if user is editing
+        if (isEditingMobileYear) return;
+        
+        const heYear = parseInt(document.getElementById('currentYear')?.value.replace(/,/g, '')) || 0;
+        if (mobileYearHE) mobileYearHE.value = heYear.toLocaleString();
+        
+        const ceValue = document.getElementById('currentYearCE')?.value || '0';
+        if (mobileYearCE) mobileYearCE.value = ceValue;
+        
+        const ceLabel = document.getElementById('set-bce')?.textContent || 'CE';
+        if (mobileYearCELabel) mobileYearCELabel.textContent = ceLabel;
+    };
+    
+    // Hook into scroll updates
+    setInterval(updateMobileYearDisplay, 100);
+    
+    // Mobile HE year input handlers
+    if (mobileYearHE) {
+        mobileYearHE.addEventListener('focus', () => {
+            isEditingMobileYear = true;
+            mobileYearHE.select();
+            // Scroll the header into view
+            setTimeout(() => {
+                mobileYearHE.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+        
+        mobileYearHE.addEventListener('blur', () => {
+            isEditingMobileYear = false;
+            // Navigate if value changed
+            const inputValue = mobileYearHE.value.replace(/,/g, '').trim();
+            const targetYear = parseDateToHE(inputValue);
+            if (!isNaN(targetYear)) {
+                scrollToYear(targetYear);
+            }
+            // Update display after a short delay
+            setTimeout(updateMobileYearDisplay, 100);
+        });
+        
+        mobileYearHE.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                mobileYearHE.blur();
+            }
+        });
+    }
+    
+    // Mobile CE year input handlers  
+    if (mobileYearCE) {
+        mobileYearCE.addEventListener('focus', () => {
+            isEditingMobileYear = true;
+            // Append current era to help user
+            const currentEra = mobileYearCELabel?.textContent || 'CE';
+            const currentValue = mobileYearCE.value.replace(/,/g, '');
+            mobileYearCE.value = `${currentValue} ${currentEra}`;
+            mobileYearCE.select();
+            // Scroll the header into view
+            setTimeout(() => {
+                mobileYearCE.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+        
+        mobileYearCE.addEventListener('blur', () => {
+            isEditingMobileYear = false;
+            // Navigate if value provided
+            const inputValue = mobileYearCE.value.replace(/,/g, '').trim();
+            const targetYear = parseCEDateToHE(inputValue);
+            if (!isNaN(targetYear)) {
+                scrollToYear(targetYear);
+            }
+            // Update display after a short delay
+            setTimeout(updateMobileYearDisplay, 100);
+        });
+        
+        mobileYearCE.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                mobileYearCE.blur();
+            }
+        });
+    }
+    
+    // Initialize mobile scale controls with current value
+    if (mobileScaleSlider) {
+        mobileScaleSlider.value = CONFIG.pxPerYear;
+    }
+    if (mobileScaleInput) {
+        mobileScaleInput.value = CONFIG.pxPerYear;
+    }
+    
+    // Mobile scale controls - sync with desktop and apply
+    const syncScale = (value) => {
+        const newScale = parseFloat(value);
+        if (isNaN(newScale) || newScale < 0.5 || newScale > 20) return;
+        
+        const desktopSlider = document.getElementById('scaleSlider');
+        const desktopInput = document.getElementById('scaleInput');
+        if (desktopSlider) desktopSlider.value = newScale;
+        if (desktopInput) desktopInput.value = newScale;
+        if (mobileScaleSlider) mobileScaleSlider.value = newScale;
+        if (mobileScaleInput) mobileScaleInput.value = newScale;
+        
+        // Use the applyScale function which properly handles CONFIG.pxPerYear
+        applyScale(newScale);
+    };
+    
+    if (mobileScaleSlider) {
+        // Add transparency class during interaction
+        mobileScaleSlider.addEventListener('mousedown', () => {
+            panel?.classList.add('adjusting-scale');
+            panelOverlay?.classList.add('adjusting-scale');
+        });
+        mobileScaleSlider.addEventListener('touchstart', () => {
+            panel?.classList.add('adjusting-scale');
+            panelOverlay?.classList.add('adjusting-scale');
+        });
+        mobileScaleSlider.addEventListener('mouseup', () => {
+            panel?.classList.remove('adjusting-scale');
+            panelOverlay?.classList.remove('adjusting-scale');
+        });
+        mobileScaleSlider.addEventListener('touchend', () => {
+            panel?.classList.remove('adjusting-scale');
+            panelOverlay?.classList.remove('adjusting-scale');
+        });
+        
+        mobileScaleSlider.addEventListener('input', () => syncScale(mobileScaleSlider.value));
+    }
+    
+    if (mobileScaleInput) {
+        mobileScaleInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                let val = parseFloat(mobileScaleInput.value);
+                if (!isNaN(val) && val >= 0.5 && val <= 20) {
+                    syncScale(val);
+                }
+                mobileScaleInput.blur();
+            }
+        });
+    }
+    
+    // Mobile filter controls
+    if (mobileFilterAll) {
+        mobileFilterAll.addEventListener('click', () => {
+            STATE.activeFilters = new Set(Object.keys(STATE.categories));
+            // Sync desktop
+            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            updateFilterCount();
+            renderTimeline();
+            populateMobileFilters();
+        });
+    }
+    
+    if (mobileFilterNone) {
+        mobileFilterNone.addEventListener('click', () => {
+            STATE.activeFilters.clear();
+            // Sync desktop
+            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            updateFilterCount();
+            renderTimeline();
+            populateMobileFilters();
+        });
+    }
+    
+    // Populate mobile filters
+    populateMobileFilters();
+}
+
+/**
+ * Populate mobile filter options (mirrors desktop)
+ */
+function populateMobileFilters() {
+    const container = document.getElementById('mobileFilterOptions');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    Object.entries(STATE.categories).forEach(([id, category]) => {
+        const isActive = STATE.activeFilters.has(id);
+        const color = category.color || DEFAULT_COLOR;
+        const label = document.createElement('label');
+        label.className = `filter-option${isActive ? ' active' : ''}`;
+        // Use the category's main color (text color works well as solid bg)
+        label.style.setProperty('--filter-color', color.text || color.border);
+        label.innerHTML = `
+            <input type="checkbox" ${isActive ? 'checked' : ''} data-category="${id}">
+            <span class="filter-option-icon">${category.icon}</span>
+            <span class="filter-option-label">${category.name}</span>
+        `;
+        
+        const checkbox = label.querySelector('input');
+        
+        // Handle tap on entire label
+        label.addEventListener('click', (e) => {
+            e.preventDefault();
+            const newState = !checkbox.checked;
+            checkbox.checked = newState;
+            label.classList.toggle('active', newState);
+            
+            // Update state
+            if (newState) {
+                STATE.activeFilters.add(id);
+            } else {
+                STATE.activeFilters.delete(id);
+            }
+            
+            // Sync with desktop
+            const desktopCheckbox = document.querySelector(`#filterOptions input[data-category="${id}"]`);
+            if (desktopCheckbox) {
+                desktopCheckbox.checked = newState;
+            }
+            
+            updateFilterCount();
+            renderTimeline();
+        });
+        
+        container.appendChild(label);
     });
 }
 
@@ -1549,6 +1829,7 @@ async function init() {
     setupNavButtons();
     setupFilterControls();
     setupRangeToggle();
+    setupMobileControls();
     setupClickAwayUnlock();
     setupSmartHover();
     
