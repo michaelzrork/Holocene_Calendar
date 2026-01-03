@@ -565,6 +565,18 @@
       "type": "event"
     },
     {
+      "year": "800 BCE",
+      "endYear": "200 BCE",
+      "title": "Axial Age",
+      "desc": "Parallel intellectual revolutions across Eurasia give rise to transformative moral and religious traditions. Confucianism and Taoism in China, Buddhism and Jainism in India, Zoroastrianism in Persia, and Greek philosophy in the Mediterranean. These traditions emphasize universal ethics and reshape worldviews across civilizations.",
+      "source": "https://en.wikipedia.org/wiki/Axial_Age",
+      "categories": [
+        "culture",
+        "religion"
+      ],
+      "type": "range"
+    },
+    {
       "year": "776 BCE",
       "title": "First Olympic Games",
       "desc": "Traditional date for the first Olympic Games at Olympia, Greece. Athletic competition becomes sacred.",
@@ -994,6 +1006,18 @@
       "type": "range"
     },
     {
+      "year": "1500 CE",
+      "endYear": "1900 CE",
+      "title": "Global Spread of Capitalism and Empire",
+      "desc": "European colonial empires and capitalist trade networks expand worldwide. Chartered companies (British and Dutch East India Companies) monopolize trade across Asia, Africa, and the Americas. By the 19th century, industrial capitalism establishes global economic domination, laying foundations for modern globalization.",
+      "source": "https://en.wikipedia.org/wiki/History_of_capitalism",
+      "categories": [
+        "economics",
+        "civilization"
+      ],
+      "type": "range"
+    },
+    {
       "year": "541 CE",
       "endYear": "c. 750 CE",
       "title": "Plague of Justinian",
@@ -1306,6 +1330,18 @@
         "figure"
       ],
       "type": "event"
+    },
+    {
+      "year": "1492 CE",
+      "endYear": "1700 CE",
+      "title": "Columbian Exchange",
+      "desc": "Massive exchange of plants, animals, people, and pathogens between the Americas and Afro-Eurasia. Old World diseases devastated indigenous populations (up to 90% mortality). New World crops (maize, potatoes, tomatoes) spread globally, transforming agriculture, diets, and demographics worldwide.",
+      "source": "https://en.wikipedia.org/wiki/Columbian_exchange",
+      "categories": [
+        "economics",
+        "civilization"
+      ],
+      "type": "range"
     },
     {
       "year": "1517 CE",
