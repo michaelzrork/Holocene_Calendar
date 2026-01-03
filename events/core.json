@@ -61,118 +61,6 @@
   },
   "events": [
     {
-      "year": "c. 10000 BCE",
-      "title": "Neolithic Revolution Begins",
-      "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently.",
-      "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution",
-      "categories": ["civilization", "science"]
-    },
-
-    {
-      "year": "c. 11000 BC",
-      "endYear": "c. 8000 BC",
-      "title": "Domestication of Sheep",
-      "desc": "Sheep become the first livestock animals domesticated for wool, milk, and meat in Mesopotamia.",
-      "source": "https://en.wikipedia.org/wiki/Domestic_sheep",
-      "categories": ["science", "civilization"],
-      "type": "approximate"
-    },
-
-    {
-      "year": 500,
-      "title": "Göbekli Tepe",
-      "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel.",
-      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
-      "categories": ["civilization", "religion", "culture"],
-      "wikipedia": "Göbekli_Tepe"
-    },
-    {
-      "year": 500,
-      "title": "First Cereal Cultivation",
-      "desc": "Wild wheat and barley first cultivated in the Fertile Crescent. Initially used for beer and gruel, later bread.",
-      "source": "https://en.wikipedia.org/wiki/Neolithic_founder_crops",
-      "categories": ["science", "civilization"]
-    },
-    {
-      "year": 800,
-      "title": "Domestication of Pigs",
-      "desc": "Pigs domesticated independently in Anatolia and China. Efficient converters of scraps to protein.",
-      "source": "https://en.wikipedia.org/wiki/Domestic_pig",
-      "categories": ["science", "civilization"]
-    },
-    {
-      "year": "c. 9000 BCE",
-      "title": "Jericho Settlement",
-      "desc": "One of humanity's first permanent settlements builds defensive walls and a tower.",
-      "source": "https://en.wikipedia.org/wiki/Jericho",
-      "categories": ["civilization"]
-    },
-    {
-      "year": 1500,
-      "title": "Domestication of Cattle",
-      "desc": "Aurochs domesticated in the Near East and South Asia. Cattle provide meat, milk, leather, and labor.",
-      "source": "https://en.wikipedia.org/wiki/Cattle",
-      "categories": ["science", "civilization"]
-    },
-    {
-      "year": 1800,
-      "title": "8.2 Kiloyear Event",
-      "desc": "Most severe climate event of the Holocene. Sudden cooling lasting 400 years caused by catastrophic drainage of glacial Lake Agassiz into the Atlantic.",
-      "source": "https://en.wikipedia.org/wiki/8.2-kiloyear_event",
-      "categories": ["geological", "disaster"]
-    },
-
-    {
-      "year": 2000,
-      "title": "Pottery Invented",
-      "desc": "Fired clay pottery emerges in multiple regions. Enables food storage, cooking, and fermentation.",
-      "source": "https://en.wikipedia.org/wiki/Pottery",
-      "categories": ["science", "culture"]
-    },
-    {
-      "year": 2500,
-      "title": "Çatalhöyük",
-      "desc": "One of the world's first proto-cities in Anatolia. Up to 10,000 residents live in densely packed mudbrick houses entered through rooftop holes.",
-      "source": "https://en.wikipedia.org/wiki/%C3%87atalh%C3%B6y%C3%BCk",
-      "categories": ["civilization"]
-    },
-    {
-      "year": 2800,
-      "title": "'Ain Ghazal Settlement",
-      "desc": "One of the largest Neolithic settlements, near modern Amman, Jordan. Famous for its plaster statues and ancestor worship practices.",
-      "source": "https://en.wikipedia.org/wiki/%27Ain_Ghazal",
-      "categories": ["civilization", "religion"]
-    },
-    {
-      "year": 3000,
-      "title": "Wheel Invented",
-      "desc": "The wheel appears in Mesopotamia, revolutionizing transportation and pottery-making.",
-      "source": "https://en.wikipedia.org/wiki/Wheel",
-      "categories": ["science"]
-    },
-    {
-      "year": 3500,
-      "title": "Copper Smelting Begins",
-      "desc": "Humans learn to extract copper from ore using fire. The Chalcolithic (Copper Age) begins, ending the Stone Age.",
-      "source": "https://en.wikipedia.org/wiki/Chalcolithic",
-      "categories": ["science", "civilization"]
-    },
-
-    {
-      "year": "153 BCE",
-      "title": "Jan 1 becomes the beginning of the calendar year",
-      "desc": "First day of the year was the first of March, but to get around a law ",
-      "source": "",
-      "categories": ["science", "civilization"]
-    },
-    {
-      "year": 4000,
-      "title": "Domestication of the Horse",
-      "desc": "Horses domesticated on the Eurasian steppes. Revolutionizes transportation, warfare, and communication.",
-      "source": "https://en.wikipedia.org/wiki/Domestication_of_the_horse",
-      "categories": ["science"]
-    },
-    {
       "year": "c. 3300000 BCE",
       "endYear": "c. 3300 BCE",
       "title": "Stone Age",
@@ -182,34 +70,154 @@
       "type": "range"
     },
     {
-      "year": "c. 3300 BC",
-      "endYear": "c. 1200 BC",
+      "year": "c. 10000 BCE",
+      "title": "Neolithic Revolution Begins",
+      "desc": "End of the Ice Age. Humans transition to agriculture, domesticate animals, and settle permanently in the Fertile Crescent.",
+      "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution",
+      "categories": ["civilization", "science"],
+      "type": "event"
+    },
+    {
+      "year": "c. 11000 BCE",
+      "endYear": "c. 8000 BCE",
+      "title": "Domestication of Sheep",
+      "desc": "Sheep become the first livestock animals domesticated for wool, milk, and meat in Mesopotamia.",
+      "source": "https://en.wikipedia.org/wiki/Domestic_sheep",
+      "categories": ["science", "civilization"],
+      "type": "approximate"
+    },
+    {
+      "year": "c. 9500 BCE",
+      "endYear": "c. 8000 BCE",
+      "title": "Göbekli Tepe",
+      "desc": "Massive stone temple complex built in modern Turkey—predating pottery, metallurgy, and the wheel. The world's oldest known temple.",
+      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
+      "categories": ["civilization", "religion", "culture"],
+      "type": "range"
+    },
+    {
+      "year": "c. 9500 BCE",
+      "title": "First Cereal Cultivation",
+      "desc": "Wild wheat and barley first cultivated in the Fertile Crescent. Initially used for beer and gruel, later bread.",
+      "source": "https://en.wikipedia.org/wiki/Neolithic_founder_crops",
+      "categories": ["science", "civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 8500 BCE",
+      "endYear": "c. 8000 BCE",
+      "title": "Domestication of Pigs",
+      "desc": "Pigs domesticated independently in Anatolia and China. Efficient converters of scraps to protein.",
+      "source": "https://en.wikipedia.org/wiki/Domestic_pig",
+      "categories": ["science", "civilization"],
+      "type": "approximate"
+    },
+    {
+      "year": "c. 9000 BCE",
+      "title": "Jericho Settlement",
+      "desc": "One of humanity's first permanent settlements builds defensive walls and a tower.",
+      "source": "https://en.wikipedia.org/wiki/Jericho",
+      "categories": ["civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 8500 BCE",
+      "title": "Domestication of Cattle",
+      "desc": "Aurochs domesticated in the Near East and South Asia. Cattle provide meat, milk, leather, and labor.",
+      "source": "https://en.wikipedia.org/wiki/Cattle",
+      "categories": ["science", "civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 8200 BCE",
+      "endYear": "c. 7800 BCE",
+      "title": "8.2 Kiloyear Event",
+      "desc": "Most severe climate event of the Holocene. Sudden cooling lasting 400 years caused by catastrophic drainage of glacial Lake Agassiz into the Atlantic.",
+      "source": "https://en.wikipedia.org/wiki/8.2-kiloyear_event",
+      "categories": ["geological", "disaster"],
+      "type": "range"
+    },
+    {
+      "year": "c. 8000 BCE",
+      "title": "Pottery Invented",
+      "desc": "Fired clay pottery emerges in multiple regions. Enables food storage, cooking, and fermentation.",
+      "source": "https://en.wikipedia.org/wiki/Pottery",
+      "categories": ["science", "culture"],
+      "type": "event"
+    },
+    {
+      "year": "c. 7500 BCE",
+      "endYear": "c. 5700 BCE",
+      "title": "Çatalhöyük",
+      "desc": "One of the world's first proto-cities in Anatolia. Up to 10,000 residents live in densely packed mudbrick houses entered through rooftop holes.",
+      "source": "https://en.wikipedia.org/wiki/%C3%87atalh%C3%B6y%C3%BCk",
+      "categories": ["civilization"],
+      "type": "range"
+    },
+    {
+      "year": "c. 7200 BCE",
+      "title": "'Ain Ghazal Settlement",
+      "desc": "One of the largest Neolithic settlements, near modern Amman, Jordan. Famous for its plaster statues and ancestor worship practices.",
+      "source": "https://en.wikipedia.org/wiki/%27Ain_Ghazal",
+      "categories": ["civilization", "religion"],
+      "type": "event"
+    },
+    {
+      "year": "c. 5500 BCE",
+      "title": "Wheel Invented",
+      "desc": "The wheel appears in Mesopotamia, revolutionizing transportation and pottery-making.",
+      "source": "https://en.wikipedia.org/wiki/Wheel",
+      "categories": ["science"],
+      "type": "event"
+    },
+    {
+      "year": "c. 5500 BCE",
+      "title": "Copper Smelting Begins",
+      "desc": "Humans learn to extract copper from ore using fire. The Chalcolithic (Copper Age) begins, ending the Stone Age.",
+      "source": "https://en.wikipedia.org/wiki/Chalcolithic",
+      "categories": ["science", "civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 4200 BCE",
+      "title": "4.2 Kiloyear Event",
+      "desc": "Severe aridification event lasting centuries. Contributed to the collapse of the Egyptian Old Kingdom and Akkadian Empire.",
+      "source": "https://en.wikipedia.org/wiki/4.2-kiloyear_event",
+      "categories": ["geological", "disaster"],
+      "type": "event"
+    },
+    {
+      "year": "c. 4000 BCE",
+      "title": "Domestication of the Horse",
+      "desc": "Horses domesticated on the Eurasian steppes. Revolutionizes transportation, warfare, and communication.",
+      "source": "https://en.wikipedia.org/wiki/Domestication_of_the_horse",
+      "categories": ["science"],
+      "type": "event"
+    },
+    {
+      "year": "c. 3300 BCE",
+      "endYear": "c. 1200 BCE",
       "title": "Bronze Age",
       "desc": "Copper-tin alloy creates bronze—harder than copper alone. Weapons, tools, and trade networks transform society.",
       "source": "https://en.wikipedia.org/wiki/Bronze_Age",
-      "categories": ["science", "civilization"]
+      "categories": ["science", "civilization"],
+      "type": "range"
     },
     {
-      "year": "c. 1200 BC",
-      "endYear": "c. 550 BC",
-      "title": "Iron Age",
-      "desc": "",
-      "source": "https://en.wikipedia.org/wiki/Iron_Age",
-      "categories": ["science", "civilization"]
-    },
-    {
-      "year": 4500,
+      "year": "c. 3500 BCE",
       "title": "First Cities in Mesopotamia",
       "desc": "Uruk, Ur, and Eridu emerge in southern Iraq. Urban planning, specialized labor, and social hierarchy develop.",
       "source": "https://en.wikipedia.org/wiki/Uruk",
-      "categories": ["civilization"]
+      "categories": ["civilization"],
+      "type": "event"
     },
     {
-      "year": 4700,
+      "year": "c. 3300 BCE",
       "title": "Invention of Writing",
       "desc": "Cuneiform in Sumer, hieroglyphs in Egypt. History begins—everything before is \"prehistory.\"",
       "source": "https://en.wikipedia.org/wiki/History_of_writing",
-      "categories": ["science", "culture", "civilization"]
+      "categories": ["science", "culture", "civilization"],
+      "type": "event"
     },
     {
       "year": "c. 3150 BCE",
@@ -217,142 +225,163 @@
       "title": "Ancient Egypt",
       "desc": "One of the longest-lasting civilizations. Pyramids, hieroglyphs, pharaohs, and the Nile defined 3,000 years of history.",
       "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
-      "categories": ["civilization"]
+      "categories": ["civilization"],
+      "type": "range"
     },
     {
-      "year": 8000,
-      "endYear": 10250,
-      "title": "Maya Preclassic Period",
-      "desc": "Maya civilization emerges in Mesoamerica. First cities, monumental architecture, and hieroglyphic writing develop.",
-      "source": "https://en.wikipedia.org/wiki/Preclassic_Maya",
-      "categories": ["civilization"]
-    },
-    {
-      "year": "2601 BC",
-      "endYear": "2574 BC",
+      "year": "c. 2580 BCE",
+      "endYear": "c. 2560 BCE",
       "title": "Great Pyramid of Giza",
       "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
       "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
-      "categories": ["civilization", "culture"]
-    },
-
-    {
-      "year": 5800,
-      "title": "4.2 Kiloyear Event",
-      "desc": "Severe aridification event lasting centuries. Contributed to the collapse of the Egyptian Old Kingdom and Akkadian Empire.",
-      "source": "https://en.wikipedia.org/wiki/4.2-kiloyear_event",
-      "categories": ["geological", "disaster"]
+      "categories": ["civilization", "culture"],
+      "type": "range"
     },
     {
-      "year": 6000,
+      "year": "c. 2000 BCE",
+      "endYear": "c. 250 CE",
+      "title": "Maya Preclassic Period",
+      "desc": "Maya civilization emerges in Mesoamerica. First cities, monumental architecture, and hieroglyphic writing develop.",
+      "source": "https://en.wikipedia.org/wiki/Preclassic_Maya",
+      "categories": ["civilization"],
+      "type": "range"
+    },
+    {
+      "year": "c. 2000 BCE",
       "title": "Abraham",
       "desc": "Traditional date for the patriarch Abraham, father of Judaism, Christianity, and Islam.",
       "source": "https://en.wikipedia.org/wiki/Abraham",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "event"
     },
     {
-      "year": 6250,
+      "year": "c. 1792 BCE",
+      "endYear": "c. 1750 BCE",
       "title": "Code of Hammurabi",
       "desc": "One of the oldest deciphered legal codes. \"An eye for an eye\" enters human thought.",
       "source": "https://en.wikipedia.org/wiki/Code_of_Hammurabi",
-      "categories": ["politics", "civilization"]
+      "categories": ["politics", "civilization"],
+      "type": "range"
     },
     {
-      "year": 6500,
+      "year": "c. 1500 BCE",
       "title": "Moses and the Exodus",
       "desc": "Traditional date for Moses leading the Israelites out of Egypt. The Ten Commandments given.",
       "source": "https://en.wikipedia.org/wiki/Moses",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "event"
     },
     {
-      "year": 7224,
-      "title": "First Olympic Games",
-      "desc": "Traditional date for the first Olympic Games at Olympia, Greece. Athletic competition becomes sacred.",
-      "source": "https://en.wikipedia.org/wiki/Ancient_Olympic_Games",
-      "categories": ["culture"]
+      "year": "c. 1200 BCE",
+      "endYear": "c. 550 BCE",
+      "title": "Iron Age",
+      "desc": "Iron replaces bronze as the dominant metal. New weapons and tools enable larger empires and transformed warfare.",
+      "source": "https://en.wikipedia.org/wiki/Iron_Age",
+      "categories": ["science", "civilization"],
+      "type": "range"
     },
     {
-      "year": 7247,
-      "title": "Founding of Rome",
-      "desc": "Traditional date for the founding of Rome by Romulus. A small village destined to rule the world.",
-      "source": "https://en.wikipedia.org/wiki/Founding_of_Rome",
-      "categories": ["civilization"]
-    },
-    {
-      "year": 8004,
+      "year": "c. 1000 BCE",
       "title": "King David",
       "desc": "David becomes King of Israel, uniting the tribes. Jerusalem becomes the capital.",
       "source": "https://en.wikipedia.org/wiki/David",
-      "categories": ["religion", "figure", "politics"]
+      "categories": ["religion", "figure", "politics"],
+      "type": "event"
     },
     {
-      "year": 8040,
+      "year": "c. 960 BCE",
       "title": "Solomon's Temple Built",
       "desc": "King Solomon completes the First Temple in Jerusalem, the holiest site in Judaism.",
       "source": "https://en.wikipedia.org/wiki/Solomon%27s_Temple",
-      "categories": ["religion", "culture"]
+      "categories": ["religion", "culture"],
+      "type": "event"
     },
     {
-      "year": 8500,
-      "endYear": 8800,
-      "title": "Assyrian Empire",
+      "year": "c. 911 BCE",
+      "endYear": "609 BCE",
+      "title": "Neo-Assyrian Empire",
       "desc": "The Neo-Assyrian Empire dominates the Near East. First true empire in history.",
       "source": "https://en.wikipedia.org/wiki/Neo-Assyrian_Empire",
-      "categories": ["civilization", "war"]
+      "categories": ["civilization", "war"],
+      "type": "range"
     },
     {
-      "year": 9437,
-      "title": "Buddha Born",
-      "desc": "Siddhartha Gautama born in Lumbini, Nepal. Will become the Buddha and found Buddhism.",
+      "year": "c. 800 BCE",
+      "title": "Athenian Democracy Emerges",
+      "desc": "World's first democracy begins to take shape. Philosophy, theater, and science flourish in Greece.",
+      "source": "https://en.wikipedia.org/wiki/Athenian_democracy",
+      "categories": ["politics", "civilization", "culture"],
+      "type": "event"
+    },
+    {
+      "year": "776 BCE",
+      "title": "First Olympic Games",
+      "desc": "Traditional date for the first Olympic Games at Olympia, Greece. Athletic competition becomes sacred.",
+      "source": "https://en.wikipedia.org/wiki/Ancient_Olympic_Games",
+      "categories": ["culture"],
+      "type": "event"
+    },
+    {
+      "year": "753 BCE",
+      "title": "Founding of Rome",
+      "desc": "Traditional date for the founding of Rome by Romulus. A small village destined to rule the world.",
+      "source": "https://en.wikipedia.org/wiki/Founding_of_Rome",
+      "categories": ["civilization"],
+      "type": "event"
+    },
+    {
+      "year": "c. 563 BCE",
+      "endYear": "c. 483 BCE",
+      "title": "Buddha (Siddhartha Gautama)",
+      "desc": "Founder of Buddhism born in Lumbini, Nepal. His teachings on suffering and enlightenment spread across Asia.",
       "source": "https://en.wikipedia.org/wiki/Gautama_Buddha",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "person"
     },
     {
-      "year": 9449,
-      "title": "Confucius Born",
+      "year": "c. 551 BCE",
+      "endYear": "479 BCE",
+      "title": "Confucius",
       "desc": "Kong Qiu born in Lu, China. His teachings will shape Chinese civilization for millennia.",
       "source": "https://en.wikipedia.org/wiki/Confucius",
-      "categories": ["religion", "figure", "culture"]
+      "categories": ["religion", "figure", "culture"],
+      "type": "person"
     },
     {
-      "year": 9200,
-      "title": "Athenian Democracy",
-      "desc": "World's first democracy. Philosophy, theater, and science flourish in Greece.",
-      "source": "https://en.wikipedia.org/wiki/Athenian_democracy",
-      "categories": ["politics", "civilization", "culture"]
+      "year": "509 BCE",
+      "title": "Roman Republic Founded",
+      "desc": "Rome overthrows its kings. The Republic will shape governance for millennia.",
+      "source": "https://en.wikipedia.org/wiki/Roman_Republic",
+      "categories": ["politics", "civilization"],
+      "type": "event"
     },
     {
-      "year": 9490,
+      "year": "490 BCE",
       "title": "Battle of Marathon",
       "desc": "Athens defeats Persian invasion. The runner Pheidippides inspires the modern marathon.",
       "source": "https://en.wikipedia.org/wiki/Battle_of_Marathon",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "event"
     },
     {
-      "year": "c. 470 BCE",
-      "endYear": "399 BC",
+      "year": "c. 470 BCE",
+      "endYear": "399 BCE",
       "title": "Socrates",
       "desc": "The father of Western philosophy born in Athens. Will teach Plato and die for his beliefs.",
       "source": "https://en.wikipedia.org/wiki/Socrates",
       "categories": ["figure", "religion", "culture"],
-      "type":"person"
+      "type": "person"
     },
     {
-      "year": 9550,
-      "title": "Roman Republic Founded",
-      "desc": "Rome overthrows its kings. The Republic will shape governance for millennia.",
-      "source": "https://en.wikipedia.org/wiki/Roman_Republic",
-      "categories": ["politics", "civilization"]
-    },
-    {
-      "year": 9586,
+      "year": "438 BCE",
       "title": "Parthenon Completed",
       "desc": "Athens completes the Parthenon, temple to Athena. Peak of Classical Greek architecture.",
       "source": "https://en.wikipedia.org/wiki/Parthenon",
-      "categories": ["culture", "religion"]
+      "categories": ["culture", "religion"],
+      "type": "event"
     },
     {
-      "year": "399 BC",
+      "year": "399 BCE",
       "title": "Trial of Socrates",
       "desc": "Socrates drinks hemlock after being condemned for corrupting Athens' youth. Philosophy's first martyr.",
       "source": "https://en.wikipedia.org/wiki/Trial_of_Socrates",
@@ -360,8 +389,8 @@
       "type": "event"
     },
     {
-      "year": "384 BC",
-      "endYear": "322 BC",
+      "year": "384 BCE",
+      "endYear": "322 BCE",
       "title": "Aristotle",
       "desc": "The polymath who will tutor Alexander the Great and systematize Western knowledge.",
       "source": "https://en.wikipedia.org/wiki/Aristotle",
@@ -369,77 +398,93 @@
       "type": "person"
     },
     {
-      "year": 9677,
-      "endYear": 9690,
+      "year": "336 BCE",
+      "endYear": "323 BCE",
       "title": "Alexander's Empire",
       "desc": "Conquers from Greece to India in 13 years. Hellenistic culture spreads worldwide.",
       "source": "https://en.wikipedia.org/wiki/Alexander_the_Great",
-      "categories": ["civilization", "war", "figure"]
+      "categories": ["civilization", "war", "figure"],
+      "type": "range"
     },
     {
-      "year": "c. 220 BCE",
+      "year": "c. 221 BCE",
       "title": "Great Wall Construction Begins",
       "desc": "Qin Shi Huang unifies China and begins the Great Wall. First Emperor of unified China.",
       "source": "https://en.wikipedia.org/wiki/Great_Wall_of_China",
-      "categories": ["civilization", "culture"]
+      "categories": ["civilization", "culture"],
+      "type": "event"
     },
     {
-      "year": 9794,
-      "endYear": 10220,
+      "year": "206 BCE",
+      "endYear": "220 CE",
       "title": "Han Dynasty",
       "desc": "One of China's greatest dynasties. Paper invented, Silk Road flourishes.",
       "source": "https://en.wikipedia.org/wiki/Han_dynasty",
-      "categories": ["civilization", "economics"]
+      "categories": ["civilization", "economics"],
+      "type": "range"
     },
     {
-      "year": 9929,
+      "year": "153 BCE",
+      "title": "January 1 Becomes New Year's Day",
+      "desc": "Roman consuls begin taking office on January 1 to respond to a rebellion in Hispania, establishing the date as the start of the civil year.",
+      "source": "https://en.wikipedia.org/wiki/Roman_calendar",
+      "categories": ["politics", "culture"],
+      "type": "event"
+    },
+    {
+      "year": "73 BCE",
+      "endYear": "71 BCE",
       "title": "Spartacus Rebellion",
       "desc": "Gladiator Spartacus leads history's most famous slave revolt against Rome.",
       "source": "https://en.wikipedia.org/wiki/Spartacus",
-      "categories": ["war", "figure"]
+      "categories": ["war", "figure"],
+      "type": "range"
     },
     {
-      "year": "44 BC",
+      "year": "c. 69 BCE",
+      "endYear": "30 BCE",
+      "title": "Cleopatra",
+      "desc": "Last pharaoh of Egypt. Her death marks Egypt becoming a Roman province.",
+      "source": "https://en.wikipedia.org/wiki/Cleopatra",
+      "categories": ["figure", "politics"],
+      "type": "person"
+    },
+    {
+      "year": "44 BCE",
       "title": "Julius Caesar Assassinated",
       "desc": "\"Et tu, Brute?\" Caesar murdered by senators on the Ides of March. Republic dies with him.",
       "source": "https://en.wikipedia.org/wiki/Assassination_of_Julius_Caesar",
-      "categories": ["politics", "figure"]
+      "categories": ["politics", "figure"],
+      "type": "event"
     },
     {
-      "year": "c. 70 BCE",
-      "endYear": "30 BCE",
-      "title": "Cleopatra",
-      "desc": "Last pharaoh of Egypt takes her own life. Egypt becomes a Roman province.",
-      "source": "https://en.wikipedia.org/wiki/Cleopatra",
-      "categories": ["figure", "politics"],
-      "type":"person"
-    },
-    {
-      "year": 9973,
-      "endYear": 10476,
+      "year": "27 BCE",
+      "endYear": "476 CE",
       "title": "Roman Empire",
       "desc": "From Augustus to the fall. At its peak, ruled 70 million people across three continents.",
       "source": "https://en.wikipedia.org/wiki/Roman_Empire",
-      "categories": ["civilization"]
+      "categories": ["civilization"],
+      "type": "range"
     },
     {
-      "year": 10000,
-      "title": "Year Zero (CE/AD)",
-      "desc": "The Gregorian calendar's anchor point. Roman Empire at its height.",
-      "source": "https://en.wikipedia.org/wiki/Anno_Domini",
-      "categories": ["religion", "culture"]
-    },
-    {
-      "year": "c. 4 bce",
-      "endYear": "c. 33 ce",
+      "year": "c. 6 BCE",
+      "endYear": "c. 30 CE",
       "title": "Jesus of Nazareth",
-      "desc": "Traditional date for the birth of Jesus of Nazareth in Bethlehem. Christianity's founding figure.",
+      "desc": "Central figure of Christianity. His life and teachings became the foundation of the world's largest religion.",
       "source": "https://en.wikipedia.org/wiki/Jesus",
       "categories": ["religion", "figure"],
       "type": "person"
     },
     {
-      "year": "c. 33 CE",
+      "year": "1 CE",
+      "title": "Year One (CE/AD)",
+      "desc": "The Gregorian calendar's anchor point. Calculated (with some error) as the birth year of Jesus.",
+      "source": "https://en.wikipedia.org/wiki/Anno_Domini",
+      "categories": ["religion", "culture"],
+      "type": "event"
+    },
+    {
+      "year": "c. 30 CE",
       "title": "Crucifixion of Jesus",
       "desc": "Jesus crucified in Jerusalem under Pontius Pilate. Christians believe he rose three days later.",
       "source": "https://en.wikipedia.org/wiki/Crucifixion_of_Jesus",
@@ -447,476 +492,548 @@
       "type": "event"
     },
     {
-      "year": 10079,
+      "year": "79 CE",
       "title": "Eruption of Vesuvius",
       "desc": "Mount Vesuvius buries Pompeii and Herculaneum. Preserved forever in volcanic ash.",
       "source": "https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD",
-      "categories": ["disaster", "geological"]
+      "categories": ["disaster", "geological"],
+      "type": "event"
     },
     {
       "year": "c. 250 CE",
-      "endYear": "1697 CE",
+      "endYear": "c. 900 CE",
       "title": "Classic Maya Period",
       "desc": "Golden age of Maya civilization. 40+ city-states including Tikal, Palenque, and Copán. Advanced astronomy, mathematics, and the Long Count calendar.",
       "source": "https://en.wikipedia.org/wiki/Classic_Maya_civilization",
-      "categories": ["civilization", "culture", "science"]
+      "categories": ["civilization", "culture", "science"],
+      "type": "range"
     },
     {
-      "year": 10313,
+      "year": "313 CE",
       "title": "Edict of Milan",
       "desc": "Constantine legalizes Christianity throughout the Roman Empire. Faith goes mainstream.",
       "source": "https://en.wikipedia.org/wiki/Edict_of_Milan",
-      "categories": ["religion", "politics"]
+      "categories": ["religion", "politics"],
+      "type": "event"
     },
     {
-      "year": 10476,
+      "year": "476 CE",
       "title": "Fall of Rome",
       "desc": "Western Roman Empire collapses. Europe enters the Middle Ages.",
       "source": "https://en.wikipedia.org/wiki/Fall_of_the_Western_Roman_Empire",
-      "categories": ["civilization", "politics"]
+      "categories": ["civilization", "politics"],
+      "type": "event"
     },
     {
-      "year": 10476,
-      "endYear": 11500,
+      "year": "c. 500 CE",
+      "endYear": "c. 1500 CE",
       "title": "Middle Ages",
       "desc": "Medieval Europe. Feudalism, castles, crusades, and the slow rebuilding of civilization.",
       "source": "https://en.wikipedia.org/wiki/Middle_Ages",
-      "categories": ["civilization"]
+      "categories": ["civilization"],
+      "type": "range"
     },
     {
-      "year": 10541,
-      "endYear": 10750,
+      "year": "541 CE",
+      "endYear": "c. 750 CE",
       "title": "Plague of Justinian",
-      "desc": "First bubonic plague pandemic. Kills up to 50 million—half of Europe's population.",
+      "desc": "First bubonic plague pandemic. Kills up to 50 million—possibly half of Europe's population.",
       "source": "https://en.wikipedia.org/wiki/Plague_of_Justinian",
-      "categories": ["disaster"]
+      "categories": ["disaster"],
+      "type": "range"
     },
     {
-      "year": 10570,
-      "title": "Muhammad Born",
-      "desc": "Prophet of Islam born in Mecca. Will unite Arabia and found world's second-largest religion.",
+      "year": "c. 570 CE",
+      "endYear": "632 CE",
+      "title": "Muhammad",
+      "desc": "Prophet of Islam born in Mecca. Will unite Arabia and found the world's second-largest religion.",
       "source": "https://en.wikipedia.org/wiki/Muhammad",
-      "categories": ["religion", "figure"]
+      "categories": ["religion", "figure"],
+      "type": "person"
     },
     {
-      "year": 10622,
+      "year": "622 CE",
       "title": "Hijra - Islamic Calendar Begins",
       "desc": "Muhammad's migration from Mecca to Medina. Year One of the Islamic calendar.",
       "source": "https://en.wikipedia.org/wiki/Hijra",
-      "categories": ["religion"]
+      "categories": ["religion"],
+      "type": "event"
     },
     {
-      "year": 10800,
+      "year": "800 CE",
       "title": "Charlemagne Crowned Emperor",
       "desc": "Pope crowns Charlemagne Emperor of the Romans. Holy Roman Empire begins.",
       "source": "https://en.wikipedia.org/wiki/Charlemagne",
-      "categories": ["politics", "figure", "civilization"]
+      "categories": ["politics", "figure", "civilization"],
+      "type": "event"
     },
     {
-      "year": 11066,
-      "title": "Norman Conquest of England",
-      "desc": "William the Conqueror defeats Harold at Hastings. English history forever changed.",
-      "source": "https://en.wikipedia.org/wiki/Norman_Conquest",
-      "categories": ["war", "politics"]
-    },
-    {
-      "year": 10900,
+      "year": "c. 900 CE",
       "title": "Classic Maya Collapse",
       "desc": "Major city-states abandoned over decades. Drought, warfare, and deforestation devastate the southern lowlands. Civilization shifts north to Yucatán.",
       "source": "https://en.wikipedia.org/wiki/Classic_Maya_collapse",
-      "categories": ["civilization", "disaster"]
+      "categories": ["civilization", "disaster"],
+      "type": "event"
     },
     {
-      "year": 10950,
-      "endYear": 11250,
+      "year": "c. 900 CE",
+      "endYear": "c. 1300 CE",
       "title": "Medieval Warm Period",
       "desc": "Climate similar to modern times. Vikings colonize Greenland, agriculture expands northward, and European population booms.",
       "source": "https://en.wikipedia.org/wiki/Medieval_Warm_Period",
-      "categories": ["geological"]
+      "categories": ["geological"],
+      "type": "range"
     },
     {
-      "year": 11096,
-      "endYear": 11099,
+      "year": "1066 CE",
+      "title": "Norman Conquest of England",
+      "desc": "William the Conqueror defeats Harold at Hastings. English history forever changed.",
+      "source": "https://en.wikipedia.org/wiki/Norman_Conquest",
+      "categories": ["war", "politics"],
+      "type": "event"
+    },
+    {
+      "year": "1096 CE",
+      "endYear": "1099 CE",
       "title": "First Crusade",
       "desc": "Christian armies capture Jerusalem. Two centuries of religious warfare begin.",
       "source": "https://en.wikipedia.org/wiki/First_Crusade",
-      "categories": ["war", "religion"]
+      "categories": ["war", "religion"],
+      "type": "range"
     },
     {
-      "year": 11162,
-      "title": "Genghis Khan Born",
+      "year": "c. 1162 CE",
+      "endYear": "1227 CE",
+      "title": "Genghis Khan",
       "desc": "Temüjin born on the Mongolian steppe. Will build the largest contiguous empire in history.",
       "source": "https://en.wikipedia.org/wiki/Genghis_Khan",
-      "categories": ["figure"]
+      "categories": ["figure"],
+      "type": "person"
     },
     {
-      "year": 11206,
-      "endYear": 11368,
+      "year": "1206 CE",
+      "endYear": "1368 CE",
       "title": "Mongol Empire",
       "desc": "Largest contiguous land empire ever. From Korea to Poland under one rule.",
       "source": "https://en.wikipedia.org/wiki/Mongol_Empire",
-      "categories": ["civilization", "war"]
+      "categories": ["civilization", "war"],
+      "type": "range"
     },
     {
-      "year": 11215,
+      "year": "1215 CE",
       "title": "Magna Carta",
       "desc": "English nobles force King John to sign—foundation of constitutional law.",
       "source": "https://en.wikipedia.org/wiki/Magna_Carta",
-      "categories": ["politics"]
+      "categories": ["politics"],
+      "type": "event"
     },
     {
-      "year": 11265,
-      "title": "Dante Born",
-      "desc": "Author of the Divine Comedy born in Florence. Father of the Italian language.",
+      "year": "1265 CE",
+      "endYear": "1321 CE",
+      "title": "Dante Alighieri",
+      "desc": "Author of the Divine Comedy. Father of the Italian language.",
       "source": "https://en.wikipedia.org/wiki/Dante_Alighieri",
-      "categories": ["figure", "culture"]
+      "categories": ["figure", "culture"],
+      "type": "person"
     },
     {
-      "year": 11300,
-      "endYear": 11600,
+      "year": "c. 1300 CE",
+      "endYear": "c. 1600 CE",
       "title": "Renaissance",
       "desc": "Rebirth of art, science, and humanism. Da Vinci, Michelangelo, and the printing press.",
       "source": "https://en.wikipedia.org/wiki/Renaissance",
-      "categories": ["civilization", "culture", "science"]
+      "categories": ["civilization", "culture", "science"],
+      "type": "range"
     },
     {
-      "year": 11300,
-      "endYear": 11850,
+      "year": "c. 1300 CE",
+      "endYear": "c. 1850 CE",
       "title": "Little Ice Age",
       "desc": "Coldest period of the past two millennia. Rivers freeze, crops fail, glaciers advance. Ends with the Industrial Revolution.",
       "source": "https://en.wikipedia.org/wiki/Little_Ice_Age",
-      "categories": ["geological"]
+      "categories": ["geological"],
+      "type": "range"
     },
     {
-      "year": 11347,
-      "endYear": 11353,
+      "year": "1347 CE",
+      "endYear": "1353 CE",
       "title": "Black Death",
-      "desc": "Bubonic plague kills 50 million Europeans—up to 60% of the population. Society transformed.",
+      "desc": "Bubonic plague kills 75-200 million people across Eurasia—up to 60% of Europe's population. Society transformed.",
       "source": "https://en.wikipedia.org/wiki/Black_Death",
-      "categories": ["disaster"]
+      "categories": ["disaster"],
+      "type": "range"
     },
     {
-      "year": 11440,
+      "year": "c. 1440 CE",
       "title": "Gutenberg's Press",
       "desc": "Movable type printing spreads knowledge faster than ever before.",
       "source": "https://en.wikipedia.org/wiki/Printing_press",
-      "categories": ["science", "culture"]
+      "categories": ["science", "culture"],
+      "type": "event"
     },
     {
-      "year": 11452,
-      "title": "Leonardo da Vinci Born",
+      "year": "1452 CE",
+      "endYear": "1519 CE",
+      "title": "Leonardo da Vinci",
       "desc": "The ultimate Renaissance man. Painter, inventor, scientist, and visionary.",
       "source": "https://en.wikipedia.org/wiki/Leonardo_da_Vinci",
-      "categories": ["figure", "science", "culture"]
+      "categories": ["figure", "science", "culture"],
+      "type": "person"
     },
     {
-      "year": 11453,
+      "year": "1453 CE",
       "title": "Fall of Constantinople",
       "desc": "Ottoman Turks conquer the Byzantine capital. End of the Roman Empire after 1,500 years.",
       "source": "https://en.wikipedia.org/wiki/Fall_of_Constantinople",
-      "categories": ["war", "civilization"]
+      "categories": ["war", "civilization"],
+      "type": "event"
     },
     {
-      "year": 11492,
+      "year": "1492 CE",
       "title": "Columbus Reaches Americas",
       "desc": "European contact with the \"New World.\" Global exchange—and exploitation—begins.",
       "source": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus",
-      "categories": ["exploration", "figure"]
+      "categories": ["exploration", "figure"],
+      "type": "event"
     },
     {
-      "year": 11517,
+      "year": "1517 CE",
       "title": "Protestant Reformation",
       "desc": "Martin Luther posts 95 Theses. Christianity splits, religious wars follow.",
       "source": "https://en.wikipedia.org/wiki/Reformation",
-      "categories": ["religion", "politics"]
+      "categories": ["religion", "politics"],
+      "type": "event"
     },
     {
-      "year": 11543,
+      "year": "1543 CE",
       "title": "Copernican Revolution",
       "desc": "Copernicus publishes heliocentric theory. Earth is not the center of the universe.",
       "source": "https://en.wikipedia.org/wiki/Copernican_Revolution",
-      "categories": ["science"]
+      "categories": ["science"],
+      "type": "event"
     },
     {
-      "year": 11564,
-      "title": "Shakespeare Born",
-      "desc": "The Bard of Avon born. Will write the most influential works in English literature.",
+      "year": "1564 CE",
+      "endYear": "1616 CE",
+      "title": "William Shakespeare",
+      "desc": "The Bard of Avon. Wrote the most influential works in English literature.",
       "source": "https://en.wikipedia.org/wiki/William_Shakespeare",
-      "categories": ["figure", "culture"]
+      "categories": ["figure", "culture"],
+      "type": "person"
     },
     {
-      "year": 11564,
-      "title": "Galileo Born",
-      "desc": "Father of modern science born in Pisa. Will confirm Copernicus and face the Inquisition.",
+      "year": "1564 CE",
+      "endYear": "1642 CE",
+      "title": "Galileo Galilei",
+      "desc": "Father of modern science. Confirmed Copernicus and faced the Inquisition.",
       "source": "https://en.wikipedia.org/wiki/Galileo_Galilei",
-      "categories": ["figure", "science"]
+      "categories": ["figure", "science"],
+      "type": "person"
     },
     {
-      "year": 11620,
+      "year": "1620 CE",
       "title": "Mayflower Landing",
       "desc": "Pilgrims land at Plymouth Rock. English colonization of North America begins in earnest.",
       "source": "https://en.wikipedia.org/wiki/Mayflower",
-      "categories": ["exploration", "religion"]
+      "categories": ["exploration", "religion"],
+      "type": "event"
     },
     {
-      "year": 11687,
+      "year": "1687 CE",
       "title": "Newton's Principia",
       "desc": "Isaac Newton publishes laws of motion and gravity. Modern physics is born.",
       "source": "https://en.wikipedia.org/wiki/Philosophi%C3%A6_Naturalis_Principia_Mathematica",
-      "categories": ["science", "figure"]
+      "categories": ["science", "figure"],
+      "type": "event"
     },
     {
-      "year": "1760 CE",
-      "endYear": "1840 CE",
+      "year": "c. 1760 CE",
+      "endYear": "c. 1840 CE",
       "title": "Industrial Revolution",
       "desc": "Steam, factories, railways. More change in 100 years than the previous 10,000.",
       "source": "https://en.wikipedia.org/wiki/Industrial_Revolution",
-      "categories": ["civilization", "science", "economics"]
+      "categories": ["civilization", "science", "economics"],
+      "type": "range"
     },
     {
-      "year": 11775,
-      "endYear": 11783,
+      "year": "1775 CE",
+      "endYear": "1783 CE",
       "title": "American Revolutionary War",
       "desc": "Thirteen colonies fight for independence from Britain. Birth of the United States.",
       "source": "https://en.wikipedia.org/wiki/American_Revolutionary_War",
-      "categories": ["war", "politics"]
+      "categories": ["war", "politics"],
+      "type": "range"
     },
     {
-      "year": 11776,
+      "year": "1776 CE",
       "title": "American Independence",
       "desc": "Declaration signed. Democratic self-governance becomes reality.",
       "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence",
-      "categories": ["politics"]
+      "categories": ["politics"],
+      "type": "event"
     },
     {
-      "year": 11789,
+      "year": "1789 CE",
       "title": "French Revolution",
       "desc": "Monarchy overthrown. Liberty, equality, fraternity reshape political thought.",
       "source": "https://en.wikipedia.org/wiki/French_Revolution",
-      "categories": ["politics", "war"]
+      "categories": ["politics", "war"],
+      "type": "event"
     },
     {
-      "year": 11809,
-      "title": "Darwin Born",
-      "desc": "Charles Darwin born. Will revolutionize biology with theory of evolution by natural selection.",
+      "year": "1809 CE",
+      "endYear": "1882 CE",
+      "title": "Charles Darwin",
+      "desc": "Naturalist who revolutionized biology with theory of evolution by natural selection.",
       "source": "https://en.wikipedia.org/wiki/Charles_Darwin",
-      "categories": ["figure", "science"]
+      "categories": ["figure", "science"],
+      "type": "person"
     },
     {
-      "year": 11815,
+      "year": "1815 CE",
       "title": "Mount Tambora Eruption",
       "desc": "Largest volcanic eruption in recorded history. Causes 'Year Without a Summer' in 1816—global crop failures and famine.",
       "source": "https://en.wikipedia.org/wiki/1815_eruption_of_Mount_Tambora",
-      "categories": ["geological", "disaster"]
+      "categories": ["geological", "disaster"],
+      "type": "event"
     },
     {
-      "year": 11837,
-      "endYear": 11901,
+      "year": "1837 CE",
+      "endYear": "1901 CE",
       "title": "Victorian Era",
       "desc": "British Empire at its height. Rapid industrialization, social reform, and global expansion.",
       "source": "https://en.wikipedia.org/wiki/Victorian_era",
-      "categories": ["civilization", "politics"]
+      "categories": ["civilization", "politics"],
+      "type": "range"
     },
     {
-      "year": 11859,
+      "year": "1859 CE",
       "title": "Origin of Species Published",
       "desc": "Darwin publishes theory of evolution. Biology—and humanity's self-image—transformed.",
       "source": "https://en.wikipedia.org/wiki/On_the_Origin_of_Species",
-      "categories": ["science"]
+      "categories": ["science"],
+      "type": "event"
     },
     {
-      "year": 11861,
-      "endYear": 11865,
+      "year": "1861 CE",
+      "endYear": "1865 CE",
       "title": "American Civil War",
       "desc": "Union vs. Confederacy. 620,000 dead. Slavery abolished, nation preserved.",
       "source": "https://en.wikipedia.org/wiki/American_Civil_War",
-      "categories": ["war", "politics"]
+      "categories": ["war", "politics"],
+      "type": "range"
     },
     {
-      "year": 11865,
+      "year": "1865 CE",
       "title": "Lincoln Assassinated",
       "desc": "President Lincoln shot at Ford's Theatre, five days after the Civil War ends.",
       "source": "https://en.wikipedia.org/wiki/Assassination_of_Abraham_Lincoln",
-      "categories": ["figure", "politics"]
+      "categories": ["figure", "politics"],
+      "type": "event"
     },
     {
-      "year": 11879,
-      "title": "Einstein Born",
-      "desc": "Albert Einstein born in Ulm, Germany. Will redefine space, time, and reality itself.",
+      "year": "1879 CE",
+      "endYear": "1955 CE",
+      "title": "Albert Einstein",
+      "desc": "Physicist who redefined space, time, and reality with relativity and E=mc².",
       "source": "https://en.wikipedia.org/wiki/Albert_Einstein",
-      "categories": ["figure", "science"]
+      "categories": ["figure", "science"],
+      "type": "person"
     },
     {
-      "year": 11883,
+      "year": "1883 CE",
       "title": "Krakatoa Eruption",
       "desc": "Catastrophic eruption heard 3,000 miles away. Triggers tsunamis killing 36,000. Global temperatures drop for years.",
       "source": "https://en.wikipedia.org/wiki/1883_eruption_of_Krakatoa",
-      "categories": ["geological", "disaster"]
+      "categories": ["geological", "disaster"],
+      "type": "event"
     },
     {
-      "year": 11905,
+      "year": "1905 CE",
       "title": "Einstein's Miracle Year",
       "desc": "Einstein publishes special relativity and E=mc². Physics will never be the same.",
       "source": "https://en.wikipedia.org/wiki/Annus_Mirabilis_papers",
-      "categories": ["science"]
+      "categories": ["science"],
+      "type": "event"
     },
     {
-      "year": 11912,
+      "year": "1912 CE",
       "title": "Titanic Sinks",
       "desc": "\"Unsinkable\" ocean liner hits iceberg on maiden voyage. 1,500 dead. End of an era.",
       "source": "https://en.wikipedia.org/wiki/Sinking_of_the_Titanic",
-      "categories": ["disaster"]
+      "categories": ["disaster"],
+      "type": "event"
     },
     {
-      "year": 11914,
-      "endYear": 11918,
+      "year": "1914 CE",
+      "endYear": "1918 CE",
       "title": "World War I",
       "desc": "The Great War. 20 million dead. Empires fall, modern warfare emerges.",
       "source": "https://en.wikipedia.org/wiki/World_War_I",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 11918,
-      "endYear": 11920,
+      "year": "1918 CE",
+      "endYear": "1920 CE",
       "title": "Spanish Flu Pandemic",
       "desc": "Deadliest pandemic in modern history. 50-100 million dead worldwide.",
       "source": "https://en.wikipedia.org/wiki/Spanish_flu",
-      "categories": ["disaster"]
+      "categories": ["disaster"],
+      "type": "range"
     },
     {
-      "year": 11929,
+      "year": "1929 CE",
       "title": "Black Tuesday",
       "desc": "Stock market crashes. Great Depression begins, reshaping global economics.",
       "source": "https://en.wikipedia.org/wiki/Wall_Street_Crash_of_1929",
-      "categories": ["economics", "disaster"]
+      "categories": ["economics", "disaster"],
+      "type": "event"
     },
     {
-      "year": 11939,
-      "endYear": 11945,
+      "year": "1939 CE",
+      "endYear": "1945 CE",
       "title": "World War II",
       "desc": "History's deadliest conflict. 70-85 million dead. The world reshaped.",
       "source": "https://en.wikipedia.org/wiki/World_War_II",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 11941,
-      "endYear": 11945,
+      "year": "1941 CE",
+      "endYear": "1945 CE",
       "title": "The Holocaust",
       "desc": "Nazi genocide kills 6 million Jews and millions of others. Humanity's darkest chapter.",
       "source": "https://en.wikipedia.org/wiki/The_Holocaust",
-      "categories": ["disaster", "war"]
+      "categories": ["disaster", "war"],
+      "type": "range"
     },
     {
-      "year": 11945,
+      "year": "1945 CE",
       "title": "Nuclear Age & United Nations",
       "desc": "WWII ends. Atomic weapons unveiled. UN founded to prevent future wars.",
       "source": "https://en.wikipedia.org/wiki/Atomic_Age",
-      "categories": ["science", "politics", "war"]
+      "categories": ["science", "politics", "war"],
+      "type": "event"
     },
     {
-      "year": 11947,
-      "endYear": 11991,
+      "year": "1947 CE",
+      "endYear": "1991 CE",
       "title": "Cold War",
       "desc": "US vs USSR. Nuclear standoff, space race, proxy wars across the globe.",
       "source": "https://en.wikipedia.org/wiki/Cold_War",
-      "categories": ["war", "politics"]
+      "categories": ["war", "politics"],
+      "type": "range"
     },
     {
-      "year": 11950,
-      "endYear": 11953,
+      "year": "1950 CE",
+      "endYear": "1953 CE",
       "title": "Korean War",
       "desc": "North Korea invades South. UN forces intervene. Armistice signed but war never officially ended.",
       "source": "https://en.wikipedia.org/wiki/Korean_War",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 11963,
-      "title": "JFK Assassinated",
-      "desc": "President Kennedy shot in Dallas. End of Camelot, birth of conspiracy theories.",
-      "source": "https://en.wikipedia.org/wiki/Assassination_of_John_F._Kennedy",
-      "categories": ["figure", "politics"]
-    },
-    {
-      "year": 11955,
-      "endYear": 11975,
+      "year": "1955 CE",
+      "endYear": "1975 CE",
       "title": "Vietnam War",
       "desc": "America's longest war until Afghanistan. 58,000 Americans and 2 million Vietnamese dead. First televised war.",
       "source": "https://en.wikipedia.org/wiki/Vietnam_War",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 11969,
+      "year": "1963 CE",
+      "title": "JFK Assassinated",
+      "desc": "President Kennedy shot in Dallas. End of Camelot, birth of conspiracy theories.",
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_John_F._Kennedy",
+      "categories": ["figure", "politics"],
+      "type": "event"
+    },
+    {
+      "year": "1969 CE",
       "title": "Moon Landing",
       "desc": "Humans walk on another world. \"One giant leap for mankind.\"",
       "source": "https://en.wikipedia.org/wiki/Apollo_11",
-      "categories": ["exploration", "science"]
+      "categories": ["exploration", "science"],
+      "type": "event"
     },
     {
-      "year": 11989,
+      "year": "1989 CE",
       "title": "Fall of the Berlin Wall",
       "desc": "East and West Germany reunite. Beginning of the end of the Cold War.",
       "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall",
-      "categories": ["politics"]
+      "categories": ["politics"],
+      "type": "event"
     },
     {
-      "year": 11991,
-      "title": "World Wide Web",
-      "desc": "Tim Berners-Lee creates the web. Information becomes instantly global.",
-      "source": "https://en.wikipedia.org/wiki/World_Wide_Web",
-      "categories": ["science"]
-    },
-    {
-      "year": 11990,
-      "endYear": 11991,
+      "year": "1990 CE",
+      "endYear": "1991 CE",
       "title": "Gulf War",
       "desc": "Coalition forces liberate Kuwait from Iraqi invasion. 'Operation Desert Storm' showcases modern warfare.",
       "source": "https://en.wikipedia.org/wiki/Gulf_War",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 12001,
+      "year": "1991 CE",
+      "title": "World Wide Web",
+      "desc": "Tim Berners-Lee creates the web. Information becomes instantly global.",
+      "source": "https://en.wikipedia.org/wiki/World_Wide_Web",
+      "categories": ["science"],
+      "type": "event"
+    },
+    {
+      "year": "2001 CE",
       "title": "September 11 Attacks",
       "desc": "Terrorist attacks kill nearly 3,000 in New York, Washington, and Pennsylvania. World changed forever.",
       "source": "https://en.wikipedia.org/wiki/September_11_attacks",
-      "categories": ["disaster", "war"]
+      "categories": ["disaster", "war"],
+      "type": "event"
     },
     {
-      "year": 12001,
-      "endYear": 12021,
+      "year": "2001 CE",
+      "endYear": "2021 CE",
       "title": "War in Afghanistan",
       "desc": "America's longest war. Response to 9/11. Taliban overthrown then returns after US withdrawal.",
       "source": "https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 12003,
-      "endYear": 12011,
+      "year": "2003 CE",
+      "endYear": "2011 CE",
       "title": "Iraq War",
       "desc": "US-led invasion topples Saddam Hussein. Controversial 'weapons of mass destruction' justification.",
       "source": "https://en.wikipedia.org/wiki/Iraq_War",
-      "categories": ["war"]
+      "categories": ["war"],
+      "type": "range"
     },
     {
-      "year": 12020,
-      "endYear": 12023,
+      "year": "2020 CE",
+      "endYear": "2023 CE",
       "title": "COVID-19 Pandemic",
       "desc": "Global pandemic kills millions, transforms society. Lockdowns, vaccines, and remote work.",
       "source": "https://en.wikipedia.org/wiki/COVID-19_pandemic",
-      "categories": ["disaster"]
+      "categories": ["disaster"],
+      "type": "range"
     },
     {
-      "year": 12022,
+      "year": "2022 CE",
       "title": "AI Goes Mainstream",
-      "desc": "Large language models enter public use. The nature of knowledge work shifts.",
+      "desc": "Large language models enter public use. ChatGPT launches, shifting the nature of knowledge work.",
       "source": "https://en.wikipedia.org/wiki/ChatGPT",
-      "categories": ["science"]
+      "categories": ["science"],
+      "type": "event"
     },
     {
-      "year": 12022,
+      "year": "2022 CE",
       "title": "Russia Invades Ukraine",
       "desc": "Largest European war since WWII. Russia's full-scale invasion reshapes global politics and alliances.",
       "source": "https://en.wikipedia.org/wiki/Russian_invasion_of_Ukraine",
-      "categories": ["war", "politics"]
+      "categories": ["war", "politics"],
+      "type": "event"
     }
   ]
 }
