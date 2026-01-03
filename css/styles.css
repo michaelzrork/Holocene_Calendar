@@ -1382,6 +1382,7 @@ footer p {
         letter-spacing: 1px;
         text-transform: uppercase;
         margin-bottom: 12px;
+        text-align: center;
     }
     
     .mobile-panel-section input[type="range"] {
