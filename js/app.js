@@ -52,7 +52,7 @@ function toHoloceneYear(year, era = 'CE') {
 
 /**
  * Convert a Holocene Era year to CE/BCE
- * @param {number} heYear - Year in Holocene Era
+ * @param {number} heYear - Year in Holocene Era (can be negative for pre-Holocene dates)
  * @returns {object} { year: number, era: 'CE' | 'BCE' }
  */
 function fromHoloceneYear(heYear) {
@@ -60,7 +60,12 @@ function fromHoloceneYear(heYear) {
         return { year: heYear - 10000, era: 'CE' };
     } else if (heYear === 10000) {
         return { year: 1, era: 'BCE' }; // There's no year 0
+    } else if (heYear > 0) {
+        // Positive HE less than 10001 = BCE years within Holocene
+        return { year: 10001 - heYear, era: 'BCE' };
     } else {
+        // Negative HE = very ancient BCE dates (pre-Holocene)
+        // -3,290,000 HE → 3,300,000 BCE (approximately)
         return { year: 10001 - heYear, era: 'BCE' };
     }
 }
@@ -188,7 +193,8 @@ function parseCEDateToHE(dateInput) {
 // ============ PIXEL/YEAR CONVERSION ============
 
 function yearToPixels(year) {
-    return year * CONFIG.pxPerYear;
+    // Clamp negative years to position 0 (they still display but at the top)
+    return Math.max(0, year) * CONFIG.pxPerYear;
 }
 
 function pixelsToYear(px) {
@@ -201,8 +207,21 @@ function yearToCE(year) {
 
 // ============ FORMATTING ============
 
-function formatYear(year) {
+/**
+ * Format a single year for display, handling negative years (BHE)
+ * @param {number} year - Year in HE (can be negative)
+ * @returns {string} Formatted year string
+ */
+function formatSingleYear(year) {
+    if (year < 0) {
+        // Negative HE = Before Holocene Era
+        return `${Math.abs(year).toLocaleString()} BHE`;
+    }
     return `${year.toLocaleString()} HE`;
+}
+
+function formatYear(year) {
+    return formatSingleYear(year);
 }
 
 /**
@@ -228,25 +247,25 @@ function formatYearDisplay(eventData) {
     switch (type) {
         case 'person':
             if (endYear) {
-                return `b. ${year.toLocaleString()} – d. ${endYear.toLocaleString()} HE`;
+                return `b. ${formatSingleYear(year)} – d. ${formatSingleYear(endYear)}`;
             }
-            return `b. ${year.toLocaleString()} HE`;
+            return `b. ${formatSingleYear(year)}`;
         
         case 'approximate':
             if (endYear) {
-                return `Between ${year.toLocaleString()} – ${endYear.toLocaleString()} HE`;
+                return `Between ${formatSingleYear(year)} – ${formatSingleYear(endYear)}`;
             }
-            return `c. ${year.toLocaleString()} HE`; // "circa" for single approximate date
+            return `c. ${formatSingleYear(year)}`; // "circa" for single approximate date
         
         case 'range':
             if (endYear) {
-                return `${year.toLocaleString()} – ${endYear.toLocaleString()} HE`;
+                return `${formatSingleYear(year)} – ${formatSingleYear(endYear)}`;
             }
-            return `${year.toLocaleString()} HE`;
+            return formatSingleYear(year);
         
         case 'event':
         default:
-            return `${year.toLocaleString()} HE`;
+            return formatSingleYear(year);
     }
 }
 

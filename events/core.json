@@ -67,14 +67,7 @@
       "source": "https://en.wikipedia.org/wiki/Neolithic_Revolution",
       "categories": ["civilization", "science"]
     },
-    {
-      "year": 50,
-      "endYear": 3500,
-      "title": "Greenlandian Age",
-      "desc": "First age of the Holocene. Rapid warming following the Ice Age. Sea levels rise dramatically as glaciers melt.",
-      "source": "https://en.wikipedia.org/wiki/Greenlandian",
-      "categories": ["geological"]
-    },
+
     {
       "year": "11000 BC",
       "endYear": "8000 BC",
@@ -84,14 +77,7 @@
       "categories": ["science", "civilization"],
       "type": "approximate"
     },
-    {
-      "year": 300,
-      "endYear": 700,
-      "title": "Preboreal Oscillation",
-      "desc": "Major climate oscillation at the start of the Holocene. Temporary return to colder conditions before sustained warming.",
-      "source": "https://en.wikipedia.org/wiki/Preboreal_Oscillation",
-      "categories": ["geological"]
-    },
+
     {
       "year": 500,
       "title": "Göbekli Tepe",
@@ -135,14 +121,7 @@
       "source": "https://en.wikipedia.org/wiki/8.2-kiloyear_event",
       "categories": ["geological", "disaster"]
     },
-    {
-      "year": 2000,
-      "endYear": 6000,
-      "title": "African Humid Period",
-      "desc": "The 'Green Sahara' era. North Africa was a lush savanna with large lakes, supporting abundant wildlife and early pastoralist cultures.",
-      "source": "https://en.wikipedia.org/wiki/African_humid_period",
-      "categories": ["geological"]
-    },
+
     {
       "year": 2000,
       "title": "Pottery Invented",
@@ -178,22 +157,8 @@
       "source": "https://en.wikipedia.org/wiki/Chalcolithic",
       "categories": ["science", "civilization"]
     },
-    {
-      "year": 3500,
-      "endYear": 5800,
-      "title": "Northgrippian Age",
-      "desc": "Second age of the Holocene. Cooling caused by disrupted ocean circulation from glacial meltwater. Includes the Holocene Climatic Optimum.",
-      "source": "https://en.wikipedia.org/wiki/Northgrippian",
-      "categories": ["geological"]
-    },
-    {
-      "year": 4000,
-      "endYear": 6000,
-      "title": "Holocene Climatic Optimum",
-      "desc": "Warmest period of the Holocene. Global temperatures 1-2°C warmer than today. Sea levels stabilize, civilizations flourish.",
-      "source": "https://en.wikipedia.org/wiki/Holocene_climatic_optimum",
-      "categories": ["geological"]
-    },
+
+
     {
       "year": 4000,
       "title": "Domestication of the Horse",
@@ -202,12 +167,13 @@
       "categories": ["science", "civilization"]
     },
     {
-      "year": "10001 BC",
-      "endYear": "3301 BC",
+      "year": "3300001 BCE",
+      "endYear": "3301 BCE",
       "title": "Stone Age",
-      "desc": "Lasting for 3.4 million years, the stone age started long before the Holocene Era and ended at the rise of the Bronze Age.",
+      "desc": "Lasting for 3.3 million years, the Stone Age began with the first stone tools and ended with the rise of metalworking. The vast majority occurred before the Holocene Era.",
       "source": "https://en.wikipedia.org/wiki/Stone_Age",
-      "categories": ["science", "civilization"]
+      "categories": ["science", "civilization"],
+      "type": "approximate"
     },
     {
       "year": "3301 BC",
@@ -240,8 +206,8 @@
       "categories": ["science", "culture", "civilization"]
     },
     {
-      "year": 5000,
-      "endYear": 6850,
+      "year": "3150 BCE",
+      "endYear": "332 BCE",
       "title": "Ancient Egypt",
       "desc": "One of the longest-lasting civilizations. Pyramids, hieroglyphs, pharaohs, and the Nile defined 3,000 years of history.",
       "source": "https://en.wikipedia.org/wiki/Ancient_Egypt",
@@ -256,19 +222,14 @@
       "categories": ["civilization"]
     },
     {
-      "year": 5450,
+      "year": "2601 BC",
+      "endYear": "2574 BC",
       "title": "Great Pyramid of Giza",
       "desc": "Built for Pharaoh Khufu. Tallest structure on Earth for 3,800 years.",
       "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
       "categories": ["civilization", "culture"]
     },
-    {
-      "year": 5800,
-      "title": "Meghalayan Age Begins",
-      "desc": "Current geological age begins with a 200-year megadrought that collapsed civilizations across Egypt, Mesopotamia, and the Indus Valley.",
-      "source": "https://en.wikipedia.org/wiki/Meghalayan",
-      "categories": ["geological", "disaster"]
-    },
+
     {
       "year": 5800,
       "title": "4.2 Kiloyear Event",
@@ -427,7 +388,7 @@
       "categories": ["war", "figure"]
     },
     {
-      "year": 9956,
+      "year": "44 BC",
       "title": "Julius Caesar Assassinated",
       "desc": "\"Et tu, Brute?\" Caesar murdered by senators on the Ides of March. Republic dies with him.",
       "source": "https://en.wikipedia.org/wiki/Assassination_of_Julius_Caesar",
