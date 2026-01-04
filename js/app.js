@@ -1588,27 +1588,6 @@ function updateYearDisplay() {
         const scrollPercent = (displayYear / currentYear) * 100;
         scrollProgress.style.width = scrollPercent + '%';
     }
-    
-    // Mobile footer avoidance - check if we're on mobile and near bottom
-    if (window.innerWidth <= 800) {
-        const footer = document.querySelector('footer');
-        if (footer && yearDisplay && navButtons) {
-            const footerRect = footer.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            
-            // If footer is visible in viewport
-            if (footerRect.top < viewportHeight) {
-                const footerVisibleHeight = viewportHeight - footerRect.top;
-                const offset = Math.max(0, footerVisibleHeight + 15); // 15px buffer
-                
-                yearDisplay.style.bottom = (15 + offset) + 'px';
-                navButtons.style.bottom = (15 + offset) + 'px';
-            } else {
-                yearDisplay.style.bottom = '15px';
-                navButtons.style.bottom = '15px';
-            }
-        }
-    }
 }
 
 /**
@@ -1890,6 +1869,10 @@ async function init() {
     window.addEventListener('scroll', updateYearDisplay);
     window.addEventListener('resize', updateYearDisplay);
     
+    // Setup nav button positioning (above footer)
+    updateNavPosition();
+    window.addEventListener('resize', updateNavPosition);
+    
     console.log('Timeline initialized');
 }
 
@@ -1917,6 +1900,20 @@ function setupNavButtons() {
             controlsToggle.classList.toggle('active');
             controlsWrapper.classList.toggle('open');
         });
+    }
+}
+
+/**
+ * Update nav buttons position to sit above the footer
+ * Called on load and resize to handle dynamic footer height
+ */
+function updateNavPosition() {
+    const footer = document.querySelector('footer');
+    const navButtons = document.querySelector('.nav-buttons');
+    
+    if (footer && navButtons) {
+        const footerHeight = footer.offsetHeight;
+        navButtons.style.bottom = (footerHeight + 15) + 'px';
     }
 }
 
