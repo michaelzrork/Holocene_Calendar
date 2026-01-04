@@ -114,7 +114,9 @@
         "science",
         "civilization"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#8b7765"
     },
     {
       "year": "c. 65000 BCE",
@@ -268,7 +270,7 @@
     {
       "year": "c. 3500 BCE",
       "title": "Wheel Invented",
-      "desc": "The earliest archaeological evidence of wheeled vehicles and potter’s wheels appears in Mesopotamia, revolutionizing transportation and manufacturing.",
+      "desc": "The earliest archaeological evidence of wheeled vehicles and potter's wheels appears in Mesopotamia, revolutionizing transportation and manufacturing.",
       "source": "https://en.wikipedia.org/wiki/Wheel",
       "categories": [
         "science"
@@ -330,7 +332,9 @@
         "science",
         "civilization"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#cd7f32"
     },
     {
       "year": "c. 3300 BCE",
@@ -491,7 +495,9 @@
         "science",
         "civilization"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#71797e"
     },
     {
       "year": "c. 800 BCE",
@@ -503,7 +509,9 @@
         "civilization",
         "culture"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#d4d4d4"
     },
     {
       "year": "c. 1000 BCE",
@@ -981,9 +989,12 @@
       "desc": "Medieval Europe. Feudalism, castles, crusades, and the slow rebuilding of civilization.",
       "source": "https://en.wikipedia.org/wiki/Middle_Ages",
       "categories": [
-        "civilization"
+        "civilization",
+        "culture"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#4b0082"
     },
     {
       "year": "c. 500 CE",
@@ -997,13 +1008,17 @@
     },
     {
       "year": "c. 1500 CE",
+      "endYear": "present",
       "title": "Modern Age",
       "desc": "From the Renaissance to the present. Characterized by nation-states, global exploration, scientific revolution, industrialization, and rapid technological change. Some divide further into Early Modern, Industrial, Atomic, and Digital ages.",
       "source": "https://en.wikipedia.org/wiki/Modern_history",
       "categories": [
-        "civilization"
+        "civilization",
+        "science"
       ],
-      "type": "range"
+      "type": "range",
+      "isAge": true,
+      "ageColor": "#00bfff"
     },
     {
       "year": "c. 1500 CE",

@@ -13,6 +13,7 @@ const STATE = {
     allEvents: [],          // Merged and sorted events from all datasets
     pointEvents: [],        // Events without endYear
     rangeEvents: [],        // Events with endYear
+    ageEvents: [],          // Events marked as ages (isAge: true)
     categories: {},         // Category definitions from datasets
     activeFilters: new Set(), // Currently active category filters (empty = show all)
     filterMode: 'all',      // 'all' = show all, 'filtered' = show only active
@@ -85,6 +86,11 @@ function parseDateToHEWithCirca(dateInput) {
     }
     
     let str = String(dateInput).trim();
+    
+    // Handle "present" keyword - returns current year
+    if (str.toLowerCase() === 'present') {
+        return { year: getCurrentHoloceneYear(), circa: false };
+    }
     
     // Check for "c." or "circa" prefix (case insensitive)
     let isCirca = false;
@@ -436,6 +442,9 @@ async function loadAllDatasets(urls) {
     STATE.pointEvents = STATE.allEvents.filter(e => !e.endYear);
     STATE.rangeEvents = STATE.allEvents.filter(e => e.endYear);
     
+    // Separate age events (for overlay rendering)
+    STATE.ageEvents = STATE.allEvents.filter(e => e.isAge);
+    
     // Pre-assign sides to all events based on their START year position
     // Since all events (including ranges) now display at their start year,
     // we sort by start year for proper left/right alternation
@@ -580,6 +589,32 @@ function setupRangeToggle() {
         mobileToggle.addEventListener('change', () => handleToggle(mobileToggle.checked));
     }
 
+}
+
+/**
+ * Setup the "Show Ages" toggle
+ */
+function setupAgeToggle() {
+    const toggle = document.getElementById('showAgesToggle');
+    const mobileToggle = document.getElementById('mobileShowAgesToggle');
+    
+    const handleToggle = (checked) => {
+        if (checked) {
+            document.body.classList.add('show-ages');
+        } else {
+            document.body.classList.remove('show-ages');
+        }
+        // Sync both toggles
+        if (toggle) toggle.checked = checked;
+        if (mobileToggle) mobileToggle.checked = checked;
+    };
+    
+    if (toggle) {
+        toggle.addEventListener('change', () => handleToggle(toggle.checked));
+    }
+    if (mobileToggle) {
+        mobileToggle.addEventListener('change', () => handleToggle(mobileToggle.checked));
+    }
 }
 
 /**
@@ -880,10 +915,25 @@ function getFilteredEvents() {
  * Get the color for an event based on its categories and current filter state
  * When viewing all categories: use first active category's color
  * When viewing a single category: use a DIFFERENT category's color for variety
+ * Age events (isAge: true) always use their ageColor
  * @param {object} event - The event object
  * @returns {object} Color object with bg, border, text properties
  */
 function getEventColor(event) {
+    // Age events always use their unique ageColor
+    if (event.isAge && event.ageColor) {
+        const hex = event.ageColor;
+        // Convert hex to rgba for bg
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return {
+            bg: `rgba(${r}, ${g}, ${b}, 0.3)`,
+            border: hex,
+            text: hex
+        };
+    }
+    
     // No categories = default gold
     if (!event.categories || event.categories.length === 0) {
         return DEFAULT_COLOR;
@@ -975,7 +1025,8 @@ function createRangeBar(rangeData, index, maxDuration) {
     
     // Determine if this should show a range bar
     const showRangeBar = shouldShowRangeBar(rangeData);
-    range.className = `event ${showRangeBar ? 'range' : ''} ${side}`;
+    const isAge = rangeData.isAge ? 'is-age' : '';
+    range.className = `event ${showRangeBar ? 'range' : ''} ${isAge} ${side}`.trim();
     
     const startPx = yearToPixels(rangeData.year);
     const endPx = yearToPixels(rangeData.endYear);
@@ -1829,6 +1880,7 @@ async function init() {
     setupNavButtons();
     setupFilterControls();
     setupRangeToggle();
+    setupAgeToggle();
     setupMobileControls();
     setupClickAwayUnlock();
     setupSmartHover();

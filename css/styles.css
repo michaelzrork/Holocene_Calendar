@@ -925,7 +925,7 @@ h1 span {
     width: 12px;
     height: var(--bar-height);
     border-radius: 6px;
-    border: 1px solid;
+    border: 2px solid var(--bg-dark);
     /* Below dots (4) and date labels (10), above ticks */
     z-index: 3;
     /* Hidden by default, shown on hover/lock */
@@ -956,6 +956,11 @@ h1 span {
 
 /* Show ALL range bars when toggle is on */
 body.show-ranges .event.range .range-bar-indicator {
+    opacity: 1;
+}
+
+/* Show age range bars when "Show Ages" toggle is on */
+body.show-ages .event.range.is-age .range-bar-indicator {
     opacity: 1;
 }
 
