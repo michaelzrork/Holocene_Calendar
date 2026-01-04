@@ -480,35 +480,43 @@ function buildFilterUI() {
     
     Object.entries(STATE.categories).forEach(([key, category]) => {
         const color = category.color || DEFAULT_COLOR;
+        // Create a dimmer version of the color for the toggle background
+        const colorDim = color.border.replace('#', '');
+        const r = parseInt(colorDim.substr(0, 2), 16);
+        const g = parseInt(colorDim.substr(2, 2), 16);
+        const b = parseInt(colorDim.substr(4, 2), 16);
+        const dimColor = `rgba(${r}, ${g}, ${b}, 0.4)`;
+        
         const label = document.createElement('label');
-        label.className = 'filter-option';
+        label.className = 'filter-option active'; // Start active
+        label.style.setProperty('--filter-color', color.border);
+        label.style.setProperty('--filter-color-dim', dimColor);
         label.innerHTML = `
-            <input type="checkbox" value="${key}" checked data-category="${key}"
-                   style="--checkbox-color: ${color.border}; --checkbox-bg: ${color.bg}">
-            <span class="filter-option-icon">${category.icon || ''}</span>
-            <span class="filter-option-label" style="color: ${color.text}">${category.name}</span>
+            <input type="checkbox" value="${key}" checked data-category="${key}">
+            <span class="filter-option-text">
+                <span class="filter-option-icon">${category.icon || ''}</span>
+                <span class="filter-option-label">${category.name}</span>
+            </span>
+            <span class="filter-toggle"></span>
         `;
         
         const checkbox = label.querySelector('input');
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 STATE.activeFilters.add(key);
+                label.classList.add('active');
             } else {
                 STATE.activeFilters.delete(key);
+                label.classList.remove('active');
             }
             updateFilterCount();
             renderTimeline();
-            // Sync mobile filters
-            populateMobileFilters();
         });
         
         filterOptions.appendChild(label);
     });
     
     updateFilterCount();
-    
-    // Also populate mobile filters
-    populateMobileFilters();
 }
 
 /**
@@ -546,8 +554,9 @@ function setupFilterControls() {
     if (filterAll) {
         filterAll.addEventListener('click', () => {
             STATE.activeFilters = new Set(Object.keys(STATE.categories));
-            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
-                cb.checked = true;
+            document.querySelectorAll('#filterOptions .filter-option').forEach(opt => {
+                opt.classList.add('active');
+                opt.querySelector('input[type="checkbox"]').checked = true;
             });
             updateFilterCount();
             renderTimeline();
@@ -557,8 +566,9 @@ function setupFilterControls() {
     if (filterNone) {
         filterNone.addEventListener('click', () => {
             STATE.activeFilters.clear();
-            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
+            document.querySelectorAll('#filterOptions .filter-option').forEach(opt => {
+                opt.classList.remove('active');
+                opt.querySelector('input[type="checkbox"]').checked = false;
             });
             updateFilterCount();
             renderTimeline();
@@ -571,24 +581,15 @@ function setupFilterControls() {
  */
 function setupRangeToggle() {
     const toggle = document.getElementById('showRangesToggle');
-    const mobileToggle = document.getElementById('mobileShowRangesToggle');
+    if (!toggle) return;
     
-    const handleToggle = (checked) => {
-        if (checked) {
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
             document.body.classList.add('show-ranges');
         } else {
             document.body.classList.remove('show-ranges');
         }
-        // Sync both toggles
-        if (toggle) toggle.checked = checked;
-        if (mobileToggle) mobileToggle.checked = checked;
-    };
-    
-    if (toggle || mobileToggle) {
-        toggle.addEventListener('change', () => handleToggle(toggle.checked));
-        mobileToggle.addEventListener('change', () => handleToggle(mobileToggle.checked));
-    }
-
+    });
 }
 
 /**
@@ -596,291 +597,85 @@ function setupRangeToggle() {
  */
 function setupAgeToggle() {
     const toggle = document.getElementById('showAgesToggle');
-    const mobileToggle = document.getElementById('mobileShowAgesToggle');
+    if (!toggle) return;
     
-    const handleToggle = (checked) => {
-        if (checked) {
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
             document.body.classList.add('show-ages');
         } else {
             document.body.classList.remove('show-ages');
         }
-        // Sync both toggles
-        if (toggle) toggle.checked = checked;
-        if (mobileToggle) mobileToggle.checked = checked;
-    };
-    
-    if (toggle) {
-        toggle.addEventListener('change', () => handleToggle(toggle.checked));
-    }
-    if (mobileToggle) {
-        mobileToggle.addEventListener('change', () => handleToggle(mobileToggle.checked));
-    }
+    });
 }
 
 /**
- * Setup mobile header, panel, and sync with desktop controls
+ * Setup sidebar and top bar controls
  */
 function setupMobileControls() {
-    const menuBtn = document.getElementById('mobileMenuBtn');
-    const panel = document.getElementById('mobilePanel');
-    const panelClose = document.getElementById('mobilePanelClose');
-    const panelOverlay = document.getElementById('mobilePanelOverlay');
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    // Mobile year inputs
-    const mobileYearHE = document.getElementById('mobileYearHE');
-    const mobileYearCE = document.getElementById('mobileYearCE');
-    const mobileYearCELabel = document.getElementById('mobileYearCELabel');
+    // Check if we're on desktop (>800px)
+    const isDesktop = () => window.innerWidth > 800;
     
-    // Mobile scale controls
-    const mobileScaleSlider = document.getElementById('mobileScaleSlider');
-    const mobileScaleInput = document.getElementById('mobileScaleInput');
-    
-    // Mobile filter controls
-    const mobileFilterAll = document.getElementById('mobileFilterAll');
-    const mobileFilterNone = document.getElementById('mobileFilterNone');
-    const mobileFilterOptions = document.getElementById('mobileFilterOptions');
-    
-    // Panel open/close
-    const openPanel = () => {
-        panel?.classList.add('open');
-        panelOverlay?.classList.add('active');
+    // Sidebar open/close
+    const openSidebar = () => {
+        sidebar?.classList.add('open');
+        if (!isDesktop()) {
+            // Mobile: show overlay
+            sidebarOverlay?.classList.add('active');
+        }
     };
     
-    const closePanel = () => {
-        panel?.classList.remove('open');
-        panelOverlay?.classList.remove('active');
+    const closeSidebar = () => {
+        sidebar?.classList.remove('open');
+        sidebarOverlay?.classList.remove('active');
     };
     
-    menuBtn?.addEventListener('click', openPanel);
-    panelClose?.addEventListener('click', closePanel);
-    panelOverlay?.addEventListener('click', closePanel);
-    
-    // Track if user is editing mobile inputs
-    let isEditingMobileYear = false;
-    
-    // Sync mobile year displays with scroll
-    const updateMobileYearDisplay = () => {
-        // Don't update if user is editing
-        if (isEditingMobileYear) return;
-        
-        const heYear = parseInt(document.getElementById('currentYear')?.value.replace(/,/g, '')) || 0;
-        if (mobileYearHE) mobileYearHE.value = heYear.toLocaleString();
-        
-        const ceValue = document.getElementById('currentYearCE')?.value || '0';
-        if (mobileYearCE) mobileYearCE.value = ceValue;
-        
-        const ceLabel = document.getElementById('set-bce')?.textContent || 'CE';
-        if (mobileYearCELabel) mobileYearCELabel.textContent = ceLabel;
+    // Toggle sidebar
+    const toggleSidebar = () => {
+        if (sidebar?.classList.contains('open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
     };
     
-    // Hook into scroll updates
-    setInterval(updateMobileYearDisplay, 100);
+    // Menu button toggles sidebar
+    menuBtn?.addEventListener('click', toggleSidebar);
     
-    // Mobile HE year input handlers
-    if (mobileYearHE) {
-        mobileYearHE.addEventListener('focus', () => {
-            isEditingMobileYear = true;
-            mobileYearHE.select();
-            // Scroll the header into view
-            setTimeout(() => {
-                mobileYearHE.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
-        });
+    // Clicking overlay closes sidebar (mobile)
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    
+    // On desktop, sidebar starts closed (user can open if needed)
+    // On mobile, sidebar also starts closed
+    
+    // Handle resize: adjust overlay behavior when crossing 800px threshold
+    let wasDesktop = isDesktop();
+    window.addEventListener('resize', () => {
+        const nowDesktop = isDesktop();
         
-        mobileYearHE.addEventListener('blur', () => {
-            isEditingMobileYear = false;
-            // Navigate if value changed
-            const inputValue = mobileYearHE.value.replace(/,/g, '').trim();
-            const targetYear = parseDateToHE(inputValue);
-            if (!isNaN(targetYear)) {
-                scrollToYear(targetYear);
+        if (sidebar?.classList.contains('open')) {
+            if (nowDesktop && !wasDesktop) {
+                // Crossed from mobile to desktop while open
+                sidebarOverlay?.classList.remove('active');
+            } else if (!nowDesktop && wasDesktop) {
+                // Crossed from desktop to mobile while open
+                sidebarOverlay?.classList.add('active');
             }
-            // Update display after a short delay
-            setTimeout(updateMobileYearDisplay, 100);
-        });
+        }
         
-        mobileYearHE.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                mobileYearHE.blur();
-            }
-        });
-    }
-    
-    // Mobile CE year input handlers  
-    if (mobileYearCE) {
-        mobileYearCE.addEventListener('focus', () => {
-            isEditingMobileYear = true;
-            // Append current era to help user
-            const currentEra = mobileYearCELabel?.textContent || 'CE';
-            const currentValue = mobileYearCE.value.replace(/,/g, '');
-            mobileYearCE.value = `${currentValue} ${currentEra}`;
-            mobileYearCE.select();
-            // Scroll the header into view
-            setTimeout(() => {
-                mobileYearCE.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
-        });
-        
-        mobileYearCE.addEventListener('blur', () => {
-            isEditingMobileYear = false;
-            // Navigate if value provided
-            const inputValue = mobileYearCE.value.replace(/,/g, '').trim();
-            const targetYear = parseCEDateToHE(inputValue);
-            if (!isNaN(targetYear)) {
-                scrollToYear(targetYear);
-            }
-            // Update display after a short delay
-            setTimeout(updateMobileYearDisplay, 100);
-        });
-        
-        mobileYearCE.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                mobileYearCE.blur();
-            }
-        });
-    }
-    
-    // Initialize mobile scale controls with current value
-    if (mobileScaleSlider) {
-        mobileScaleSlider.value = CONFIG.pxPerYear;
-    }
-    if (mobileScaleInput) {
-        mobileScaleInput.value = CONFIG.pxPerYear;
-    }
-    
-    // Mobile scale controls - sync with desktop and apply
-    const syncScale = (value) => {
-        const newScale = parseFloat(value);
-        if (isNaN(newScale) || newScale < 0.5 || newScale > 20) return;
-        
-        const desktopSlider = document.getElementById('scaleSlider');
-        const desktopInput = document.getElementById('scaleInput');
-        if (desktopSlider) desktopSlider.value = newScale;
-        if (desktopInput) desktopInput.value = newScale;
-        if (mobileScaleSlider) mobileScaleSlider.value = newScale;
-        if (mobileScaleInput) mobileScaleInput.value = newScale;
-        
-        // Use the applyScale function which properly handles CONFIG.pxPerYear
-        applyScale(newScale);
-    };
-    
-    if (mobileScaleSlider) {
-        // Add transparency class during interaction
-        mobileScaleSlider.addEventListener('mousedown', () => {
-            panel?.classList.add('adjusting-scale');
-            panelOverlay?.classList.add('adjusting-scale');
-        });
-        mobileScaleSlider.addEventListener('touchstart', () => {
-            panel?.classList.add('adjusting-scale');
-            panelOverlay?.classList.add('adjusting-scale');
-        });
-        mobileScaleSlider.addEventListener('mouseup', () => {
-            panel?.classList.remove('adjusting-scale');
-            panelOverlay?.classList.remove('adjusting-scale');
-        });
-        mobileScaleSlider.addEventListener('touchend', () => {
-            panel?.classList.remove('adjusting-scale');
-            panelOverlay?.classList.remove('adjusting-scale');
-        });
-        
-        mobileScaleSlider.addEventListener('input', () => syncScale(mobileScaleSlider.value));
-    }
-    
-    if (mobileScaleInput) {
-        mobileScaleInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                let val = parseFloat(mobileScaleInput.value);
-                if (!isNaN(val) && val >= 0.5 && val <= 20) {
-                    syncScale(val);
-                }
-                mobileScaleInput.blur();
-            }
-        });
-    }
-    
-    // Mobile filter controls
-    if (mobileFilterAll) {
-        mobileFilterAll.addEventListener('click', () => {
-            STATE.activeFilters = new Set(Object.keys(STATE.categories));
-            // Sync desktop
-            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
-                cb.checked = true;
-            });
-            updateFilterCount();
-            renderTimeline();
-            populateMobileFilters();
-        });
-    }
-    
-    if (mobileFilterNone) {
-        mobileFilterNone.addEventListener('click', () => {
-            STATE.activeFilters.clear();
-            // Sync desktop
-            document.querySelectorAll('#filterOptions input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-            updateFilterCount();
-            renderTimeline();
-            populateMobileFilters();
-        });
-    }
-    
-    // Populate mobile filters
-    populateMobileFilters();
+        wasDesktop = nowDesktop;
+    });
 }
 
 /**
- * Populate mobile filter options (mirrors desktop)
+ * Populate filter options (called after categories are loaded)
  */
 function populateMobileFilters() {
-    const container = document.getElementById('mobileFilterOptions');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    Object.entries(STATE.categories).forEach(([id, category]) => {
-        const isActive = STATE.activeFilters.has(id);
-        const color = category.color || DEFAULT_COLOR;
-        const label = document.createElement('label');
-        label.className = `filter-option${isActive ? ' active' : ''}`;
-        // Use the category's main color (text color works well as solid bg)
-        label.style.setProperty('--filter-color', color.text || color.border);
-        label.innerHTML = `
-            <input type="checkbox" ${isActive ? 'checked' : ''} data-category="${id}">
-            <span class="filter-option-icon">${category.icon}</span>
-            <span class="filter-option-label">${category.name}</span>
-        `;
-        
-        const checkbox = label.querySelector('input');
-        
-        // Handle tap on entire label
-        label.addEventListener('click', (e) => {
-            e.preventDefault();
-            const newState = !checkbox.checked;
-            checkbox.checked = newState;
-            label.classList.toggle('active', newState);
-            
-            // Update state
-            if (newState) {
-                STATE.activeFilters.add(id);
-            } else {
-                STATE.activeFilters.delete(id);
-            }
-            
-            // Sync with desktop
-            const desktopCheckbox = document.querySelector(`#filterOptions input[data-category="${id}"]`);
-            if (desktopCheckbox) {
-                desktopCheckbox.checked = newState;
-            }
-            
-            updateFilterCount();
-            renderTimeline();
-        });
-        
-        container.appendChild(label);
-    });
+    // No longer needed - we only have one set of filter controls now
+    // This function is kept for compatibility but does nothing
 }
 
 /**
@@ -1563,10 +1358,8 @@ function getYearAtReference() {
 function updateYearDisplay() {
     const yearInput = document.getElementById('currentYear');
     const yearInputCE = document.getElementById('currentYearCE');
-    const setBCE = document.getElementById('set-bce');
+    const yearCELabel = document.getElementById('yearCELabel');
     const scrollProgress = document.getElementById('scrollProgress');
-    const yearDisplay = document.getElementById('yearDisplay');
-    const navButtons = document.querySelector('.nav-buttons');
     
     if (!yearInput) return;
     
@@ -1581,8 +1374,8 @@ function updateYearDisplay() {
     
     // Update CE/BCE display
     const converted = fromHoloceneYear(displayYear);
-    yearInputCE.value = converted.year;
-    setBCE.textContent = converted.era === 'BCE' ? 'BCE' : '\u00A0CE';
+    if (yearInputCE) yearInputCE.value = converted.year;
+    if (yearCELabel) yearCELabel.textContent = converted.era === 'BCE' ? 'BCE' : 'CE';
     
     if (scrollProgress) {
         const scrollPercent = (displayYear / currentYear) * 100;
@@ -1663,7 +1456,7 @@ function setupYearInput() {
         yearInputCE.addEventListener('focus', () => {
             isEditingYear = true;
             // Append the current era to the value so user knows context
-            const currentEra = document.getElementById('set-bce').textContent.trim();
+            const currentEra = document.getElementById('yearCELabel')?.textContent?.trim() || 'CE';
             const currentValue = yearInputCE.value.replace(/,/g, '');
             ceValueOnFocus = `${currentValue} ${currentEra}`;
             yearInputCE.value = ceValueOnFocus;
@@ -1727,12 +1520,33 @@ function applyScale(newScale) {
 function setupScaleControl() {
     const slider = document.getElementById('scaleSlider');
     const scaleInput = document.getElementById('scaleInput');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
     if (slider) {
         slider.min = CONFIG.minPxPerYear;
         slider.max = CONFIG.maxPxPerYear;
         slider.step = 0.5;
         slider.value = CONFIG.pxPerYear;
+        
+        // Add transparency during slider interaction
+        slider.addEventListener('mousedown', () => {
+            sidebar?.classList.add('adjusting-scale');
+            sidebarOverlay?.classList.add('adjusting-scale');
+        });
+        slider.addEventListener('touchstart', () => {
+            sidebar?.classList.add('adjusting-scale');
+            sidebarOverlay?.classList.add('adjusting-scale');
+        });
+        
+        const removeTransparency = () => {
+            sidebar?.classList.remove('adjusting-scale');
+            sidebarOverlay?.classList.remove('adjusting-scale');
+        };
+        slider.addEventListener('mouseup', removeTransparency);
+        slider.addEventListener('touchend', removeTransparency);
+        document.addEventListener('mouseup', removeTransparency);
+        document.addEventListener('touchend', removeTransparency);
         
         slider.addEventListener('input', (e) => {
             const newScale = parseFloat(e.target.value);
@@ -1832,11 +1646,43 @@ window.timelineAPI = {
     parseDateToHE,
 };
 
+// ============ TOP BAR HEIGHT ============
+
+/**
+ * Measure the top bar height and set it as a CSS variable
+ * This allows other elements (like sidebar) to position relative to it
+ */
+function updateTopBarHeight() {
+    const topBar = document.getElementById('topBar');
+    if (topBar) {
+        document.documentElement.style.setProperty('--top-bar-height', topBar.offsetHeight + 'px');
+    }
+}
+
+/**
+ * Measure the footer height and set it as a CSS variable
+ * This allows elements to add padding/margin to clear the fixed footer
+ */
+function updateFooterHeight() {
+    const footer = document.querySelector('footer');
+    if (footer) {
+        document.documentElement.style.setProperty('--footer-height', footer.offsetHeight + 'px');
+    }
+}
+
 // ============ INITIALIZE ============
 
 async function init() {
     console.log('Initializing timeline...');
     console.log('Current Holocene Year:', getCurrentHoloceneYear());
+    
+    // Set top bar height CSS variable (used by sidebar positioning)
+    updateTopBarHeight();
+    window.addEventListener('resize', updateTopBarHeight);
+    
+    // Set footer height CSS variable (used for bottom padding)
+    updateFooterHeight();
+    window.addEventListener('resize', updateFooterHeight);
     
     // Ensure page starts at top (fixes mobile scroll issues)
     window.scrollTo(0, 0);
@@ -1869,10 +1715,6 @@ async function init() {
     window.addEventListener('scroll', updateYearDisplay);
     window.addEventListener('resize', updateYearDisplay);
     
-    // Setup nav button positioning (above footer)
-    updateNavPosition();
-    window.addEventListener('resize', updateNavPosition);
-    
     console.log('Timeline initialized');
 }
 
@@ -1900,20 +1742,6 @@ function setupNavButtons() {
             controlsToggle.classList.toggle('active');
             controlsWrapper.classList.toggle('open');
         });
-    }
-}
-
-/**
- * Update nav buttons position to sit above the footer
- * Called on load and resize to handle dynamic footer height
- */
-function updateNavPosition() {
-    const footer = document.querySelector('footer');
-    const navButtons = document.querySelector('.nav-buttons');
-    
-    if (footer && navButtons) {
-        const footerHeight = footer.offsetHeight;
-        navButtons.style.bottom = (footerHeight + 15) + 'px';
     }
 }
 

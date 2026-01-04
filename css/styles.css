@@ -8,6 +8,8 @@
     --bone: #e5e3de;
     --bone-dim: #d6d3c7;
     --accent: #d4442e;
+    --sidebar-width: 300px;
+    --sidebar-padding: 15px;
 }
 
 * {
@@ -17,7 +19,6 @@
 }
 
 html {
-    /* Fix for mobile viewport issues */
     scroll-behavior: smooth;
 }
 
@@ -27,15 +28,290 @@ body {
     font-family: 'Cormorant Garamond', Georgia, serif;
     min-height: 100vh;
     overflow-x: hidden;
-    padding-bottom: 50px; /* Space for sticky footer */
-    /* Ensure page starts at top */
+}
+
+/* ============ APP WRAPPER - FLEXBOX LAYOUT ============ */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+/* ============ SIDEBAR (RIGHT SIDE) ============ */
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-gray);
+    height: calc(100vh - var(--top-bar-height, 80px) - var(--footer-height, 60px));
+    position: fixed;
+    top: var(--top-bar-height, 80px);
+    right: 0;
+    z-index: 1010;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+/* Sidebar transparency during scale adjustment - mobile only where sidebar overlays content */
+@media (max-width: 800px) {
+    .sidebar.adjusting-scale {
+        background: transparent;
+        border-color: transparent;
+    }
+
+    .sidebar.adjusting-scale .sidebar-content > *:first-child {
+        opacity: 1;
+        background: var(--bg-card);
+        border: 2px solid var(--timeline-gray);
+    }
+
+    .sidebar.adjusting-scale .sidebar-content > *:not(:first-child) {
+        opacity: 0;
+    }
+
+    .sidebar-overlay.adjusting-scale {
+        opacity: 0;
+    }
+}
+
+/* No header needed - remove these styles */
+.sidebar-header {
+    display: none;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar-content::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-section {
+    padding: var(--sidebar-padding) 20px;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.sidebar-section:nth-child(2) {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
+}
+
+/* Toggle sections need less vertical padding */
+.sidebar-section .toggle-label {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.sidebar-section .toggle-label:last-child {
+    border-bottom: none;
+}
+
+.sidebar-section > label:first-child:not(.toggle-label) {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--bone-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.sidebar-section input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    margin-bottom: 10px;
+}
+
+.sidebar-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sidebar-section-header > span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--bone-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Sidebar overlay (mobile only) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1005;
+}
+
+/* ============ MAIN CONTENT ============ */
+.main-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
     position: relative;
+    padding-bottom: var(--footer-height, 60px); /* Space for fixed footer */
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: var(--footer-height, 60px); /* Space for fixed footer */
+}
+
+/* ============ TOP BAR (STICKY HEADER) ============ */
+.top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-gray);
+    padding: 14px 15px;
+}
+
+.top-bar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.menu-btn {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 1px solid var(--border-gray);
+    color: var(--gold);
+    font-size: 1.4rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.menu-btn:hover {
+    background: var(--gold);
+    color: var(--bg-dark);
+}
+
+.year-display {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex: 1;
+}
+
+.year-ce {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    padding-bottom: 2px;
+}
+
+.year-ce .year-input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--bone-dim);
+    background: transparent;
+    border: none;
+    width: 50px;
+    text-align: left;
+    outline: none;
+    padding: 0;
+}
+
+.year-ce .year-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    color: var(--bone-dim);
+}
+
+.year-divider {
+    width: 1px;
+    height: 35px;
+    background: var(--timeline-gray);
+    align-self: center;
+}
+
+.year-he {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.year-he .year-input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    color: var(--gold);
+    background: transparent;
+    border: none;
+    width: 130px;
+    text-align: left;
+    outline: none;
+    padding: 0;
+}
+
+.year-he .year-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--gold);
+    margin-top: 2px;
+}
+
+.year-input:focus {
+    color: var(--bone);
+    border-bottom: 1px solid var(--gold);
+}
+
+/* ============ SCROLL PROGRESS ============ */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--gold);
+    z-index: 1100;
+    width: 0%;
+    transition: left 0.3s ease;
+}
+
+/* When sidebar is open, progress bar shifts left (sidebar is on right) */
+body:has(.sidebar.open) .scroll-progress {
+    right: var(--sidebar-width);
 }
 
 /* ============ HEADER ============ */
 header {
     text-align: center;
-    padding: 80px 20px 60px;
+    padding: 60px 20px;
     position: relative;
 }
 
@@ -98,204 +374,17 @@ h1 span {
     color: var(--gold);
 }
 
-/* ============ SCROLL PROGRESS & CONTROLS WRAPPER ============ */
-.scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    background: var(--gold);
-    z-index: 1001;
-    width: 0%;
-    /* Ensure it stays at the very top on mobile */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-
-.controls-toggle {
-    display: none; /* Hidden on desktop */
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 1002;
-    width: 44px;
-    height: 44px;
-    background: var(--bg-card);
-    border: 1px solid var(--gold-dim);
-    color: var(--gold);
-    font-size: 1.4rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.controls-toggle:hover {
-    background: var(--gold);
-    color: var(--bg-dark);
-}
-
-.controls-toggle.active {
-    background: var(--gold);
-    color: var(--bg-dark);
-}
-
-.controls-wrapper {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Year display - fixed position, separate from controls-wrapper */
-.year-display {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1001;
-    padding: 15px 20px;
-    background: var(--bg-card);
-    border: 1px solid #1a1a1f;
-    font-family: 'JetBrains Mono', monospace;
-    width: 150px;
-    text-align: right;
-    transition: border-color 0.3s ease;
-}
-
-.year-display:hover {
-    border-color: var(--gold-dim);
-}
-
-/* On desktop, controls-wrapper sits below year-display */
-.controls-wrapper {
-    top: 145px; /* Below year-display */
-}
-
-.year-display .current-year {
-    font-size: 1.45rem;
-    color: var(--gold);
-    letter-spacing: 2px;
-    background: transparent;
-    border: none;
-    font-family: 'JetBrains Mono', monospace;
-    width: 100%;
-    text-align: right;
-    outline: none;
-    cursor: text;
-    padding: 0;
-    display: block;
-}
-
-.year-display .current-year:focus {
-    color: var(--bone);
-    border-bottom: 1px solid var(--gold);
-}
-
-.year-display .current-year::selection {
-    background: var(--gold);
-    color: var(--bg-dark);
-}
-
-.year-display .he-label {
-    font-size: 0.65rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
-
-.year-display .ce-display {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #1a1a1f;
-    display: flex;
-    justify-content: flex-end;
-    align-items: baseline;
-    gap: 5px;
-}
-
-.year-display .ce-year {
-    font-size: 1rem;
-    color: var(--bone-dim);
-    letter-spacing: 1px;
-    background: transparent;
-    border: none;
-    font-family: 'JetBrains Mono', monospace;
-    width: 100%;
-    text-align: right;
-    outline: none;
-    cursor: text;
-    padding: 0;
-}
-
-.year-display .ce-year:focus {
-    color: var(--bone);
-    border-bottom: 1px solid var(--bone-dim);
-}
-
-.year-display .ce-year:focus + .ce-label {
-    display: none;
-}
-
-.year-display .ce-year::selection {
-    background: var(--bone-dim);
-    color: var(--bg-dark);
-}
-
-.year-display .ce-label {
-    font-size: 0.65rem;
-    color: var(--bone-dim);
-    letter-spacing: 1px;
-}
-
-/* ============ SCALE CONTROL ============ */
-.scale-control {
-    padding: 15px 20px;
-    background: var(--bg-card);
-    border: 1px solid #1a1a1f;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    width: 150px;
-    transition: border-color 0.3s ease;
-}
-
-.scale-control:hover {
-    border-color: var(--gold-dim);
-}
-
-.scale-control label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--bone-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.scale-control input[type="range"] {
-    width: 100px;
-    accent-color: var(--gold);
-    cursor: pointer;
-}
-
-.scale-control .scale-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--gold);
-}
-
-.scale-control .scale-input-row {
+/* ============ SCALE INPUT ============ */
+.scale-input-row {
     display: flex;
     align-items: baseline;
-    gap: 4px;
+    gap: 6px;
     justify-content: center;
 }
 
 .scale-input {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--gold);
     background: var(--border-gray);
     border: none;
@@ -306,187 +395,26 @@ h1 span {
     padding: 4px 0;
 }
 
-.scale-control .scale-input:focus {
+.scale-input:focus {
     color: var(--bone);
     border-bottom-color: var(--gold);
+    
 }
 
-.scale-control .scale-input::selection {
-    background: var(--gold);
-    color: var(--bg-dark);
-}
-
-.scale-control .scale-unit {
+.scale-unit {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--bone-dim);
 }
 
-/* ============ FILTER CONTROL ============ */
-.filter-control {
-    background: var(--bg-card);
-    border: 1px solid #1a1a1f;
-    width: 150px;
-    transition: border-color 0.3s ease;
-}
-
-.filter-control:hover {
-    border-color: var(--gold-dim);
-}
-
-.filter-toggle {
-    width: 100%;
-    padding: 12px 15px;
-    background: transparent;
-    border: none;
-    color: var(--bone-dim);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: color 0.3s ease;
-}
-
-.filter-toggle:hover {
-    color: var(--gold);
-}
-
-.filter-icon {
-    font-size: 0.9rem;
-}
-
-.filter-count {
-    margin-left: auto;
-    color: var(--gold);
-    font-size: 0.6rem;
-}
-
-.filter-panel {
-    display: none;
-    padding: 0 15px 15px;
-    border-top: 1px solid #1a1a1f;
-    max-height: calc(100vh - 350px); /* Leave room for year display, scale, and filter toggle */
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-
-.filter-panel::-webkit-scrollbar {
-    display: none; /* Chrome/Safari/Opera */
-}
-
-.filter-panel.open {
-    display: block;
-}
-
-.filter-actions {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding-top: 12px;
-}
-
-.filter-action {
-    flex: 1;
-    padding: 6px 10px;
-    background: transparent;
-    border: 1px solid #1a1a1f;
-    color: var(--bone-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-action:hover {
-    border-color: var(--gold-dim);
-    color: var(--gold);
-}
-
-.filter-options {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.filter-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 4px 0;
-    transition: color 0.3s ease;
-}
-
-.filter-option:hover {
-    color: var(--gold);
-}
-
-.filter-option input[type="checkbox"] {
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border: 1px solid var(--checkbox-color, #1a1a1f);
-    background: transparent;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.filter-option input[type="checkbox"]:checked {
-    background: var(--checkbox-color, var(--gold));
-    border-color: var(--checkbox-color, var(--gold));
-}
-
-.filter-option input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--bg-dark);
-    font-size: 0.6rem;
-}
-
-.filter-option-icon {
-    font-size: 0.8rem;
-    width: 16px;
-    text-align: center;
-}
-
-.filter-option-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.5px;
-    color: var(--bone-dim);
-}
-
-/* ============ RANGE TOGGLE CONTROL ============ */
-.range-toggle-control {
-    padding: 12px 15px;
-    background: var(--bg-card);
-    border: 1px solid #1a1a1f;
-    width: 150px;
-    transition: border-color 0.3s ease;
-}
-
-.range-toggle-control:hover {
-    border-color: var(--gold-dim);
-}
-
+/* ============ TOGGLE CONTROLS ============ */
 .toggle-label {
     display: flex;
     align-items: center;
     gap: 10px;
     cursor: pointer;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.85rem;
     color: var(--bone-dim);
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -499,10 +427,11 @@ h1 span {
 
 .toggle-switch {
     position: relative;
-    width: 32px;
-    height: 18px;
-    background: #1a1a1f;
-    border-radius: 9px;
+    width: 48px;
+    min-width: 48px;
+    height: 26px;
+    background: var(--border-gray);
+    border-radius: 13px;
     border: 1px solid var(--timeline-gray);
     transition: all 0.3s ease;
     flex-shrink: 0;
@@ -513,9 +442,9 @@ h1 span {
     content: '';
     position: absolute;
     top: 2px;
-    left: 2px;
-    width: 12px;
-    height: 12px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
     background: var(--bone-dim);
     border-radius: 50%;
     transition: all 0.3s ease;
@@ -527,7 +456,7 @@ h1 span {
 }
 
 .toggle-label input[type="checkbox"]:checked + .toggle-switch::after {
-    left: 16px;
+    left: 24px;
 }
 
 .toggle-text {
@@ -542,11 +471,119 @@ h1 span {
     color: var(--gold);
 }
 
-/* ============ MOBILE HEADER & PANEL (hidden on desktop) ============ */
-.mobile-header,
-.mobile-panel,
-.mobile-panel-overlay {
+/* ============ FILTER CONTROLS ============ */
+.filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-action {
+    padding: 6px 12px;
+    font-size: 0.65rem;
+    background: transparent;
+    border: 1px solid var(--timeline-gray);
+    color: var(--bone-dim);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.filter-action:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Filter styled like toggle switches */
+.filter-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.filter-option:last-child {
+    border-bottom: none;
+}
+
+.filter-option input[type="checkbox"] {
     display: none;
+}
+
+.filter-option-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    color: var(--bone-dim);
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.filter-option-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.filter-option-label {
+    text-transform: uppercase;
+}
+
+/* Filter toggle switch (like the range/age toggles) */
+.filter-toggle {
+    position: relative;
+    width: 48px;
+    min-width: 48px;
+    height: 26px;
+    background: var(--border-gray);
+    border-radius: 13px;
+    border: 1px solid var(--filter-color, var(--gold));
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.filter-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: var(--bone-dim);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+/* Active state - use category color */
+.filter-option.active .filter-toggle {
+    background: var(--filter-color-dim, var(--gold-dim));
+    border-color: var(--filter-color, var(--gold));
+}
+
+.filter-option.active .filter-toggle::after {
+    left: 24px;
+    background: var(var(--bone-dim));
+}
+
+.filter-option.active .filter-option-text {
+    color: var(--filter-color, var(--gold));
+}
+
+.filter-option:hover .filter-option-text {
+    color: var(--filter-color, var(--gold));
 }
 
 /* ============ TIMELINE CONTAINER ============ */
@@ -555,6 +592,7 @@ h1 span {
     margin: 0 auto;
     padding: 60px 40px 100px;
     position: relative;
+    flex: 1;
 }
 
 .timeline-track {
@@ -586,7 +624,6 @@ h1 span {
 }
 
 .century-marker.millennium span {
-    
     border-color: var(--gold-dim);
     background: var(--bg-card);
 }
@@ -599,7 +636,6 @@ h1 span {
     width: 20px;
     height: 1px;
     background: var(--timeline-gray);
-    opacity: 1;
 }
 
 .decade-marker {
@@ -620,7 +656,6 @@ h1 span {
     background: var(--bg-dark);
     border: 1px solid var(--timeline-gray);
     padding: 4px 10px;
-    opacity: 1;
 }
 
 /* ============ YEAR TICKS ============ */
@@ -631,7 +666,6 @@ h1 span {
     width: 20px;
     height: 1px;
     background: var(--timeline-gray);
-    opacity: 1;
 }
 
 /* ============ EVENTS (ALTERNATING LEFT/RIGHT) ============ */
@@ -639,19 +673,15 @@ h1 span {
     position: absolute;
     width: 300px;
     cursor: pointer;
-    transition: z-index 0s;
     z-index: 9;
     transform: translateY(-50%);
-    /* Prevent Chrome from auto-scrolling when this element is found via CTRL+F */
     scroll-margin: 50vh;
 }
 
 .event.hovered {
     z-index: 100;
-    opacity: 1;
 }
 
-/* Left side events */
 .event.left {
     right: calc(50% + 60px);
     text-align: right;
@@ -666,21 +696,6 @@ h1 span {
     height: 1px;
 }
 
-.event.left .content .dot {
-    position: absolute;
-    right: -66px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.event.left .content .event-year-marker {
-    position: absolute;
-    right: -61px;
-    top: 50%;
-    transform: translate(50%, -50%);
-}
-
-/* Right side events */
 .event.right {
     left: calc(50% + 60px);
     text-align: left;
@@ -695,20 +710,6 @@ h1 span {
     height: 1px;
 }
 
-.event.right .content .dot {
-    position: absolute;
-    left: -66px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.event.right .content .event-year-marker {
-    position: absolute;
-    left: -61px;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .event .connector {
     background: var(--gold-dim);
     transition: background 0.3s ease;
@@ -719,11 +720,6 @@ h1 span {
     background: var(--gold);
 }
 
-/* Event year marker (replaces dot) */
-.event .event-year-marker {
-    z-index: 15;
-}
-
 /* Event category icons */
 .event-category-icons {
     font-size: 0.7rem;
@@ -731,7 +727,7 @@ h1 span {
     opacity: 0.8;
 }
 
-/* Event footer - icons and source link */
+/* Event footer */
 .event-footer {
     display: flex;
     justify-content: space-between;
@@ -743,7 +739,6 @@ h1 span {
     transition: all 0.3s ease;
 }
 
-/* Always: link left, icons right */
 .event-footer .event-source {
     order: 1;
 }
@@ -759,35 +754,14 @@ h1 span {
     opacity: 1;
 }
 
-.event .event-year-marker span {
-    display: block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-    white-space: nowrap;
-    background: var(--bg-card);
-    border: 1px solid var(--gold-dim);
-    padding: 4px 10px;
-    transition: all 0.3s ease;
-}
-
-.event.hovered .event-year-marker span,
-.event.locked .event-year-marker span {
-    background: var(--gold);
-    color: var(--bg-dark);
-    border-color: var(--gold);
-    box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
-}
-
-/* Event dot - colored circle on timeline */
+/* Event dot */
 .event-dot {
     position: absolute;
     width: 10px;
     height: 10px;
     border-radius: 50%;
     border: 2px solid var(--bg-dark);
-    z-index: 4; /* Above range bars (3), below date labels (10) */
+    z-index: 4;
     transition: all 0.3s ease;
 }
 
@@ -807,42 +781,18 @@ h1 span {
 .event.locked .event-dot {
     border: none;
     box-shadow: 0 0 20px currentColor;
-    z-index: 200; /* On hover/locked, go to top */
+    z-index: 200;
 }
 
-/* Locked state - persistent focus */
 .event.locked {
     z-index: 500 !important;
-}
-
-/* Year text inside content box */
-.event-year-text {
-    display: block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
-
-/* Source link */
-.event-source {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-    text-decoration: none;
-}
-
-.event-source:hover {
-    text-decoration: underline;
 }
 
 /* Event content */
 .event .content {
     padding: 8px 12px;
     background: var(--bg-card);
-    border: 1px solid #1a1a1f;
+    border: 1px solid var(--border-gray);
     transition: all 0.3s ease;
     display: inline-block;
     max-width: 100%;
@@ -873,14 +823,6 @@ h1 span {
     justify-content: flex-start;
 }
 
-.event .event-year {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-    white-space: nowrap;
-}
-
 .event .event-title {
     font-size: 1rem;
     font-weight: 400;
@@ -888,6 +830,27 @@ h1 span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.event-year-text {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+.event-source {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+
+.event-source:hover {
+    text-decoration: underline;
 }
 
 .event .event-desc {
@@ -900,7 +863,7 @@ h1 span {
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
-    text-align: left; /* Always left-align description text */
+    text-align: left;
 }
 
 .event.hovered .event-desc,
@@ -916,9 +879,6 @@ h1 span {
 }
 
 /* ============ RANGE BARS ============ */
-/* Ranges use .event class, bar is like year-marker but taller */
-
-/* Range bar indicator - extends downward from event dot position */
 .range-bar-indicator {
     position: absolute;
     top: 50%;
@@ -926,16 +886,12 @@ h1 span {
     height: var(--bar-height);
     border-radius: 6px;
     border: 2px solid var(--bg-dark);
-    /* Below dots (4) and date labels (10), above ticks */
     z-index: 3;
-    /* Hidden by default, shown on hover/lock */
     opacity: 0;
     transition: opacity 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-    /* Extend downward from the dot position (top of the range) */
-    transform: translateY(0); /* Start from the event's position, extend down */
+    transform: translateY(0);
 }
 
-/* Position like event-dot but extend downward */
 .event.left .content .range-bar-indicator {
     right: -61px;
     transform: translate(50%, 0);
@@ -946,7 +902,6 @@ h1 span {
     transform: translate(-50%, 0);
 }
 
-/* Show range bar on hover/lock */
 .event.range.hovered .range-bar-indicator,
 .event.range.locked .range-bar-indicator {
     opacity: 1;
@@ -954,24 +909,14 @@ h1 span {
     box-shadow: 0 0 20px var(--bar-border);
 }
 
-/* Show ALL range bars when toggle is on */
 body.show-ranges .event.range .range-bar-indicator {
     opacity: 1;
 }
 
-/* Show age range bars when "Show Ages" toggle is on */
 body.show-ages .event.range.is-age .range-bar-indicator {
     opacity: 1;
 }
 
-/* On hover/lock with toggle on, still show enhanced style */
-body.show-ranges .event.range.hovered .range-bar-indicator,
-body.show-ranges .event.range.locked .range-bar-indicator {
-    background-color: var(--bar-bg-hover) !important;
-    box-shadow: 0 0 20px var(--bar-border);
-}
-
-/* Date range text in content box */
 .range-dates {
     display: block;
     font-family: 'JetBrains Mono', monospace;
@@ -988,19 +933,6 @@ body.show-ranges .event.range.locked .range-bar-indicator {
     z-index: 500 !important;
 }
 
-.event.range.locked .range-bar-indicator {
-    background-color: var(--bar-bg-hover) !important;
-    box-shadow: 0 0 20px var(--bar-border);
-}
-
-/* ============ LIGHTBOX BACKDROP (Mobile only - currently disabled) ============ */
-.mobile-backdrop {
-    display: none;
-}
-
-/* Backdrop no longer used since mobile cards stay in flow */
-/* .mobile-backdrop.active kept for potential future use */
-
 /* ============ FOOTER ============ */
 footer {
     position: fixed;
@@ -1008,10 +940,11 @@ footer {
     left: 0;
     right: 0;
     text-align: center;
-    padding: 15px 15px;
+    padding: 15px;
     background: var(--bg-card);
-    border-top: 1px solid #1a1a1f;
+    border-top: 1px solid var(--border-gray);
     z-index: 1000;
+    transition: left 0.3s ease;
 }
 
 footer p {
@@ -1021,22 +954,30 @@ footer p {
     letter-spacing: 1px;
 }
 
+/* When sidebar is open, footer shifts left (sidebar is on right) */
+/* body:has(.sidebar.open) footer {
+    right: var(--sidebar-width);
+} */
+
 /* ============ NAV BUTTONS ============ */
 .nav-buttons {
     position: fixed;
-    bottom: 60px; /* Default, JS will override based on footer height */
+    bottom: calc(var(--footer-height, 60px) + 15px);
     left: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     z-index: 1001;
+    transition: left 0.3s ease;
 }
+
+/* Nav buttons stay on left - no shift needed since sidebar is on right */
 
 .nav-btn {
     width: 50px;
     height: 50px;
     background: var(--bg-card);
-    border: 1px solid #1a1a1f;
+    border: 1px solid var(--border-gray);
     color: var(--bone-dim);
     font-size: 1.5rem;
     cursor: pointer;
@@ -1051,548 +992,21 @@ footer p {
     color: var(--gold);
 }
 
-/* ============ RESPONSIVE ============ */
-@media (max-width: 1400px) {
-    /* Mobile lightbox backdrop */
-    .mobile-backdrop {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
+/* ============ RESPONSIVE - MOBILE ============ */
+@media (max-width: 800px) {
+    /* On mobile, sidebar overlays content (overlay becomes active) */
+    
+    .sidebar-overlay.active {
+        display: block;
+    }
+    
+    /* On mobile, fixed elements don't shift (sidebar overlays) */
+    body:has(.sidebar.open) footer,
+    body:has(.sidebar.open) .scroll-progress {
         right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 400;
     }
-
-    header {
-        padding: 120px 20px 60px;
-        position: relative;
-    }
-     
-    .mobile-backdrop.active {
-        display: block;
-    }
-    
-    /* Collapsed cards are narrower on mobile */
-    .event {
-        width: 300px;
-    }
-    
-    /* Bring cards closer to timeline */
-    .event.left {
-        right: calc(50% + 35px);
-    }
-    
-    .event.right {
-        left: calc(50% + 35px);
-    }
-    
-    /* Shorter connectors */
-    .event.left .content .connector {
-        right: -35px;
-        width: 35px;
-    }
-    
-    .event.right .content .connector {
-        left: -35px;
-        width: 35px;
-    }
-    
-    /* Adjust dot positions */
-    .event.left .content .event-dot {
-        right: -36px;
-    }
-    
-    .event.right .content .event-dot {
-        left: -36px;
-    }
-    
-    /* Adjust range bar positions */
-    .event.left .content .range-bar-indicator {
-        right: -36px;
-    }
-    
-    .event.right .content .range-bar-indicator {
-        left: -36px;
-    }
-    
-    .event .event-title {
-        font-size: 0.85rem;
-    }
-    
-    .event .content {
-        padding: 6px 10px;
-    }
-    
-    /* No special mobile locked state - cards expand naturally in place */
-    /* Backdrop disabled */
-    .mobile-backdrop,
-    .mobile-backdrop.active {
-        display: none !important;
-    }
-    
-    /* Event footer on mobile: stack vertically to prevent awkward wrapping */
-    .event-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 4px;
-    }
-    
-    .event-footer .event-category-icons {
-        order: 1;
-        text-align: left;
-        margin-left: 0;
-    }
-    
-    .event-footer .event-source {
-        order: 2;
-        text-align: left;
-    }
-    
-    /* ============ MOBILE HEADER (now at top) ============ */
-    .mobile-header {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1005; /* Higher than footer and nav buttons */
-        background: var(--bg-card);
-        border-bottom: 1px solid #1a1a1f;
-        padding: 14px 15px; /* Taller padding */
-    }
-    
-    .mobile-header-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-    }
-    
-    /* Menu button on LEFT */
-    .mobile-menu-btn {
-        order: 1;
-        width: 44px;
-        height: 44px;
-        background: transparent;
-        border: 1px solid #1a1a1f;
-        color: var(--gold);
-        font-size: 1.4rem;
-        cursor: pointer;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    
-    .mobile-menu-btn:active {
-        background: var(--gold);
-        color: var(--bg-dark);
-    }
-    
-    /* Year display - HE featured on left, CE secondary on right */
-    .mobile-year-display {
-        order: 2;
-        display: flex;
-        align-items: flex-end; /* Align items to bottom */
-        gap: 12px;
-        flex: 1;
-        justify-content: flex-end; /* Push to right edge */
-    }
-    
-    /* HE year - larger, primary, with label underneath */
-    .mobile-year-he {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-    
-    .mobile-year-he .mobile-year-input {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.6rem; /* Larger */
-        color: var(--gold);
-        background: transparent;
-        border: none;
-        width: 130px; /* Even wider for full numbers like 12,026 */
-        text-align: right;
-        outline: none;
-        padding: 0;
-    }
-    
-    .mobile-year-he .mobile-year-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem; /* Slightly larger */
-        letter-spacing: 1px;
-        color: var(--gold);
-        margin-top: 2px;
-    }
-    
-    .mobile-year-divider {
-        width: 1px;
-        height: 35px;
-        background: var(--timeline-gray);
-        align-self: center;
-    }
-    
-    /* CE year - smaller, secondary, aligned to bottom */
-    .mobile-year-ce {
-        display: flex;
-        align-items: baseline;
-        gap: 3px;
-        padding-bottom: 2px; /* Align with bottom of HE */
-    }
-    
-    .mobile-year-ce .mobile-year-input {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.9rem;
-        color: var(--bone-dim);
-        background: transparent;
-        border: none;
-        width: 50px;
-        text-align: right;
-        outline: none;
-        padding: 0;
-    }
-    
-    .mobile-year-ce .mobile-year-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.55rem;
-        letter-spacing: 1px;
-        color: var(--bone-dim);
-    }
-    
-    .mobile-year-input:focus {
-        color: var(--bone);
-        border-bottom: 1px solid var(--gold);
-    }
-    
-    /* ============ MOBILE SLIDE-OUT PANEL (from LEFT) ============ */
-    .mobile-panel {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: -300px;
-        width: 300px;
-        height: 100%;
-        background: var(--bg-card);
-        border-right: 1px solid #1a1a1f;
-        z-index: 1010; /* Above everything */
-        transition: left 0.3s ease, background 0.2s ease;
-        overflow: hidden; /* Let content scroll, not panel */
-    }
-    
-    .mobile-panel.open {
-        left: 0;
-    }
-    
-    /* Panel transparency during scale adjustment - show page behind */
-    
-    .mobile-panel.adjusting-scale .mobile-panel-header {
-        opacity: 0;
-        width: 300px;
-    }
-    
-    .mobile-panel.adjusting-scale .mobile-panel-content > *:not(:first-child) {
-        opacity: 0;
-        width: 300px;
-    }
-    
-    .mobile-panel.adjusting-scale {
-        background: transparent;
-        border: transparent;
-        width: 100%;
-    }
-    
-    .mobile-panel.adjusting-scale .mobile-panel-content > :first-child {
-        opacity: 1.0;
-        background: var(--bg-card);
-        border: 2px solid var(--timeline-gray);
-        width: 300px;
-    }
-
-    .mobile-panel-overlay.adjusting-scale {
-        opacity: 0;
-    }
-    
-    
-    /* Sticky panel header */
-    .mobile-panel-header {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        background: var(--bg-card);
-        border-bottom: 1px solid #1a1a1f;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
-        color: var(--gold);
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: opacity 0.2s ease;
-    }
-    
-    .mobile-panel-close {
-        width: 36px;
-        height: 36px;
-        background: transparent;
-        border: 1px solid #1a1a1f;
-        color: var(--bone-dim);
-        font-size: 1.2rem;
-        cursor: pointer;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .mobile-panel-close:active {
-        background: var(--gold);
-        color: var(--bg-dark);
-    }
-    
-    .mobile-panel-content {
-        padding: 0px 0px;
-        height: calc(100% - 60px); /* Account for header */
-        overflow-y: auto;
-    }
-    
-    .mobile-range-toggle-control {
-        padding: 20px 20px;
-        width: 100%;      
-        border-bottom: 1px solid #1a1a1f;
-        transition: opacity 0.2s ease;
-    }
-
-    .mobile-panel-section {
-        padding: 20px 20px;
-        border-bottom: 1px solid #1a1a1f;
-        transition: opacity 0.2s ease;
-    }
-    
-    .mobile-panel-section:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-    }
-    
-    .mobile-panel-section > label:first-child {
-        display: block;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        color: var(--bone-dim);
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-        text-align: center;
-    }
-    
-    .mobile-panel-section input[type="range"] {
-        width: 100%;
-        accent-color: var(--gold);
-        margin-bottom: 10px;
-    }
-    
-    /* Scale input row styling */
-    .mobile-panel-section .scale-input-row {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-        justify-content:center;
-    }
-    
-    .scale-input {
-        font-size: 1rem;
-    }
-    
-    .mobile-panel-section .scale-input:focus {
-        border-bottom-color: var(--gold);
-    }
-    
-    .mobile-panel-section .scale-unit {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        color: var(--bone-dim);
-    }
-    
-    /* Show Ranges toggle in panel - FIXED LAYOUT */
-    
-    .toggle-text {
-        font-size: .85rem;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-    
-    .toggle-switch {
-        width: 48px;
-        min-width: 48px;
-        height: 26px;
-    }
-    
-    .toggle-switch::after {
-        width: 20px;
-        height: 20px;
-        top: 2px;
-        left: 3px;
-    }
-    
-    .toggle-label input[type="checkbox"]:checked + .toggle-switch::after {
-        left: 24px;    
-    }
-
-    .toggle-label:hover .toggle-text {
-        color: var(--bone);
-    }
-    
-    
-    /* Filter section header */
-    .mobile-panel-section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    
-    .mobile-panel-section-header > span {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        color: var(--bone-dim);
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-    
-    .mobile-panel-section-header .filter-actions {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 0;
-        padding-top: 0;
-    }
-    
-    /* All/None buttons - more button-like */
-    .mobile-panel-section-header .filter-action {
-        padding: 8px 14px;
-        font-size: 0.7rem;
-        background: #1a1a1f;
-        border: 1px solid var(--timeline-gray);
-        color: var(--bone-dim);
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .mobile-panel-section-header .filter-action:active {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: var(--bg-dark);
-    }
-    
-    /* Mobile filter options - full width solid color pills */
-    .mobile-filter-options {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .mobile-filter-options .filter-option {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 15px;
-        background: #1a1a1f;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .mobile-filter-options .filter-option.active {
-        background: var(--filter-color, var(--gold));
-    }
-    
-    .mobile-filter-options .filter-option input[type="checkbox"] {
-        display: none;
-    }
-    
-    .mobile-filter-options .filter-option-icon {
-        font-size: 1.2rem;
-        width: 26px;
-        text-align: center;
-    }
-    
-    .mobile-filter-options .filter-option-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        color: var(--bone-dim);
-        flex: 1;
-    }
-    
-    .mobile-filter-options .filter-option.active .filter-option-label {
-        color: var(--bg-dark);
-        font-weight: 500;
-    }
-    
-    /* No checkmark - just color indicates state */
-    .mobile-filter-options .filter-option::after {
-        display: none;
-    }
-    
-    /* Panel overlay */
-    .mobile-panel-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1008;
-    }
-    
-    .mobile-panel-overlay.active {
-        display: block;
-    }
-    
-    /* Hide desktop controls on mobile */
-    .controls-toggle,
-    .year-display,
-    .controls-wrapper {
-        display: none !important;
-    }
-    
-    /* Adjust body padding for fixed footer */
-    body {
-        padding-top: 0;
-    }
-    
-    /* Progress bar stays at very top */
-    .scroll-progress {
-        top: 0;
-        z-index: 1009;
-    }
-
-    
-    /* Footer */
-    footer {
-        position: fixed;
-        z-index: 1001; /* Above everything fixed */
-    }
-    
-    /* Footer text wrapping for mobile */
-    footer p {
-        line-height: 1.6;
-    }
-    
-    footer a {
-        white-space: nowrap;
-    }
-    
-    body {
-        padding-bottom: 0; /* Remove footer spacing since not sticky */
-    }
     
+    /* Smaller nav buttons */
     .nav-btn {
         width: 40px;
         height: 40px;
@@ -1613,5 +1027,39 @@ footer p {
     .event-year-text,
     .range-dates {
         font-size: 0.55rem;
+    }
+    
+    .event.left {
+        right: calc(50% + 35px);
+    }
+    
+    .event.right {
+        left: calc(50% + 35px);
+    }
+    
+    .event.left .content .connector {
+        right: -35px;
+        width: 35px;
+    }
+    
+    .event.right .content .connector {
+        left: -35px;
+        width: 35px;
+    }
+    
+    .event.left .content .event-dot {
+        right: -36px;
+    }
+    
+    .event.right .content .event-dot {
+        left: -36px;
+    }
+    
+    .event.left .content .range-bar-indicator {
+        right: -36px;
+    }
+    
+    .event.right .content .range-bar-indicator {
+        left: -36px;
     }
 }
