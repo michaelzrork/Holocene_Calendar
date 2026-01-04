@@ -611,63 +611,90 @@ function setupAgeToggle() {
 /**
  * Setup sidebar and top bar controls
  */
-function setupMobileControls() {
+// function setupMobileControls() {
+//     const menuBtn = document.getElementById('menuBtn');
+//     const sidebar = document.getElementById('sidebar');
+//     const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+//     // Check if we're on desktop (>800px)
+//     const isDesktop = () => window.innerWidth > 800;
+    
+//     // Sidebar open/close
+//     const openSidebar = () => {
+//         sidebar?.classList.add('open');
+//         if (!isDesktop()) {
+//             // Mobile: show overlay
+//             sidebarOverlay?.classList.add('active');
+//         }
+//     };
+    
+//     const closeSidebar = () => {
+//         sidebar?.classList.remove('open');
+//         sidebarOverlay?.classList.remove('active');
+//     };
+    
+//     // Toggle sidebar
+//     const toggleSidebar = () => {
+//         if (sidebar?.classList.contains('open')) {
+//             closeSidebar();
+//         } else {
+//             openSidebar();
+//         }
+//     };
+    
+//     // Menu button toggles sidebar
+//     menuBtn?.addEventListener('click', toggleSidebar);
+    
+//     // Clicking overlay closes sidebar (mobile)
+//     sidebarOverlay?.addEventListener('click', closeSidebar);
+    
+//     // On desktop, sidebar starts closed (user can open if needed)
+//     // On mobile, sidebar also starts closed
+//     if (window.innerWidth > 1600) {
+//         openSidebar();
+//     }
+
+
+//     // Handle resize: adjust overlay behavior when crossing 800px threshold
+//     let wasDesktop = isDesktop();
+//     window.addEventListener('resize', () => {
+//         const nowDesktop = isDesktop();
+        
+//         if (sidebar?.classList.contains('open')) {
+//             if (nowDesktop && !wasDesktop) {
+//                 // Crossed from mobile to desktop while open
+//                 sidebarOverlay?.classList.remove('active');
+//             } else if (!nowDesktop && wasDesktop) {
+//                 // Crossed from desktop to mobile while open
+//                 sidebarOverlay?.classList.add('active');
+//             }
+//         }
+        
+//         wasDesktop = nowDesktop;
+//     });
+// }
+
+function setupSidebarControls() {
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    // Check if we're on desktop (>800px)
-    const isDesktop = () => window.innerWidth > 800;
-    
-    // Sidebar open/close
-    const openSidebar = () => {
-        sidebar?.classList.add('open');
-        if (!isDesktop()) {
-            // Mobile: show overlay
-            sidebarOverlay?.classList.add('active');
-        }
-    };
-    
-    const closeSidebar = () => {
-        sidebar?.classList.remove('open');
-        sidebarOverlay?.classList.remove('active');
-    };
-    
-    // Toggle sidebar
-    const toggleSidebar = () => {
-        if (sidebar?.classList.contains('open')) {
-            closeSidebar();
-        } else {
-            openSidebar();
-        }
-    };
-    
-    // Menu button toggles sidebar
-    menuBtn?.addEventListener('click', toggleSidebar);
-    
-    // Clicking overlay closes sidebar (mobile)
-    sidebarOverlay?.addEventListener('click', closeSidebar);
-    
-    // On desktop, sidebar starts closed (user can open if needed)
-    // On mobile, sidebar also starts closed
-    
-    // Handle resize: adjust overlay behavior when crossing 800px threshold
-    let wasDesktop = isDesktop();
-    window.addEventListener('resize', () => {
-        const nowDesktop = isDesktop();
-        
-        if (sidebar?.classList.contains('open')) {
-            if (nowDesktop && !wasDesktop) {
-                // Crossed from mobile to desktop while open
-                sidebarOverlay?.classList.remove('active');
-            } else if (!nowDesktop && wasDesktop) {
-                // Crossed from desktop to mobile while open
-                sidebarOverlay?.classList.add('active');
-            }
-        }
-        
-        wasDesktop = nowDesktop;
+    menuBtn?.addEventListener('click', () => {
+        sidebar?.classList.toggle('open');
     });
+    
+    // Click outside closes sidebar
+    document.addEventListener('click', (e) => {
+        if (!sidebar?.classList.contains('open')) return;
+        if (sidebar.contains(e.target)) return;
+        if (menuBtn.contains(e.target)) return;
+        
+        sidebar.classList.remove('open');
+    });
+    
+    // Start open on wide screens
+    if (window.innerWidth > 1600) {
+        sidebar?.classList.add('open');
+    }
 }
 
 /**
@@ -1706,7 +1733,8 @@ async function init() {
     setupFilterControls();
     setupRangeToggle();
     setupAgeToggle();
-    setupMobileControls();
+    // setupMobileControls();
+    setupSidebarControls()
     setupClickAwayUnlock();
     setupSmartHover();
     

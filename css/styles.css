@@ -8,7 +8,7 @@
     --bone: #e5e3de;
     --bone-dim: #d6d3c7;
     --accent: #d4442e;
-    --sidebar-width: 300px;
+    --sidebar-width: 325px;
     --sidebar-padding: 15px;
 }
 
@@ -372,6 +372,12 @@ h1 span {
 
 .scale-note strong {
     color: var(--gold);
+}
+
+.infobox-section {
+    margin-top: 12px;
+    border-top: 1px solid #1a1a1f;
+    padding-top: 10px;
 }
 
 /* ============ SCALE INPUT ============ */
