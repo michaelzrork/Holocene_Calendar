@@ -1031,6 +1031,21 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Click-to-lock behavior
     range.addEventListener('click', (e) => {
         e.stopPropagation();
+        
+        // In hide-labels mode, only respond to clicks on dots or visible range bars
+        const hideLabelsMode = document.body.classList.contains('hide-labels');
+        if (hideLabelsMode) {
+            const dot = range.querySelector('.event-dot');
+            const rangeBar = range.querySelector('.range-bar-indicator');
+            const clickedOnDot = dot && dot.contains(e.target);
+            const clickedOnBar = rangeBar && rangeBar.contains(e.target) && 
+                                 window.getComputedStyle(rangeBar).opacity > 0;
+            
+            if (!clickedOnDot && !clickedOnBar) {
+                return; // Ignore click on hidden card area
+            }
+        }
+        
         handleEventClick(range, zIndex);
     });
     
@@ -1126,6 +1141,18 @@ function createEvent(eventData, index) {
     // Click-to-lock behavior
     event.addEventListener('click', (e) => {
         e.stopPropagation();
+        
+        // In hide-labels mode, only respond to clicks on dots
+        const hideLabelsMode = document.body.classList.contains('hide-labels');
+        if (hideLabelsMode) {
+            const dot = event.querySelector('.event-dot');
+            const clickedOnDot = dot && dot.contains(e.target);
+            
+            if (!clickedOnDot) {
+                return; // Ignore click on hidden card area
+            }
+        }
+        
         handleEventClick(event, zIndex);
     });
     
@@ -1241,6 +1268,9 @@ function setupSmartHover() {
         const movingUp = lastY !== null && e.clientY < lastY;
         lastY = e.clientY;
         
+        // Check if we're in hide-labels mode
+        const hideLabelsMode = document.body.classList.contains('hide-labels');
+        
         // Get all event elements in the track
         const allEvents = track.querySelectorAll('.event');
         
@@ -1248,28 +1278,55 @@ function setupSmartHover() {
         const eventsUnderCursor = [];
         
         allEvents.forEach(eventEl => {
-            const rect = eventEl.getBoundingClientRect();
-            let isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
-                            e.clientY >= rect.top && e.clientY <= rect.bottom);
+            let isUnder = false;
             
-            // Also check range bar if it exists
-            if (!isUnder) {
-                const rangeBar = eventEl.querySelector('.range-bar-indicator');
-                if (rangeBar) {
-                    const barRect = rangeBar.getBoundingClientRect();
-                    isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
-                               e.clientY >= barRect.top && e.clientY <= barRect.bottom);
-                }
-            }
-            
-            // Also check the dot
-            if (!isUnder) {
+            if (hideLabelsMode) {
+                // In hide-labels mode, only check dot and visible range bar
                 const dot = eventEl.querySelector('.event-dot');
                 if (dot) {
                     const dotRect = dot.getBoundingClientRect();
                     // Expand dot hit area a bit
-                    isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
-                               e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
+                    if (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
+                        e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5) {
+                        isUnder = true;
+                    }
+                }
+                
+                if (!isUnder) {
+                    const rangeBar = eventEl.querySelector('.range-bar-indicator');
+                    if (rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
+                        const barRect = rangeBar.getBoundingClientRect();
+                        if (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                            e.clientY >= barRect.top && e.clientY <= barRect.bottom) {
+                            isUnder = true;
+                        }
+                    }
+                }
+            } else {
+                // Normal mode: check card, dot, and range bar
+                const rect = eventEl.getBoundingClientRect();
+                isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
+                           e.clientY >= rect.top && e.clientY <= rect.bottom);
+                
+                // Also check range bar if it exists
+                if (!isUnder) {
+                    const rangeBar = eventEl.querySelector('.range-bar-indicator');
+                    if (rangeBar) {
+                        const barRect = rangeBar.getBoundingClientRect();
+                        isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                                   e.clientY >= barRect.top && e.clientY <= barRect.bottom);
+                    }
+                }
+                
+                // Also check the dot
+                if (!isUnder) {
+                    const dot = eventEl.querySelector('.event-dot');
+                    if (dot) {
+                        const dotRect = dot.getBoundingClientRect();
+                        // Expand dot hit area a bit
+                        isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
+                                   e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
+                    }
                 }
             }
             
