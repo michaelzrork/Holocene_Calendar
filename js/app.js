@@ -20,6 +20,7 @@ const STATE = {
     lockedEvent: null,      // Currently locked/focused event element
     hoveredEvent: null,     // Currently hovered event element (smart hover)
     spreadRanges: true,     // Whether to spread ranges into channels
+    showAges: true,         // Whether to show technological ages
 };
 
 // ============ CHANNEL SYSTEM FOR RANGES ============
@@ -621,6 +622,8 @@ function setupRangeToggle() {
         } else {
             document.body.classList.remove('show-ranges');
         }
+        // Re-render to update channel assignments and z-indexes
+        renderTimeline();
     });
 }
 
@@ -631,12 +634,21 @@ function setupAgeToggle() {
     const toggle = document.getElementById('showAgesToggle');
     if (!toggle) return;
     
+    // Initialize based on checkbox state
+    STATE.showAges = toggle.checked;
+    if (toggle.checked) {
+        document.body.classList.add('show-ages');
+    }
+    
     toggle.addEventListener('change', () => {
+        STATE.showAges = toggle.checked;
         if (toggle.checked) {
             document.body.classList.add('show-ages');
         } else {
             document.body.classList.remove('show-ages');
         }
+        // Re-render to update channel assignments and z-indexes
+        renderTimeline();
     });
 }
 
@@ -934,10 +946,19 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Store the start year for sorting/scrolling purposes
     range.dataset.year = rangeData.year;
     
-    // Assign channel for ranges to avoid overlap (only if spread is enabled)
+    // Determine if this range will be visible (for spread/z-index decisions)
+    // Ages are controlled ONLY by showAges toggle
+    // Non-age ranges are controlled ONLY by showRanges toggle
+    const showRangesToggle = document.getElementById('showRangesToggle');
+    const showAgesToggle = document.getElementById('showAgesToggle');
+    const rangesVisible = showRangesToggle?.checked || false;
+    const agesVisible = showAgesToggle?.checked || false;
+    const isVisibleRange = rangeData.isAge ? agesVisible : rangesVisible;
+    
+    // Assign channel for ranges to avoid overlap (only if spread is enabled AND range is visible)
     let channel = 0;
     let channelOffset = 0;
-    if (STATE.spreadRanges) {
+    if (STATE.spreadRanges && isVisibleRange) {
         channel = findAvailableChannel(side, rangeData.year, rangeData.endYear);
         channelOffset = channel * CHANNEL_CONFIG.channelWidth;
     }
@@ -949,6 +970,11 @@ function createRangeBar(rangeData, index, maxDuration) {
         } else {
             range.style.marginLeft = channelOffset + 'px';
         }
+    }
+    
+    // Set lower z-index for hidden ranges so visible ones take priority
+    if (!isVisibleRange) {
+        range.style.zIndex = '1';
     }
     
     const yearLabel = formatYearDisplay(rangeData);

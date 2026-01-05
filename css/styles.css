@@ -918,7 +918,7 @@ h1 span {
     box-shadow: 0 0 20px var(--bar-border);
 }
 
-body.show-ranges .event.range .range-bar-indicator {
+body.show-ranges .event.range:not(.is-age) .range-bar-indicator {
     opacity: 1;
 }
 
