@@ -1,0 +1,120 @@
+{
+  "id": "bhe",
+  "name": "Before Holocene Era",
+  "color": "#c9a227",
+  "categories": {
+    "civilization": {
+      "name": "Civilizations & Eras",
+      "icon": "🏛️",
+      "color": {
+        "bg": "rgba(100, 149, 237, 0.3)",
+        "border": "#4a7dc4",
+        "text": "#6495ed"
+      }
+    },
+    "war": {
+      "name": "Wars & Conflicts",
+      "icon": "⚔️",
+      "color": {
+        "bg": "rgba(212, 68, 46, 0.3)",
+        "border": "#a33322",
+        "text": "#d4442e"
+      }
+    },
+    "politics": {
+      "name": "Political Events",
+      "icon": "🏴",
+      "color": {
+        "bg": "rgba(138, 43, 226, 0.3)",
+        "border": "#6a20b0",
+        "text": "#8a2be2"
+      }
+    },
+    "science": {
+      "name": "Science & Technology",
+      "icon": "🔬",
+      "color": {
+        "bg": "rgba(64, 224, 208, 0.3)",
+        "border": "#2a9a8a",
+        "text": "#40e0d0"
+      }
+    },
+    "culture": {
+      "name": "Culture & Art",
+      "icon": "🎭",
+      "color": {
+        "bg": "rgba(255, 105, 180, 0.3)",
+        "border": "#cc5090",
+        "text": "#ff69b4"
+      }
+    },
+    "figure": {
+      "name": "Historical Figures",
+      "icon": "👤",
+      "color": {
+        "bg": "rgba(144, 238, 144, 0.3)",
+        "border": "#5a9a5a",
+        "text": "#90ee90"
+      }
+    },
+    "disaster": {
+      "name": "Disasters & Plagues",
+      "icon": "💀",
+      "color": {
+        "bg": "rgba(210, 180, 140, 0.3)",
+        "border": "#b8956c",
+        "text": "#d2b48c"
+      }
+    },
+    "exploration": {
+      "name": "Exploration & Discovery",
+      "icon": "🧭",
+      "color": {
+        "bg": "rgba(255, 220, 50, 0.3)",
+        "border": "#ccaa20",
+        "text": "#ffdc32"
+      }
+    },
+    "economics": {
+      "name": "Trade & Economics",
+      "icon": "💰",
+      "color": {
+        "bg": "rgba(221, 160, 221, 0.3)",
+        "border": "#9a6a9a",
+        "text": "#dda0dd"
+      }
+    },
+    "religion": {
+      "name": "Religion & Philosophy",
+      "icon": "✝️",
+      "color": {
+        "bg": "rgba(255, 255, 255, 0.3)",
+        "border": "#aaaaaa",
+        "text": "#e5e3de"
+      }
+    },
+    "geological": {
+      "name": "Geological Events",
+      "icon": "🌋",
+      "color": {
+        "bg": "rgba(34, 139, 34, 0.3)",
+        "border": "#228b22",
+        "text": "#32cd32"
+      }
+    }
+  },
+  "events": [
+    {
+      "year": "c. 65000 BCE",
+      "endYear": "c. 50000 BCE",
+      "title": "Peopling of Sahul (Australia)",
+      "desc": "Humans cross the Wallace Line to colonize Australia, New Guinea, and Tasmania—the earliest evidence of advanced maritime capability. Required open-ocean voyages and represents the oldest continuous culture on Earth. Archaeological and genetic dating differ by 15,000 years, an active scientific debate.",
+      "source": "https://en.wikipedia.org/wiki/Early_human_migrations#Sahul",
+      "categories": [
+        "exploration",
+        "civilization"
+      ],
+      "type": "range"
+    }
+  ]
+}

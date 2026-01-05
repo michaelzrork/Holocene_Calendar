@@ -119,18 +119,6 @@
       "ageColor": "#8b7765"
     },
     {
-      "year": "c. 65000 BCE",
-      "endYear": "c. 50000 BCE",
-      "title": "Peopling of Sahul (Australia)",
-      "desc": "Humans cross the Wallace Line to colonize Australia, New Guinea, and Tasmania—the earliest evidence of advanced maritime capability. Required open-ocean voyages and represents the oldest continuous culture on Earth. Archaeological and genetic dating differ by 15,000 years, an active scientific debate.",
-      "source": "https://en.wikipedia.org/wiki/Early_human_migrations#Sahul",
-      "categories": [
-        "exploration",
-        "civilization"
-      ],
-      "type": "range"
-    },
-    {
       "year": "c. 9700 BCE",
       "title": "Holocene Epoch Begins",
       "desc": "The geological epoch marking the end of the last Ice Age and the start of the current warm interval. Begins approximately 11,700 years before present and coincides with major human transitions to sedentism and agriculture.",

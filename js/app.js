@@ -19,7 +19,34 @@ const STATE = {
     filterMode: 'all',      // 'all' = show all, 'filtered' = show only active
     lockedEvent: null,      // Currently locked/focused event element
     hoveredEvent: null,     // Currently hovered event element (smart hover)
+    spreadRanges: true,     // Whether to spread ranges into channels
 };
+
+// ============ CHANNEL SYSTEM FOR RANGES ============
+const CHANNEL_CONFIG = {
+    channelWidth: 20,       // Pixels per channel (range bar width 12px + 8px gap)
+    maxChannels: 15,
+};
+
+let channelOccupancy = { left: [], right: [] };
+
+function resetChannels() {
+    channelOccupancy = { left: [], right: [] };
+}
+
+function findAvailableChannel(side, startYear, endYear) {
+    const channels = channelOccupancy[side];
+    // Start at channel 1 so ALL ranges are offset from center (channel 0 unused)
+    for (let i = 1; i <= CHANNEL_CONFIG.maxChannels; i++) {
+        if (!channels[i]) channels[i] = [];
+        const occupied = channels[i].some(r => !(endYear < r.start || startYear > r.end));
+        if (!occupied) {
+            channels[i].push({ start: startYear, end: endYear });
+            return i;
+        }
+    }
+    return CHANNEL_CONFIG.maxChannels;
+}
 
 // ============ DATE CONVERSION UTILITIES ============
 
@@ -583,6 +610,11 @@ function setupRangeToggle() {
     const toggle = document.getElementById('showRangesToggle');
     if (!toggle) return;
     
+    // Initialize based on checkbox state
+    if (toggle.checked) {
+        document.body.classList.add('show-ranges');
+    }
+    
     toggle.addEventListener('change', () => {
         if (toggle.checked) {
             document.body.classList.add('show-ranges');
@@ -605,6 +637,43 @@ function setupAgeToggle() {
         } else {
             document.body.classList.remove('show-ages');
         }
+    });
+}
+
+/**
+ * Setup the "Show Labels" toggle (labels hidden when unchecked)
+ */
+function setupShowLabelsToggle() {
+    const toggle = document.getElementById('showLabelsToggle');
+    if (!toggle) return;
+    
+    // Initialize based on checkbox state (if unchecked, hide labels)
+    if (!toggle.checked) {
+        document.body.classList.add('hide-labels');
+    }
+    
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            document.body.classList.remove('hide-labels');
+        } else {
+            document.body.classList.add('hide-labels');
+        }
+    });
+}
+
+/**
+ * Setup the "Spread Ranges" toggle
+ */
+function setupSpreadRangesToggle() {
+    const toggle = document.getElementById('spreadRangesToggle');
+    if (!toggle) return;
+    
+    // Initialize based on checkbox state
+    STATE.spreadRanges = toggle.checked;
+    
+    toggle.addEventListener('change', () => {
+        STATE.spreadRanges = toggle.checked;
+        renderTimeline();
     });
 }
 
@@ -677,6 +746,7 @@ function setupAgeToggle() {
 function setupSidebarControls() {
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
+    autoOpenWidth = 1600;
     
     menuBtn?.addEventListener('click', () => {
         sidebar?.classList.toggle('open');
@@ -687,12 +757,13 @@ function setupSidebarControls() {
         if (!sidebar?.classList.contains('open')) return;
         if (sidebar.contains(e.target)) return;
         if (menuBtn.contains(e.target)) return;
+        if (window.innerWidth > autoOpenWidth) return;
         
         sidebar.classList.remove('open');
     });
     
     // Start open on wide screens
-    if (window.innerWidth > 1600) {
+    if (window.innerWidth > autoOpenWidth) {
         sidebar?.classList.add('open');
     }
 }
@@ -863,6 +934,23 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Store the start year for sorting/scrolling purposes
     range.dataset.year = rangeData.year;
     
+    // Assign channel for ranges to avoid overlap (only if spread is enabled)
+    let channel = 0;
+    let channelOffset = 0;
+    if (STATE.spreadRanges) {
+        channel = findAvailableChannel(side, rangeData.year, rangeData.endYear);
+        channelOffset = channel * CHANNEL_CONFIG.channelWidth;
+    }
+    
+    // Apply channel offset - push card further from center
+    if (channelOffset > 0) {
+        if (side === 'left') {
+            range.style.marginRight = channelOffset + 'px';
+        } else {
+            range.style.marginLeft = channelOffset + 'px';
+        }
+    }
+    
     const yearLabel = formatYearDisplay(rangeData);
     
     // Get color from first active category
@@ -894,9 +982,12 @@ function createRangeBar(rangeData, index, maxDuration) {
                         background-color: var(--bar-bg); 
                         border-color: var(--bar-border);"></div>` : '';
     
+    // Connector width extends based on channel
+    const connectorWidth = 60 + channelOffset;
+    
     range.innerHTML = `
         <div class="content" style="border-top: 5px solid ${borderColor}">
-            <div class="connector" style="background: ${color.border}"></div>
+            <div class="connector" style="background: ${color.border}; width: ${connectorWidth}px"></div>
             <div class="event-dot" style="background: ${borderColor}; box-shadow: 0 0 0 1px ${borderColor}"></div>
             ${rangeBarHtml}
             <div class="event-header">
@@ -1132,8 +1223,29 @@ function setupSmartHover() {
         
         allEvents.forEach(eventEl => {
             const rect = eventEl.getBoundingClientRect();
-            const isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
+            let isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
                             e.clientY >= rect.top && e.clientY <= rect.bottom);
+            
+            // Also check range bar if it exists
+            if (!isUnder) {
+                const rangeBar = eventEl.querySelector('.range-bar-indicator');
+                if (rangeBar) {
+                    const barRect = rangeBar.getBoundingClientRect();
+                    isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                               e.clientY >= barRect.top && e.clientY <= barRect.bottom);
+                }
+            }
+            
+            // Also check the dot
+            if (!isUnder) {
+                const dot = eventEl.querySelector('.event-dot');
+                if (dot) {
+                    const dotRect = dot.getBoundingClientRect();
+                    // Expand dot hit area a bit
+                    isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
+                               e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
+                }
+            }
             
             if (isUnder) {
                 eventsUnderCursor.push(eventEl);
@@ -1222,6 +1334,7 @@ function renderTimeline() {
     }
     
     track.innerHTML = '';
+    resetChannels(); // Reset channel assignments for range events
     
     const currentYear = getCurrentHoloceneYear();
     
@@ -1732,7 +1845,9 @@ async function init() {
     setupNavButtons();
     setupFilterControls();
     setupRangeToggle();
+    setupSpreadRangesToggle();
     setupAgeToggle();
+    setupShowLabelsToggle();
     // setupMobileControls();
     setupSidebarControls()
     setupClickAwayUnlock();
