@@ -1073,9 +1073,8 @@
       "desc": "Scandinavian seafarers explore, trade, and raid across Europe, reaching Iceland, Greenland, and North America centuries before Columbus.",
       "source": "https://en.wikipedia.org/wiki/Viking_Age",
       "categories": [
-        "exploration",
         "civilization",
-        "war"
+        "exploration"
       ],
       "type": "range"
     },

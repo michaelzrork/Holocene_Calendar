@@ -1598,7 +1598,7 @@ function updateYearDisplay() {
     // Update CE/BCE display
     const converted = fromHoloceneYear(displayYear);
     if (yearInputCE) yearInputCE.value = converted.year;
-    if (yearCELabel) yearCELabel.textContent = converted.era === 'BCE' ? 'BCE' : 'CE';
+    if (yearCELabel) yearCELabel.textContent = converted.era === 'BCE' ? 'BCE' : 'CE\u00A0';
     
     if (scrollProgress) {
         const scrollPercent = (displayYear / currentYear) * 100;

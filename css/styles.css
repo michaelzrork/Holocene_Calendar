@@ -225,6 +225,8 @@ body {
     align-items: flex-end;
     gap: 12px;
     flex: 1;
+    justify-content: flex-start; 
+    flex-direction: row-reverse; /* use to position year display in header bar: row for left side, row-reverse for right */
 }
 
 .year-ce {
@@ -244,6 +246,7 @@ body {
     text-align: left;
     outline: none;
     padding: 0;
+    text-align:end;
 }
 
 .year-ce .year-label {
@@ -263,7 +266,8 @@ body {
 .year-he {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-content: baseline;
+    align-items: flex-end;
 }
 
 .year-he .year-input {
@@ -273,7 +277,7 @@ body {
     background: transparent;
     border: none;
     width: 130px;
-    text-align: left;
+    text-align:end;
     outline: none;
     padding: 0;
 }
@@ -556,7 +560,8 @@ h1 span {
     height: 26px;
     background: var(--border-gray);
     border-radius: 13px;
-    border: 1px solid var(--filter-color, var(--gold));
+    /* border: 1px solid var(--filter-color, var(--gold)); */
+    border: 1px solid var(--bone-dim, var(--gold));
     transition: all 0.3s ease;
     flex-shrink: 0;
 }
@@ -590,6 +595,10 @@ h1 span {
 
 .filter-option:hover .filter-option-text {
     color: var(--filter-color, var(--gold));
+}
+
+.filter-option:hover .filter-toggle {
+    border-color: var(--filter-color, var(--gold));
 }
 
 /* ============ TIMELINE CONTAINER ============ */
