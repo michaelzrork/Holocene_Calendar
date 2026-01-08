@@ -982,7 +982,7 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Get color from first active category
     const color = getEventColor(rangeData);
     const barBgColor = color.bg.replace('0.3', '0.6'); // More opaque for bar
-    const barBgColorHover = color.bg.replace('0.3', '0.9'); // Even more opaque on hover
+    const barBgColorHover = color.bg.replace('0.3', '1'); // Even more opaque on hover
     const borderColor = color.border; // For card top border
     
     // Set CSS custom properties for hover/lock glow
