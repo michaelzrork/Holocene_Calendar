@@ -8,8 +8,8 @@
       "icon": "📅",
       "color": {
         "bg":"rgba(201, 162, 39, 0.3)",
-        "border":"#8a7019",
-        "text":"#c9a227"
+        "border":"#c9a227",
+        "text":"#8a7019"
       }
     },
     "civilization": {
