@@ -801,7 +801,7 @@ h1 span {
 }
 
 .event.locked {
-    z-index: 500 !important;
+    z-index: 500;
 }
 
 /* Event content */
@@ -1036,12 +1036,8 @@ body.hide-labels .event.locked .event-footer {
     margin-top: 2px;
 }
 
-.event.range.hovered {
-    z-index: 200 !important;
-}
-
 .event.range.locked {
-    z-index: 500 !important;
+    z-index: 500;
 }
 
 /* ============ FOOTER ============ */

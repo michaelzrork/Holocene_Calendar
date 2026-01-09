@@ -1227,6 +1227,12 @@ function setupClickAwayUnlock() {
         // Check if click hit a different card
         const clickedEvent = e.target.closest('.event');
         if (clickedEvent && clickedEvent !== STATE.lockedEvent) {
+            // If clicking on the currently hovered card, always let it through
+            // (hovered cards are previewed above locked, so user can click to lock them)
+            if (clickedEvent === STATE.hoveredEvent) {
+                return;
+            }
+
             // Check if this card is visually behind the locked card
             const lockedRect = STATE.lockedEvent.getBoundingClientRect();
             const clickInLockedBounds = (
@@ -1358,8 +1364,22 @@ function setupSmartHover() {
         
         // Filter out the locked event from hover candidates
         // (locked event stays locked, we hover OTHER events)
-        const hoverCandidates = eventsUnderCursor.filter(el => el !== STATE.lockedEvent);
-        
+        let hoverCandidates = eventsUnderCursor.filter(el => el !== STATE.lockedEvent);
+
+        // If there's a locked event, only allow hovering cards where the mouse
+        // is OUTSIDE the locked card's visual bounds (i.e., hovering the peeking edge)
+        if (STATE.lockedEvent && hoverCandidates.length > 0) {
+            const lockedRect = STATE.lockedEvent.getBoundingClientRect();
+            const mouseInLockedBounds = (
+                e.clientX >= lockedRect.left && e.clientX <= lockedRect.right &&
+                e.clientY >= lockedRect.top && e.clientY <= lockedRect.bottom
+            );
+            if (mouseInLockedBounds) {
+                // Mouse is within locked card bounds - don't hover cards behind it
+                hoverCandidates = [];
+            }
+        }
+
         // If no events under cursor (excluding locked), clear hover
         if (hoverCandidates.length === 0) {
             if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
@@ -1409,8 +1429,8 @@ function setupSmartHover() {
         // Add hover to new
         if (topmostEvent) {
             topmostEvent.classList.add('hovered');
-            // Hovered events go below locked (z-index 500) but above normal
-            topmostEvent.style.zIndex = topmostEvent.classList.contains('range') ? 200 : 100;
+            // Hovered events go ABOVE locked (z-index 500) so previews appear on top
+            topmostEvent.style.zIndex = 600;
         }
         
         STATE.hoveredEvent = topmostEvent;
