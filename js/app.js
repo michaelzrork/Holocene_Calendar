@@ -1031,21 +1031,21 @@ function createRangeBar(rangeData, index, maxDuration) {
     // Click-to-lock behavior
     range.addEventListener('click', (e) => {
         e.stopPropagation();
-        
+
         // In hide-labels mode, only respond to clicks on dots or visible range bars
         const hideLabelsMode = document.body.classList.contains('hide-labels');
         if (hideLabelsMode) {
             const dot = range.querySelector('.event-dot');
             const rangeBar = range.querySelector('.range-bar-indicator');
             const clickedOnDot = dot && dot.contains(e.target);
-            const clickedOnBar = rangeBar && rangeBar.contains(e.target) && 
+            const clickedOnBar = rangeBar && rangeBar.contains(e.target) &&
                                  window.getComputedStyle(rangeBar).opacity > 0;
-            
+
             if (!clickedOnDot && !clickedOnBar) {
                 return; // Ignore click on hidden card area
             }
         }
-        
+
         handleEventClick(range, zIndex);
     });
     
@@ -1141,18 +1141,18 @@ function createEvent(eventData, index) {
     // Click-to-lock behavior
     event.addEventListener('click', (e) => {
         e.stopPropagation();
-        
+
         // In hide-labels mode, only respond to clicks on dots
         const hideLabelsMode = document.body.classList.contains('hide-labels');
         if (hideLabelsMode) {
             const dot = event.querySelector('.event-dot');
             const clickedOnDot = dot && dot.contains(e.target);
-            
+
             if (!clickedOnDot) {
                 return; // Ignore click on hidden card area
             }
         }
-        
+
         handleEventClick(event, zIndex);
     });
     
@@ -1165,44 +1165,44 @@ function createEvent(eventData, index) {
  * Handle click-to-lock behavior for events
  */
 function handleEventClick(eventEl, originalZIndex) {
-    const backdrop = document.getElementById('mobileBackdrop');
-    
     // Get the year from the event's data attribute
     const eventYear = parseFloat(eventEl.dataset.year);
-    
+
     // If clicking the already-locked event, unlock it and collapse
     if (STATE.lockedEvent === eventEl) {
         eventEl.classList.remove('locked');
         eventEl.classList.remove('hovered');
         eventEl.style.zIndex = '';
         STATE.lockedEvent = null;
-        // Also clear from hoveredEvent so it doesn't immediately re-hover
-        STATE.hoveredEvent = null;
-        
-        // Hide backdrop
-        if (backdrop) {
-            backdrop.classList.remove('active');
+        // Clear any hovered event as well (prevents card behind from staying open)
+        if (STATE.hoveredEvent) {
+            STATE.hoveredEvent.classList.remove('hovered');
+            STATE.hoveredEvent.style.zIndex = '';
+            STATE.hoveredEvent = null;
         }
         return;
     }
-    
-    // Unlock any previously locked event (and remove hovered class too)
+
+    // Unlock any previously locked event
     if (STATE.lockedEvent) {
         STATE.lockedEvent.classList.remove('locked');
         STATE.lockedEvent.classList.remove('hovered');
         STATE.lockedEvent.style.zIndex = '';
+        STATE.lockedEvent = null;
     }
-    
+
+    // Clear any hovered event (prevents other cards from staying open)
+    if (STATE.hoveredEvent && STATE.hoveredEvent !== eventEl) {
+        STATE.hoveredEvent.classList.remove('hovered');
+        STATE.hoveredEvent.style.zIndex = '';
+        STATE.hoveredEvent = null;
+    }
+
     // Lock this event
     eventEl.classList.add('locked');
     eventEl.style.zIndex = 500;
     STATE.lockedEvent = eventEl;
-    
-    // Show backdrop
-    if (backdrop) {
-        backdrop.classList.add('active');
-    }
-    
+
     // Scroll to the event's year
     if (!isNaN(eventYear)) {
         scrollToYear(eventYear);
@@ -1210,42 +1210,63 @@ function handleEventClick(eventEl, originalZIndex) {
 }
 
 /**
- * Setup click-away-to-unlock on the document
+ * Setup click-away-to-unlock on the document.
+ * Uses capturing phase to intercept clicks before they reach card elements.
+ * This handles:
+ * - Clicking on empty space closes the locked card
+ * - Clicking on a card behind the locked card (within locked bounds) just closes locked
+ * - Clicking on a separate card lets the click through to switch cards
  */
 function setupClickAwayUnlock() {
-    const backdrop = document.getElementById('mobileBackdrop');
-    
-    // Click on backdrop closes the lightbox
-    if (backdrop) {
-        backdrop.addEventListener('click', () => {
-            if (STATE.lockedEvent) {
+    document.addEventListener('click', (e) => {
+        if (!STATE.lockedEvent) return;
+
+        // If clicking on the locked event itself, let it through to handleEventClick
+        if (STATE.lockedEvent.contains(e.target)) return;
+
+        // Check if click hit a different card
+        const clickedEvent = e.target.closest('.event');
+        if (clickedEvent && clickedEvent !== STATE.lockedEvent) {
+            // Check if this card is visually behind the locked card
+            const lockedRect = STATE.lockedEvent.getBoundingClientRect();
+            const clickInLockedBounds = (
+                e.clientX >= lockedRect.left && e.clientX <= lockedRect.right &&
+                e.clientY >= lockedRect.top && e.clientY <= lockedRect.bottom
+            );
+
+            if (clickInLockedBounds) {
+                // Click is within locked card's visual bounds but hit a card behind it
+                // User intended to tap on locked card - just close it, don't open the one behind
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
                 STATE.lockedEvent.classList.remove('locked');
                 STATE.lockedEvent.classList.remove('hovered');
                 STATE.lockedEvent.style.zIndex = '';
                 STATE.lockedEvent = null;
-                STATE.hoveredEvent = null;
-                backdrop.classList.remove('active');
+                if (STATE.hoveredEvent) {
+                    STATE.hoveredEvent.classList.remove('hovered');
+                    STATE.hoveredEvent.style.zIndex = '';
+                    STATE.hoveredEvent = null;
+                }
+                return;
             }
-        });
-    }
-    
-    document.addEventListener('click', (e) => {
-        // Don't close if clicking on backdrop (handled above)
-        if (e.target === backdrop) return;
-        
-        if (STATE.lockedEvent && !STATE.lockedEvent.contains(e.target)) {
-            STATE.lockedEvent.classList.remove('locked');
-            STATE.lockedEvent.classList.remove('hovered');
-            STATE.lockedEvent.style.zIndex = '';
-            STATE.lockedEvent = null;
-            STATE.hoveredEvent = null;
-            
-            // Hide backdrop
-            if (backdrop) {
-                backdrop.classList.remove('active');
-            }
+
+            // Click is on a card that's visually separate - let it through to switch cards
+            return;
         }
-    });
+
+        // Clicking on empty space - close the locked event
+        STATE.lockedEvent.classList.remove('locked');
+        STATE.lockedEvent.classList.remove('hovered');
+        STATE.lockedEvent.style.zIndex = '';
+        STATE.lockedEvent = null;
+        if (STATE.hoveredEvent) {
+            STATE.hoveredEvent.classList.remove('hovered');
+            STATE.hoveredEvent.style.zIndex = '';
+            STATE.hoveredEvent = null;
+        }
+    }, true); // true = capturing phase
 }
 
 /**
