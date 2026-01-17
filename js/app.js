@@ -29,6 +29,27 @@ const CHANNEL_CONFIG = {
     maxChannels: 15,
 };
 
+/**
+ * Get channel configuration based on viewport width.
+ * On mobile, uses reduced channels to prevent cards from being pushed off-screen.
+ * @returns {object} { maxChannels, channelWidth, maxOffset }
+ */
+function getMobileChannelConfig() {
+    const isMobile = window.innerWidth < 600;
+    if (isMobile) {
+        return {
+            maxChannels: 4,          // Reduced from 15 (prevents extreme offset)
+            channelWidth: 15,        // Reduced from 20
+            maxOffset: 60            // Hard cap: 4 x 15 = 60px max offset
+        };
+    }
+    return {
+        maxChannels: CHANNEL_CONFIG.maxChannels,
+        channelWidth: CHANNEL_CONFIG.channelWidth,
+        maxOffset: CHANNEL_CONFIG.maxChannels * CHANNEL_CONFIG.channelWidth
+    };
+}
+
 let channelOccupancy = { left: [], right: [] };
 
 function resetChannels() {
@@ -37,8 +58,10 @@ function resetChannels() {
 
 function findAvailableChannel(side, startYear, endYear) {
     const channels = channelOccupancy[side];
+    const config = getMobileChannelConfig();
+
     // Start at channel 1 so ALL ranges are offset from center (channel 0 unused)
-    for (let i = 1; i <= CHANNEL_CONFIG.maxChannels; i++) {
+    for (let i = 1; i <= config.maxChannels; i++) {
         if (!channels[i]) channels[i] = [];
         const occupied = channels[i].some(r => !(endYear < r.start || startYear > r.end));
         if (!occupied) {
@@ -46,7 +69,429 @@ function findAvailableChannel(side, startYear, endYear) {
             return i;
         }
     }
-    return CHANNEL_CONFIG.maxChannels;
+    return config.maxChannels;
+}
+
+// ============ TIMELINE ENTRY CLASS ============
+/**
+ * TimelineEntry - New architecture for timeline events
+ *
+ * Key difference from old approach:
+ * - Dot, bar, connector, and card are SIBLING elements (not nested)
+ * - Each can be positioned independently without inheriting parent transforms
+ * - Uses CSS custom properties for dynamic positioning
+ *
+ * DOM Structure:
+ * <div class="timeline-entry" data-year="11861" data-side="left" data-type="range">
+ *   <div class="entry-dot"></div>
+ *   <div class="entry-bar"></div>
+ *   <div class="entry-connector"></div>
+ *   <div class="entry-card">...</div>
+ * </div>
+ */
+class TimelineEntry {
+    constructor(eventData, index) {
+        this.data = eventData;
+        this.index = index;
+        this.side = eventData.side || (index % 2 === 0 ? 'left' : 'right');
+        this.isRange = this.data.endYear !== undefined && this.data.endYear !== null;
+        this.isAge = this.data.isAge || false;
+        this.showRangeBar = this._shouldShowRangeBar();
+
+        // Calculate positions
+        this.startPx = yearToPixels(this.data.year);
+        this.endPx = this.isRange ? yearToPixels(this.data.endYear) : this.startPx;
+        this.barHeight = this.endPx - this.startPx;
+
+        // Channel offset (for spread ranges)
+        this.channel = 0;
+        this.channelOffset = 0;
+
+        // Get colors
+        this.color = getEventColor(this.data);
+
+        // DOM element references
+        this.container = null;
+        this.dot = null;
+        this.bar = null;
+        this.connector = null;
+        this.card = null;
+
+        // State
+        this.isLocked = false;
+        this.isHovered = false;
+        this.isNudged = false;
+        this.nudgeAmount = 0;
+    }
+
+    _shouldShowRangeBar() {
+        if (!this.isRange) return false;
+        const duration = this.data.endYear - this.data.year;
+        return duration >= 1;
+    }
+
+    /**
+     * Assign a channel for this range event (call before render)
+     */
+    assignChannel() {
+        if (!this.showRangeBar) return;
+
+        const showRangesToggle = document.getElementById('showRangesToggle');
+        const showAgesToggle = document.getElementById('showAgesToggle');
+        const rangesVisible = showRangesToggle?.checked || false;
+        const agesVisible = showAgesToggle?.checked || false;
+        const isVisibleRange = this.isAge ? agesVisible : rangesVisible;
+
+        if (STATE.spreadRanges && isVisibleRange) {
+            const config = getMobileChannelConfig();
+            this.channel = findAvailableChannel(this.side, this.data.year, this.data.endYear);
+            this.channelOffset = Math.min(
+                this.channel * config.channelWidth,
+                config.maxOffset
+            );
+        }
+    }
+
+    /**
+     * Create and return the DOM element
+     */
+    render() {
+        // Create container
+        this.container = document.createElement('div');
+        this.container.className = `timeline-entry ${this.side}`;
+        if (this.showRangeBar) this.container.classList.add('has-range');
+        if (this.isAge) this.container.classList.add('is-age');
+
+        this.container.dataset.year = this.data.year;
+        this.container.dataset.side = this.side;
+        this.container.dataset.type = this.showRangeBar ? 'range' : 'point';
+
+        // Position at start year
+        this.container.style.top = `${this.startPx}px`;
+
+        // Set CSS custom properties for colors
+        this.container.style.setProperty('--entry-color', this.color.border);
+        this.container.style.setProperty('--entry-bg', this.color.bg);
+        this.container.style.setProperty('--entry-text', this.color.text);
+        this.container.style.setProperty('--entry-glow', this.color.bg.replace('0.3', '0.5'));
+
+        // Set channel offset as CSS custom property
+        this.container.style.setProperty('--channel-offset', `${this.channelOffset}px`);
+
+        // Create dot (always present)
+        this._createDot();
+
+        // Create bar (only for range events with visible bar)
+        if (this.showRangeBar) {
+            this._createBar();
+        }
+
+        // Create connector
+        this._createConnector();
+
+        // Create card
+        this._createCard();
+
+        // Set up event handlers
+        this._setupEventHandlers();
+
+        // Store reference to this instance on the DOM element
+        this.container._timelineEntry = this;
+
+        return this.container;
+    }
+
+    _createDot() {
+        this.dot = document.createElement('div');
+        this.dot.className = 'entry-dot';
+        // Dot is always at timeline center (50%)
+        // Visibility controlled by CSS based on whether bar is visible
+        this.container.appendChild(this.dot);
+    }
+
+    _createBar() {
+        this.bar = document.createElement('div');
+        this.bar.className = 'entry-bar';
+
+        // Read dot dimensions from CSS variables (defined in :root)
+        const rootStyles = getComputedStyle(document.documentElement);
+        const dotInnerSize = parseFloat(rootStyles.getPropertyValue('--dot-inner-size')) || 10;
+        const dotBorder = parseFloat(rootStyles.getPropertyValue('--dot-border')) || 2;
+        const dotOutline = parseFloat(rootStyles.getPropertyValue('--dot-outline')) || 1;
+
+        // Calculate total diameter and offset
+        const dotTotalDiameter = dotInnerSize + (dotBorder * 2) + (dotOutline * 2);
+        const dotOffset = dotTotalDiameter / 2;
+
+        const adjustedBarHeight = this.barHeight + (dotOffset * 2);
+
+        // Set bar height (with dot offset added)
+        this.bar.style.setProperty('--bar-height', `${adjustedBarHeight}px`);
+
+        // Position bar to start above the dot center
+        this.bar.style.top = `${-dotOffset}px`;
+
+        // Bar colors
+        const barBgColor = this.color.bg.replace('0.3', '0.6');
+        const barBgHover = this.color.bg.replace('0.3', '1');
+        this.bar.style.setProperty('--bar-bg', barBgColor);
+        this.bar.style.setProperty('--bar-bg-hover', barBgHover);
+        this.bar.style.setProperty('--bar-border', this.color.border);
+
+        // Apply channel offset for spread ranges
+        // Bar moves away from center based on channel assignment
+        if (this.channelOffset > 0) {
+            // Store offset for potential centering later
+            this.bar.dataset.channelOffset = this.channelOffset;
+            if (this.side === 'left') {
+                // Left side: bar moves left (negative X from center)
+                this.bar.style.left = `calc(50% - ${this.channelOffset}px)`;
+            } else {
+                // Right side: bar moves right (positive X from center)
+                this.bar.style.left = `calc(50% + ${this.channelOffset}px)`;
+            }
+        }
+
+        this.container.appendChild(this.bar);
+    }
+
+    _createConnector() {
+        this.connector = document.createElement('div');
+        this.connector.className = 'entry-connector';
+
+        // Base connector width (extends based on channel offset)
+        const baseWidth = window.innerWidth < 600 ? 35 : 60;
+        const connectorWidth = baseWidth + this.channelOffset;
+
+        // Set width directly on connector
+        this.connector.style.width = `${connectorWidth}px`;
+
+        // Also set CSS variable on container for card positioning
+        this.container.style.setProperty('--connector-width', `${connectorWidth}px`);
+
+        // When ranges are spread, the connector endpoint needs to reach the bar position
+        // Bar uses left: calc(50% - offset) for left side, left: calc(50% + offset) for right
+        // Connector anchors at the bar position, extending toward the card
+        if (this.channelOffset > 0) {
+            if (this.side === 'left') {
+                // Left card: bar is at 50% - offset (to the left of center)
+                // Connector right edge should be where bar is
+                // In CSS 'right' property: right: X means right edge is X from right side
+                // So right: calc(50% + offset) places right edge at 50% - offset from left
+                this.connector.style.right = `calc(50% + ${this.channelOffset}px)`;
+            } else {
+                // Right card: bar is at 50% + offset (to the right of center)
+                // Connector left edge should be where bar is
+                // left: calc(50% + offset) places left edge at 50% + offset from left
+                this.connector.style.left = `calc(50% + ${this.channelOffset}px)`;
+            }
+        }
+
+        this.container.appendChild(this.connector);
+    }
+
+    _createCard() {
+        this.card = document.createElement('div');
+        this.card.className = 'entry-card';
+        this.card.style.borderTop = `5px solid ${this.color.border}`;
+
+        const yearLabel = formatYearDisplay(this.data);
+        const sourceLink = this.data.source
+            ? `<a href="${this.data.source}" target="_blank" rel="noopener noreferrer" class="event-source" style="color: ${this.color.text}">Learn more →</a>`
+            : '';
+        const categoryIcons = getCategoryIcons(this.data);
+
+        // Use range-dates for ranges, event-year-text for points
+        const dateClass = this.showRangeBar ? 'range-dates' : 'event-year-text';
+
+        this.card.innerHTML = `
+            <div class="event-header">
+                <span class="event-title">${this.data.title}</span>
+            </div>
+            <span class="${dateClass}" style="color: ${this.color.text}">${yearLabel}</span>
+            <p class="event-desc">${this.data.desc || ''}</p>
+            <div class="event-footer">
+                ${categoryIcons}
+                ${sourceLink}
+            </div>
+        `;
+
+        this.container.appendChild(this.card);
+    }
+
+    _setupEventHandlers() {
+        // Click handler on card - captures clicks and prevents passthrough
+        // Use capturing phase to intercept before bubbling
+        this.card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            // In hide-labels mode and card is not locked/hovered, ignore card clicks
+            const hideLabelsMode = document.body.classList.contains('hide-labels');
+            if (hideLabelsMode && !this.isLocked && !this.isHovered) {
+                return;
+            }
+
+            this._handleClick(e);
+        }, true); // Capturing phase
+
+        // Click handler on container for dot/bar clicks
+        this.container.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            // If click was on the card, it's already handled above
+            if (this.card.contains(e.target)) {
+                return;
+            }
+
+            // In hide-labels mode, only respond to clicks on dot or bar
+            const hideLabelsMode = document.body.classList.contains('hide-labels');
+            if (hideLabelsMode) {
+                const clickedOnDot = this.dot && this.dot.contains(e.target);
+                const clickedOnBar = this.bar && this.bar.contains(e.target) &&
+                                     window.getComputedStyle(this.bar).opacity > 0;
+                if (!clickedOnDot && !clickedOnBar) {
+                    return;
+                }
+            }
+
+            this._handleClick(e);
+        });
+
+    }
+
+    _handleClick(e) {
+        // This will be integrated with the existing handleEventClick system
+        // For now, toggle locked state and call the existing handler
+        handleEventClick(this.container, 9);
+    }
+
+    /**
+     * Nudge the card into viewport on mobile
+     * With new architecture, elements are independent - no counter-nudging needed
+     */
+    nudgeIntoViewport() {
+        if (!this.card) return 0;
+
+        const rect = this.card.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const padding = 10;
+
+        let nudge = 0;
+        if (rect.left < padding) {
+            nudge = padding - rect.left;
+        } else if (rect.right > viewportWidth - padding) {
+            nudge = (viewportWidth - padding) - rect.right;
+        }
+
+        // For range events on mobile, center the bar (remove spread offset)
+        // This is done by setting left back to 50% (overriding any channel offset)
+        const isMobile = viewportWidth < 600;
+        if (this.showRangeBar && isMobile && this.bar && this.channelOffset > 0) {
+            // Store original position for reset
+            this.bar.dataset.originalLeft = this.bar.style.left;
+            // Center the bar (remove spread offset)
+            this.bar.style.left = '50%';
+            this.bar.dataset.wasCentered = 'true';
+
+            // Also reset connector to center position (remove spread offset)
+            if (this.connector) {
+                if (this.side === 'left') {
+                    this.connector.dataset.originalRight = this.connector.style.right;
+                    this.connector.style.right = '50%';
+                } else {
+                    this.connector.dataset.originalLeft = this.connector.style.left;
+                    this.connector.style.left = '50%';
+                }
+                // Reset connector width to base width (without channel offset)
+                const baseWidth = window.innerWidth < 600 ? 35 : 60;
+                this.connector.dataset.originalWidth = this.connector.style.width;
+                this.connector.style.width = `${baseWidth}px`;
+                this.connector.dataset.wasCentered = 'true';
+            }
+        }
+
+        if (nudge === 0 && !(this.showRangeBar && isMobile && this.channelOffset > 0)) {
+            return 0;
+        }
+
+        if (nudge !== 0) {
+            this.isNudged = true;
+            this.nudgeAmount = nudge;
+
+            // Only move the card - dot and bar stay at timeline center
+            this.card.style.transform = `translateY(-50%) translateX(${nudge}px)`;
+
+            // Adjust connector to bridge the gap
+            // The connector needs to stretch/shrink to connect card edge to timeline
+            if (this.connector) {
+                const baseWidth = parseInt(getComputedStyle(this.connector).getPropertyValue('--connector-width')) || 35;
+                if (this.side === 'left') {
+                    // Left card nudged right: connector shrinks
+                    this.connector.style.width = `${Math.max(0, baseWidth - nudge)}px`;
+                } else {
+                    // Right card nudged left: connector shrinks (nudge is negative)
+                    this.connector.style.width = `${Math.max(0, baseWidth + nudge)}px`;
+                }
+            }
+        }
+
+        return 1;
+    }
+
+    /**
+     * Reset nudge to original position
+     */
+    resetNudge() {
+        if (!this.isNudged && !this.bar?.dataset.wasCentered && !this.connector?.dataset.wasCentered) return;
+
+        this.isNudged = false;
+        this.nudgeAmount = 0;
+
+        if (this.card) {
+            this.card.style.transform = '';
+        }
+
+        // Restore connector to its spread position
+        if (this.connector && this.connector.dataset.wasCentered) {
+            this.connector.style.width = this.connector.dataset.originalWidth || '';
+            if (this.side === 'left') {
+                this.connector.style.right = this.connector.dataset.originalRight || '';
+            } else {
+                this.connector.style.left = this.connector.dataset.originalLeft || '';
+            }
+            delete this.connector.dataset.wasCentered;
+            delete this.connector.dataset.originalWidth;
+            delete this.connector.dataset.originalRight;
+            delete this.connector.dataset.originalLeft;
+        } else if (this.connector) {
+            // Just reset width if not spread-centered
+            this.connector.style.width = '';
+        }
+
+        // Restore bar to its spread position
+        if (this.bar && this.bar.dataset.wasCentered) {
+            this.bar.style.left = this.bar.dataset.originalLeft || '';
+            delete this.bar.dataset.wasCentered;
+            delete this.bar.dataset.originalLeft;
+        }
+    }
+
+    /**
+     * Set hover state
+     */
+    setHovered(hovered) {
+        this.isHovered = hovered;
+        this.container.classList.toggle('hovered', hovered);
+    }
+
+    /**
+     * Set locked state
+     */
+    setLocked(locked) {
+        this.isLocked = locked;
+        this.container.classList.toggle('locked', locked);
+    }
 }
 
 // ============ DATE CONVERSION UTILITIES ============
@@ -959,8 +1404,12 @@ function createRangeBar(rangeData, index, maxDuration) {
     let channel = 0;
     let channelOffset = 0;
     if (STATE.spreadRanges && isVisibleRange) {
+        const config = getMobileChannelConfig();
         channel = findAvailableChannel(side, rangeData.year, rangeData.endYear);
-        channelOffset = channel * CHANNEL_CONFIG.channelWidth;
+        channelOffset = Math.min(
+            channel * config.channelWidth,
+            config.maxOffset
+        );
     }
     
     // Apply channel offset - push card further from center
@@ -1162,17 +1611,367 @@ function createEvent(eventData, index) {
 }
 
 /**
+ * Nudge a card horizontally so it's fully visible within the viewport.
+ * Keeps dot stationary on timeline, moves range bar to timeline center,
+ * and adjusts connector width to bridge the gap.
+ */
+function nudgeCardIntoViewport(eventEl) {
+    const content = eventEl.querySelector('.content');
+    if (!content) return 0;
+
+    const rect = content.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const padding = 10; // Minimum padding from viewport edge
+
+    const dot = content.querySelector('.event-dot');
+    const rangeBar = content.querySelector('.range-bar-indicator');
+    const connector = content.querySelector('.connector');
+    const isLeft = eventEl.classList.contains('left');
+    const isRange = eventEl.classList.contains('range');
+
+    // Check if card needs nudging into viewport
+    let needsNudge = false;
+    if (rect.left < padding) {
+        needsNudge = true;
+    } else if (rect.right > viewportWidth - padding) {
+        needsNudge = true;
+    }
+
+    // For range events, ALWAYS center the bar (even if card doesn't need nudging)
+    // For point events, only act if card needs nudging
+    if (!needsNudge && !isRange) {
+        return 0;
+    }
+
+    // Disable ALL transitions before any changes to prevent animation
+    if (dot) dot.style.transition = 'none';
+    if (rangeBar) rangeBar.style.transition = 'none';
+    if (connector) connector.style.transition = 'none';
+
+    // Store original values for reset
+    eventEl.dataset.originalTransform = eventEl.style.transform || '';
+
+    if (isRange && rangeBar) {
+        // RANGE EVENTS: Nudge card into view, center bar on timeline
+
+        let nudge = 0;
+        if (rect.left < padding) {
+            nudge = padding - rect.left;
+        } else if (rect.right > viewportWidth - padding) {
+            nudge = (viewportWidth - padding) - rect.right;
+        }
+
+        // Center the bar - CSS .centered class positions bar at viewport center
+        // This happens ALWAYS for range events on mobile (even if card doesn't need nudging)
+        rangeBar.classList.add('centered');
+        rangeBar.style.transform = ''; // Clear inline transform so CSS .centered can take effect
+        eventEl.dataset.rangeBarCentered = 'true';
+
+        // If card needs nudging, apply transforms
+        if (nudge !== 0) {
+            // Nudge the card into view
+            eventEl.dataset.nudgeAmount = nudge;
+            eventEl.style.transform = `translateY(-50%) translateX(${nudge}px)`;
+
+            // Counter-nudge dot so it stays stationary on timeline
+            if (dot) {
+                const dotTransform = isLeft ? 'translate(50%, -50%)' : 'translate(-50%, -50%)';
+                dot.dataset.originalTransform = dotTransform;
+                dot.style.transform = `${dotTransform} translateX(${-nudge}px)`;
+            }
+
+            // Adjust connector to bridge card edge to the centered bar
+            if (connector) {
+                const currentWidth = connector.offsetWidth;
+                connector.dataset.originalWidth = currentWidth;
+
+                if (isLeft) {
+                    // Left card moving right: shrink connector, shift it right
+                    const newWidth = currentWidth - nudge;
+                    connector.style.width = `${Math.max(0, newWidth)}px`;
+                    connector.style.transform = `translateY(-50%) translateX(${-nudge}px)`;
+                } else {
+                    // Right card moving left: grow connector, shift it left
+                    const newWidth = currentWidth + nudge; // nudge is negative for right cards
+                    connector.style.width = `${Math.max(0, newWidth)}px`;
+                    connector.style.transform = `translateY(-50%) translateX(${-nudge}px)`;
+                }
+                connector.dataset.originalTransformConn = 'translateY(-50%)';
+            }
+        }
+
+        return 1; // Range events always return 1 to indicate processing occurred
+
+    } else if (needsNudge) {
+        // POINT EVENTS: Simple nudge, keep dot in place
+
+        let nudge = 0;
+        if (rect.left < padding) {
+            nudge = padding - rect.left;
+        } else if (rect.right > viewportWidth - padding) {
+            nudge = (viewportWidth - padding) - rect.right;
+        }
+
+        eventEl.dataset.nudgeAmount = nudge;
+
+        // Apply horizontal nudge to card
+        eventEl.style.transform = `translateY(-50%) translateX(${nudge}px)`;
+
+        // Counter-nudge dot so it stays stationary on timeline
+        if (dot) {
+            const dotTransform = isLeft ? 'translate(50%, -50%)' : 'translate(-50%, -50%)';
+            dot.dataset.originalTransform = dotTransform;
+            dot.style.transform = `${dotTransform} translateX(${-nudge}px)`;
+        }
+
+        // Adjust connector to bridge card to dot
+        if (connector) {
+            const currentWidth = connector.offsetWidth;
+            connector.dataset.originalWidth = currentWidth;
+
+            if (isLeft) {
+                // Left card moving right: shrink connector, shift it right
+                const newWidth = currentWidth - nudge;
+                connector.style.width = `${Math.max(0, newWidth)}px`;
+                connector.style.transform = `translateY(-50%) translateX(${-nudge}px)`;
+                connector.dataset.originalTransformConn = 'translateY(-50%)';
+            } else {
+                // Right card moving left: shrink connector, shift it left
+                const newWidth = currentWidth + nudge; // nudge is negative for right cards
+                connector.style.width = `${Math.max(0, newWidth)}px`;
+                connector.style.transform = `translateY(-50%) translateX(${-nudge}px)`;
+                connector.dataset.originalTransformConn = 'translateY(-50%)';
+            }
+        }
+    }
+
+    // Re-enable transitions after browser paints
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            if (dot) dot.style.transition = '';
+            if (rangeBar) rangeBar.style.transition = '';
+            if (connector) connector.style.transition = '';
+        });
+    });
+
+    return needsNudge ? 1 : 0;
+}
+
+/**
+ * Reset a card's horizontal nudge back to original position.
+ */
+function resetCardNudge(eventEl) {
+    // Check if we need to reset anything
+    if (eventEl.dataset.originalTransform === undefined &&
+        eventEl.dataset.rangeBarCentered === undefined) {
+        return;
+    }
+
+    const content = eventEl.querySelector('.content');
+    const dot = content?.querySelector('.event-dot');
+    const rangeBar = content?.querySelector('.range-bar-indicator');
+    const connector = content?.querySelector('.connector');
+
+    // Disable transitions to prevent animation on reset
+    if (dot) dot.style.transition = 'none';
+    if (rangeBar) rangeBar.style.transition = 'none';
+    if (connector) connector.style.transition = 'none';
+
+    // Reset card transform
+    if (eventEl.dataset.originalTransform !== undefined) {
+        eventEl.style.transform = eventEl.dataset.originalTransform || 'translateY(-50%)';
+        delete eventEl.dataset.originalTransform;
+    }
+    delete eventEl.dataset.nudgeAmount;
+
+    // Reset range bar centered class
+    if (eventEl.dataset.rangeBarCentered !== undefined) {
+        if (rangeBar) {
+            rangeBar.classList.remove('centered');
+        }
+        delete eventEl.dataset.rangeBarCentered;
+    }
+
+    // Reset dot transform
+    if (dot && dot.dataset.originalTransform !== undefined) {
+        dot.style.transform = dot.dataset.originalTransform;
+        delete dot.dataset.originalTransform;
+    }
+
+    // Reset connector width and transform
+    if (connector && connector.dataset.originalWidth !== undefined) {
+        connector.style.width = '';
+        connector.style.transform = connector.dataset.originalTransformConn || 'translateY(-50%)';
+        delete connector.dataset.originalWidth;
+        delete connector.dataset.originalTransformConn;
+    }
+
+    // Re-enable transitions after browser paints
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            if (dot) dot.style.transition = '';
+            if (rangeBar) rangeBar.style.transition = '';
+            if (connector) connector.style.transition = '';
+        });
+    });
+}
+
+/**
+ * Auto-nudge a collapsed card into viewport on mobile during initial render.
+ * Unlike nudgeCardIntoViewport(), this handles collapsed cards and
+ * counter-nudges dot/range-bar/connector to maintain timeline alignment.
+ * Uses instant positioning (no animation).
+ *
+ * @param {HTMLElement} eventEl - The event element to nudge
+ */
+function autoNudgeCollapsedCard(eventEl) {
+    // Only apply on mobile
+    if (window.innerWidth >= 600) return;
+
+    const content = eventEl.querySelector('.content');
+    if (!content) return;
+
+    // Force layout calculation
+    const rect = content.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const padding = 8; // Minimum padding from edge
+
+    // Calculate required nudge
+    let nudge = 0;
+    if (rect.left < padding) {
+        nudge = padding - rect.left;
+    } else if (rect.right > viewportWidth - padding) {
+        nudge = (viewportWidth - padding) - rect.right;
+    }
+
+    // No nudge needed
+    if (Math.abs(nudge) < 1) return;
+
+    const dot = content.querySelector('.event-dot');
+    const rangeBar = content.querySelector('.range-bar-indicator');
+    const connector = content.querySelector('.connector');
+    const isLeft = eventEl.classList.contains('left');
+
+    // Disable transitions for instant positioning
+    eventEl.style.transition = 'none';
+    if (dot) dot.style.transition = 'none';
+    if (rangeBar) rangeBar.style.transition = 'none';
+    if (connector) connector.style.transition = 'none';
+
+    // Store original state for reset on hover/lock
+    eventEl.dataset.autoNudge = nudge;
+    eventEl.dataset.originalAutoTransform = eventEl.style.transform || 'translateY(-50%)';
+
+    // Apply nudge to card
+    eventEl.style.transform = `translateY(-50%) translateX(${nudge}px)`;
+
+    // Counter-nudge dot to keep it stationary on timeline
+    if (dot) {
+        const baseDotTransform = isLeft ? 'translate(50%, -50%)' : 'translate(-50%, -50%)';
+        dot.dataset.autoOriginalTransform = baseDotTransform;
+        dot.style.transform = `${baseDotTransform} translateX(${-nudge}px)`;
+    }
+
+    // Counter-nudge range bar to keep it on timeline
+    if (rangeBar) {
+        const baseBarTransform = isLeft ? 'translate(50%, 0)' : 'translate(-50%, 0)';
+        rangeBar.dataset.autoOriginalTransform = baseBarTransform;
+        rangeBar.style.transform = `${baseBarTransform} translateX(${-nudge}px)`;
+    }
+
+    // Adjust connector to bridge the gap
+    if (connector) {
+        const currentWidth = parseFloat(getComputedStyle(connector).width) || 35;
+        connector.dataset.autoOriginalWidth = currentWidth;
+
+        // For left cards, nudging right means connector shrinks
+        // For right cards, nudging left means connector shrinks (nudge is negative)
+        const newWidth = isLeft ? (currentWidth - nudge) : (currentWidth + nudge);
+        connector.style.width = `${Math.max(15, newWidth)}px`;
+        connector.style.transform = `translateY(-50%) translateX(${-nudge}px)`;
+    }
+
+    // Re-enable transitions after browser paint
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            eventEl.style.transition = '';
+            if (dot) dot.style.transition = '';
+            if (rangeBar) rangeBar.style.transition = '';
+            if (connector) connector.style.transition = '';
+        });
+    });
+}
+
+/**
+ * Reset auto-nudge when card is clicked/locked (will be re-nudged by nudgeCardIntoViewport)
+ * @param {HTMLElement} eventEl - The event element
+ */
+function resetAutoNudge(eventEl) {
+    if (!eventEl.dataset.autoNudge) return;
+
+    const content = eventEl.querySelector('.content');
+    const dot = content?.querySelector('.event-dot');
+    const rangeBar = content?.querySelector('.range-bar-indicator');
+    const connector = content?.querySelector('.connector');
+
+    // Restore original transforms
+    eventEl.style.transform = eventEl.dataset.originalAutoTransform || 'translateY(-50%)';
+
+    if (dot && dot.dataset.autoOriginalTransform) {
+        dot.style.transform = dot.dataset.autoOriginalTransform;
+        delete dot.dataset.autoOriginalTransform;
+    }
+
+    if (rangeBar && rangeBar.dataset.autoOriginalTransform) {
+        rangeBar.style.transform = rangeBar.dataset.autoOriginalTransform;
+        delete rangeBar.dataset.autoOriginalTransform;
+    }
+
+    if (connector && connector.dataset.autoOriginalWidth) {
+        connector.style.width = '';
+        connector.style.transform = 'translateY(-50%)';
+        delete connector.dataset.autoOriginalWidth;
+    }
+
+    delete eventEl.dataset.autoNudge;
+    delete eventEl.dataset.originalAutoTransform;
+}
+
+/**
  * Handle click-to-lock behavior for events
  */
 function handleEventClick(eventEl, originalZIndex) {
     // Get the year from the event's data attribute
     const eventYear = parseFloat(eventEl.dataset.year);
 
+    // Helper to reset nudge for both architectures
+    const resetNudge = (el) => {
+        if (el._timelineEntry) {
+            // New architecture
+            el._timelineEntry.resetNudge();
+        } else {
+            // Legacy architecture
+            resetCardNudge(el);
+        }
+    };
+
+    // Helper to nudge card into viewport for both architectures
+    const nudgeIntoView = (el) => {
+        if (el._timelineEntry) {
+            // New architecture
+            el._timelineEntry.nudgeIntoViewport();
+        } else {
+            // Legacy architecture
+            nudgeCardIntoViewport(el);
+        }
+    };
+
     // If clicking the already-locked event, unlock it and collapse
     if (STATE.lockedEvent === eventEl) {
         eventEl.classList.remove('locked');
         eventEl.classList.remove('hovered');
         eventEl.style.zIndex = '';
+        resetNudge(eventEl);
         STATE.lockedEvent = null;
         // Clear any hovered event as well (prevents card behind from staying open)
         if (STATE.hoveredEvent) {
@@ -1188,6 +1987,7 @@ function handleEventClick(eventEl, originalZIndex) {
         STATE.lockedEvent.classList.remove('locked');
         STATE.lockedEvent.classList.remove('hovered');
         STATE.lockedEvent.style.zIndex = '';
+        resetNudge(STATE.lockedEvent);
         STATE.lockedEvent = null;
     }
 
@@ -1198,10 +1998,20 @@ function handleEventClick(eventEl, originalZIndex) {
         STATE.hoveredEvent = null;
     }
 
+    // Reset any auto-nudge before applying lock nudge (legacy only)
+    if (!eventEl._timelineEntry) {
+        resetAutoNudge(eventEl);
+    }
+
     // Lock this event
     eventEl.classList.add('locked');
     eventEl.style.zIndex = 500;
     STATE.lockedEvent = eventEl;
+
+    // Nudge card into viewport if needed (after a brief delay for CSS transitions)
+    requestAnimationFrame(() => {
+        nudgeIntoView(eventEl);
+    });
 
     // Scroll to the event's year
     if (!isNaN(eventYear)) {
@@ -1224,8 +2034,8 @@ function setupClickAwayUnlock() {
         // If clicking on the locked event itself, let it through to handleEventClick
         if (STATE.lockedEvent.contains(e.target)) return;
 
-        // Check if click hit a different card
-        const clickedEvent = e.target.closest('.event');
+        // Check if click hit a different card (support both old and new architecture)
+        const clickedEvent = e.target.closest('.event, .timeline-entry');
         if (clickedEvent && clickedEvent !== STATE.lockedEvent) {
             // If clicking on the currently hovered card, always let it through
             // (hovered cards are previewed above locked, so user can click to lock them)
@@ -1234,7 +2044,14 @@ function setupClickAwayUnlock() {
             }
 
             // Check if this card is visually behind the locked card
-            const lockedRect = STATE.lockedEvent.getBoundingClientRect();
+            // For new architecture, container has height: 0, so get the card's rect
+            let lockedRect;
+            const lockedCard = STATE.lockedEvent.querySelector('.entry-card, .content');
+            if (lockedCard) {
+                lockedRect = lockedCard.getBoundingClientRect();
+            } else {
+                lockedRect = STATE.lockedEvent.getBoundingClientRect();
+            }
             const clickInLockedBounds = (
                 e.clientX >= lockedRect.left && e.clientX <= lockedRect.right &&
                 e.clientY >= lockedRect.top && e.clientY <= lockedRect.bottom
@@ -1249,6 +2066,12 @@ function setupClickAwayUnlock() {
                 STATE.lockedEvent.classList.remove('locked');
                 STATE.lockedEvent.classList.remove('hovered');
                 STATE.lockedEvent.style.zIndex = '';
+                // Support both architectures
+                if (STATE.lockedEvent._timelineEntry) {
+                    STATE.lockedEvent._timelineEntry.resetNudge();
+                } else {
+                    resetCardNudge(STATE.lockedEvent);
+                }
                 STATE.lockedEvent = null;
                 if (STATE.hoveredEvent) {
                     STATE.hoveredEvent.classList.remove('hovered');
@@ -1266,6 +2089,12 @@ function setupClickAwayUnlock() {
         STATE.lockedEvent.classList.remove('locked');
         STATE.lockedEvent.classList.remove('hovered');
         STATE.lockedEvent.style.zIndex = '';
+        // Support both architectures
+        if (STATE.lockedEvent._timelineEntry) {
+            STATE.lockedEvent._timelineEntry.resetNudge();
+        } else {
+            resetCardNudge(STATE.lockedEvent);
+        }
         STATE.lockedEvent = null;
         if (STATE.hoveredEvent) {
             STATE.hoveredEvent.classList.remove('hovered');
@@ -1298,18 +2127,22 @@ function setupSmartHover() {
         // Check if we're in hide-labels mode
         const hideLabelsMode = document.body.classList.contains('hide-labels');
         
-        // Get all event elements in the track
-        const allEvents = track.querySelectorAll('.event');
+        // Get all event elements in the track (support both old and new architecture)
+        const allEvents = track.querySelectorAll('.event, .timeline-entry');
         
         // Find which events contain the mouse point
         const eventsUnderCursor = [];
         
         allEvents.forEach(eventEl => {
             let isUnder = false;
-            
+
+            // Support both old (.event-dot, .range-bar-indicator) and new (.entry-dot, .entry-bar, .entry-card) architectures
+            const dot = eventEl.querySelector('.event-dot, .entry-dot');
+            const rangeBar = eventEl.querySelector('.range-bar-indicator, .entry-bar');
+            const card = eventEl.querySelector('.content, .entry-card');
+
             if (hideLabelsMode) {
                 // In hide-labels mode, only check dot and visible range bar
-                const dot = eventEl.querySelector('.event-dot');
                 if (dot) {
                     const dotRect = dot.getBoundingClientRect();
                     // Expand dot hit area a bit
@@ -1318,45 +2151,38 @@ function setupSmartHover() {
                         isUnder = true;
                     }
                 }
-                
-                if (!isUnder) {
-                    const rangeBar = eventEl.querySelector('.range-bar-indicator');
-                    if (rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
-                        const barRect = rangeBar.getBoundingClientRect();
-                        if (e.clientX >= barRect.left && e.clientX <= barRect.right &&
-                            e.clientY >= barRect.top && e.clientY <= barRect.bottom) {
-                            isUnder = true;
-                        }
+
+                if (!isUnder && rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
+                    const barRect = rangeBar.getBoundingClientRect();
+                    if (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                        e.clientY >= barRect.top && e.clientY <= barRect.bottom) {
+                        isUnder = true;
                     }
                 }
             } else {
                 // Normal mode: check card, dot, and range bar
-                const rect = eventEl.getBoundingClientRect();
-                isUnder = (e.clientX >= rect.left && e.clientX <= rect.right &&
-                           e.clientY >= rect.top && e.clientY <= rect.bottom);
-                
-                // Also check range bar if it exists
-                if (!isUnder) {
-                    const rangeBar = eventEl.querySelector('.range-bar-indicator');
-                    if (rangeBar) {
-                        const barRect = rangeBar.getBoundingClientRect();
-                        isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
-                                   e.clientY >= barRect.top && e.clientY <= barRect.bottom);
-                    }
+                if (card) {
+                    const cardRect = card.getBoundingClientRect();
+                    isUnder = (e.clientX >= cardRect.left && e.clientX <= cardRect.right &&
+                               e.clientY >= cardRect.top && e.clientY <= cardRect.bottom);
                 }
-                
+
+                // Also check range bar if it exists AND is visible
+                if (!isUnder && rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
+                    const barRect = rangeBar.getBoundingClientRect();
+                    isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                               e.clientY >= barRect.top && e.clientY <= barRect.bottom);
+                }
+
                 // Also check the dot
-                if (!isUnder) {
-                    const dot = eventEl.querySelector('.event-dot');
-                    if (dot) {
-                        const dotRect = dot.getBoundingClientRect();
-                        // Expand dot hit area a bit
-                        isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
-                                   e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
-                    }
+                if (!isUnder && dot) {
+                    const dotRect = dot.getBoundingClientRect();
+                    // Expand dot hit area a bit
+                    isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
+                               e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
                 }
             }
-            
+
             if (isUnder) {
                 eventsUnderCursor.push(eventEl);
             }
@@ -1369,7 +2195,9 @@ function setupSmartHover() {
         // If there's a locked event, only allow hovering cards where the mouse
         // is OUTSIDE the locked card's visual bounds (i.e., hovering the peeking edge)
         if (STATE.lockedEvent && hoverCandidates.length > 0) {
-            const lockedRect = STATE.lockedEvent.getBoundingClientRect();
+            // For new architecture, container has height: 0, so get the card's rect
+            const lockedCard = STATE.lockedEvent.querySelector('.entry-card, .content');
+            const lockedRect = lockedCard ? lockedCard.getBoundingClientRect() : STATE.lockedEvent.getBoundingClientRect();
             const mouseInLockedBounds = (
                 e.clientX >= lockedRect.left && e.clientX <= lockedRect.right &&
                 e.clientY >= lockedRect.top && e.clientY <= lockedRect.bottom
@@ -1558,14 +2386,36 @@ function renderTimeline() {
     // Events are rendered in chronological order (already sorted by sortYear)
     // DOM order determines stacking: later elements (newer events) appear on top
     // Base z-index is 9 (below markers at 10), hover/locked go higher
-    
+
+    // Feature flag: Use new TimelineEntry architecture
+    // Set to true to use new sibling-based architecture (better mobile support)
+    // Set to false to use legacy nested architecture
+    const USE_NEW_ARCHITECTURE = true;
+
     allEventsForRender.forEach((eventData, index) => {
-        if (eventData.isRange) {
-            const rangeEl = createRangeBar(eventData, index, maxDuration);
-            track.appendChild(rangeEl);
+        let eventEl;
+
+        if (USE_NEW_ARCHITECTURE) {
+            // New architecture: TimelineEntry class with sibling elements
+            const entry = new TimelineEntry(eventData, index);
+            entry.assignChannel(); // Assign channel before render
+            eventEl = entry.render();
         } else {
-            const eventEl = createEvent(eventData, index);
-            track.appendChild(eventEl);
+            // Legacy architecture: nested elements
+            if (eventData.isRange) {
+                eventEl = createRangeBar(eventData, index, maxDuration);
+            } else {
+                eventEl = createEvent(eventData, index);
+            }
+        }
+
+        track.appendChild(eventEl);
+
+        // Auto-nudge collapsed cards into viewport on mobile (legacy only)
+        if (!USE_NEW_ARCHITECTURE) {
+            requestAnimationFrame(() => {
+                autoNudgeCollapsedCard(eventEl);
+            });
         }
     });
 }
@@ -1651,16 +2501,56 @@ function updateYearDisplay() {
  * Scroll to a specific year on the timeline
  * @param {number} year - Year in HE to scroll to
  */
-function scrollToYear(year) {
+function scrollToYear(year, options = {}) {
+    const { center = false, padding = 100 } = options;
+
     const currentYear = getCurrentHoloceneYear();
     const clampedYear = Math.max(0, Math.min(currentYear, year));
-    
+
     const trackOffset = getTrackOffset();
-    const referencePoint = getReferencePoint();
-    
-    // Scroll so the year lands at the reference point
-    const targetScroll = trackOffset + yearToPixels(clampedYear) - referencePoint;
-    
+    const yearPx = yearToPixels(clampedYear);
+    const yearPositionOnPage = trackOffset + yearPx;
+
+    // If center mode, scroll to put year at reference point (old behavior)
+    if (center) {
+        const referencePoint = getReferencePoint();
+        const targetScroll = yearPositionOnPage - referencePoint;
+        window.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: 'smooth'
+        });
+        return;
+    }
+
+    // Otherwise, scroll only as needed to bring year into view
+    const viewportTop = window.scrollY;
+    const viewportBottom = viewportTop + window.innerHeight;
+
+    // Check if year is already visible (with some padding)
+    const yearViewportPos = yearPositionOnPage - viewportTop;
+    const topBar = document.querySelector('.top-bar');
+    const topBarHeight = topBar ? topBar.offsetHeight : 80;
+    const footer = document.querySelector('footer');
+    const footerHeight = footer ? footer.offsetHeight : 60;
+
+    const visibleTop = topBarHeight + padding;
+    const visibleBottom = window.innerHeight - footerHeight - padding;
+
+    if (yearViewportPos >= visibleTop && yearViewportPos <= visibleBottom) {
+        // Already visible, no scroll needed
+        return;
+    }
+
+    // Calculate minimum scroll to bring into view
+    let targetScroll;
+    if (yearViewportPos < visibleTop) {
+        // Need to scroll up - put year near top of visible area
+        targetScroll = yearPositionOnPage - topBarHeight - padding;
+    } else {
+        // Need to scroll down - put year near bottom of visible area
+        targetScroll = yearPositionOnPage - window.innerHeight + footerHeight + padding;
+    }
+
     window.scrollTo({
         top: Math.max(0, targetScroll),
         behavior: 'smooth'
@@ -1692,10 +2582,10 @@ function setupYearInput() {
             if (currentValue !== heValueOnFocus) {
                 const inputValue = currentValue.replace(/,/g, '').trim();
                 const targetYear = parseDateToHE(inputValue);
-                
+
                 if (!isNaN(targetYear)) {
                     isEditingYear = false;
-                    scrollToYear(targetYear);
+                    scrollToYear(targetYear, { center: true });
                     return;
                 }
             }
@@ -1733,10 +2623,10 @@ function setupYearInput() {
             if (currentValue !== ceValueOnFocus) {
                 const inputValue = currentValue.replace(/,/g, '').trim();
                 const targetYear = parseCEDateToHE(inputValue);
-                
+
                 if (!isNaN(targetYear)) {
                     isEditingYear = false;
-                    scrollToYear(targetYear);
+                    scrollToYear(targetYear, { center: true });
                     return;
                 }
             }
@@ -1868,9 +2758,9 @@ window.timelineAPI = {
         STATE.allEvents.sort((a, b) => a.year - b.year);
         renderTimeline();
         
-        // Scroll to the new event
+        // Scroll to the new event (center it since user just added it)
         setTimeout(() => {
-            scrollToYear(newEvent.year);
+            scrollToYear(newEvent.year, { center: true });
         }, 100);
         
         return newEvent;
@@ -1981,7 +2871,32 @@ async function init() {
     updateYearDisplay();
     window.addEventListener('scroll', updateYearDisplay);
     window.addEventListener('resize', updateYearDisplay);
-    
+
+    // Re-render timeline when crossing mobile/desktop threshold
+    let lastViewportCategory = window.innerWidth < 600 ? 'mobile' : 'desktop';
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const currentCategory = window.innerWidth < 600 ? 'mobile' : 'desktop';
+            if (currentCategory !== lastViewportCategory) {
+                lastViewportCategory = currentCategory;
+                // Clear locked/hovered state
+                if (STATE.lockedEvent) {
+                    STATE.lockedEvent.classList.remove('locked');
+                    resetCardNudge(STATE.lockedEvent);
+                    STATE.lockedEvent = null;
+                }
+                if (STATE.hoveredEvent) {
+                    STATE.hoveredEvent.classList.remove('hovered');
+                    STATE.hoveredEvent = null;
+                }
+                // Re-render with new channel config
+                renderTimeline();
+            }
+        }, 250);
+    });
+
     console.log('Timeline initialized');
 }
 

@@ -10,6 +10,15 @@
     --accent: #d4442e;
     --sidebar-width: 325px;
     --sidebar-padding: 15px;
+
+    /* Dot dimensions - used for positioning bars relative to dots */
+    --dot-inner-size: 10px;
+    --dot-border: 2px;
+    --dot-outline: 1px;
+    /* Total diameter = inner + (border * 2) + (outline * 2) */
+    --dot-total-diameter: calc(var(--dot-inner-size) + (var(--dot-border) * 2) + (var(--dot-outline) * 2));
+    /* Half diameter for bar offset */
+    --dot-offset: calc(var(--dot-total-diameter) / 2);
 }
 
 * {
@@ -920,6 +929,15 @@ h1 span {
     transform: translate(-50%, 0);
 }
 
+/* When bar needs to center on timeline (card is nudged into viewport) */
+/* Use fixed positioning to place bar at viewport center regardless of card position */
+.range-bar-indicator.centered {
+    position: fixed;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+
 .event.range.hovered .range-bar-indicator,
 .event.range.locked .range-bar-indicator {
     opacity: 1;
@@ -1038,6 +1056,347 @@ body.hide-labels .event.locked .event-footer {
 
 .event.range.locked {
     z-index: 500;
+}
+
+/* ============ NEW TIMELINE ENTRY ARCHITECTURE ============ */
+/*
+ * Key difference: dot, bar, connector, and card are SIBLINGS
+ * Each positioned independently - no transform inheritance issues
+ */
+
+.timeline-entry {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    z-index: 9;
+    /* Container is just a positioning anchor at the year's vertical position */
+}
+
+.timeline-entry.hovered {
+    z-index: 100;
+}
+
+.timeline-entry.locked {
+    z-index: 500;
+}
+
+/* Entry Dot - Always at timeline center (50%) */
+.entry-dot {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+    width: var(--dot-inner-size);
+    height: var(--dot-inner-size);
+    border-radius: 50%;
+    background: var(--entry-color, var(--gold));
+    border: var(--dot-border) solid var(--bg-dark);
+    box-shadow: 0 0 0 var(--dot-outline) var(--entry-color, var(--gold));
+    z-index: 4;
+    transition: all 0.3s ease;
+}
+
+.timeline-entry.hovered .entry-dot,
+.timeline-entry.locked .entry-dot {
+    border: none;
+    box-shadow: 0 0 20px var(--entry-color, var(--gold));
+    z-index: 200;
+}
+
+/* Hide dot when bar is visible */
+body.show-ranges .timeline-entry.has-range:not(.is-age) .entry-dot {
+    opacity: 0;
+}
+
+body.show-ages .timeline-entry.has-range.is-age .entry-dot {
+    opacity: 0;
+}
+
+/* Also hide dot when card is hovered/locked (bar becomes visible) */
+.timeline-entry.has-range.hovered .entry-dot,
+.timeline-entry.has-range.locked .entry-dot {
+    opacity: 0;
+}
+
+/* Entry Bar - At timeline center, extends down from dot position */
+.entry-bar {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 12px;
+    height: var(--bar-height, 100px);
+    border-radius: 6px;
+    background-color: var(--bar-bg, rgba(201, 162, 39, 0.6));
+    border: 2px solid var(--bg-dark);
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    pointer-events: none;  /* Hidden bars are not clickable */
+    cursor: pointer;
+}
+
+/* Note: Bar centering is handled via JS by setting left: 50% directly
+   This avoids position: fixed which breaks vertical positioning */
+
+/* When bar is visible (hovered/locked), make it clickable */
+.timeline-entry.hovered .entry-bar,
+.timeline-entry.locked .entry-bar {
+    opacity: 1;
+    background-color: var(--bar-bg-hover, rgba(201, 162, 39, 1));
+    box-shadow: 0 0 20px var(--bar-border, var(--gold));
+    pointer-events: auto;
+}
+
+/* When ranges are shown globally, make bars visible and clickable */
+body.show-ranges .timeline-entry.has-range:not(.is-age) .entry-bar {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+body.show-ages .timeline-entry.has-range.is-age .entry-bar {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Entry Connector - Bridges card edge to timeline center */
+.entry-connector {
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    width: var(--connector-width, 60px);
+    height: 1px;
+    background: var(--entry-color, var(--gold-dim));
+    z-index: -1;
+    transition: background 0.3s ease;
+}
+
+.timeline-entry.left .entry-connector {
+    right: 50%;
+}
+
+.timeline-entry.right .entry-connector {
+    left: 50%;
+}
+
+.timeline-entry.hovered .entry-connector,
+.timeline-entry.locked .entry-connector {
+    background: var(--entry-color, var(--gold));
+}
+
+/* Entry Card - The content card */
+.entry-card {
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    width: 300px;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-gray);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.timeline-entry.left .entry-card {
+    right: calc(50% + var(--connector-width, 60px));
+    text-align: right;
+}
+
+.timeline-entry.right .entry-card {
+    left: calc(50% + var(--connector-width, 60px));
+    text-align: left;
+}
+
+.timeline-entry.hovered .entry-card,
+.timeline-entry.locked .entry-card {
+    border-color: var(--entry-color, var(--gold-dim));
+    background: #151517;
+}
+
+.timeline-entry.locked .entry-card {
+    background: #1a1a1d;
+    box-shadow: 0 0 30px var(--entry-glow, rgba(201, 162, 39, 0.3));
+}
+
+/* Reuse existing event-* styles for card content */
+.entry-card .event-header {
+    display: flex;
+    align-items: baseline;
+}
+
+.timeline-entry.left .entry-card .event-header {
+    justify-content: flex-end;
+}
+
+.timeline-entry.right .entry-card .event-header {
+    justify-content: flex-start;
+}
+
+.entry-card .event-title {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timeline-entry.hovered .entry-card .event-title,
+.timeline-entry.locked .entry-card .event-title {
+    white-space: normal;
+}
+
+.entry-card .event-desc {
+    font-size: 0.85rem;
+    color: var(--bone-dim);
+    line-height: 1.5;
+    font-weight: 300;
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    text-align: left;
+}
+
+.timeline-entry.hovered .entry-card .event-desc,
+.timeline-entry.locked .entry-card .event-desc {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 8px;
+}
+
+.entry-card .event-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.timeline-entry.hovered .entry-card .event-footer,
+.timeline-entry.locked .entry-card .event-footer {
+    max-height: 30px;
+    opacity: 1;
+}
+
+/* ============ TIMELINE ENTRY - MOBILE RESPONSIVE ============ */
+@media (max-width: 600px) {
+    .entry-card {
+        width: 150px;
+    }
+
+    .entry-card .event-title {
+        font-size: 0.8rem;
+    }
+
+    /* Card position uses --connector-width from container (set by JS) */
+    /* This allows spread ranges to push cards further from center */
+    .timeline-entry.left .entry-card {
+        right: calc(50% + var(--connector-width, 35px));
+    }
+
+    .timeline-entry.right .entry-card {
+        left: calc(50% + var(--connector-width, 35px));
+    }
+
+    /* Default connector width on mobile (overridden by JS when spread) */
+    .entry-connector {
+        width: var(--connector-width, 35px);
+    }
+
+    /* Smaller cards when ranges are shown */
+    body.show-ranges .timeline-entry .entry-card,
+    body.show-ages .timeline-entry .entry-card {
+        width: 120px;
+    }
+
+    /* Expanded cards sizing on mobile */
+    .timeline-entry.hovered .entry-card,
+    .timeline-entry.locked .entry-card {
+        min-width: 140px;
+        width: auto;
+        max-width: calc(50vw - 40px);
+    }
+
+    .timeline-entry.hovered .entry-card .event-desc,
+    .timeline-entry.locked .entry-card .event-desc {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+}
+
+/* ============ TIMELINE ENTRY - HIDE LABELS MODE ============ */
+body.hide-labels .timeline-entry {
+    pointer-events: none;
+}
+
+body.hide-labels .timeline-entry .entry-card {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+body.hide-labels .timeline-entry .entry-connector {
+    opacity: 0;
+}
+
+body.hide-labels .timeline-entry .entry-card .event-header,
+body.hide-labels .timeline-entry .entry-card .event-title,
+body.hide-labels .timeline-entry .entry-card .event-year-text,
+body.hide-labels .timeline-entry .entry-card .range-dates,
+body.hide-labels .timeline-entry .entry-card .event-desc,
+body.hide-labels .timeline-entry .entry-card .event-footer {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Dots and bars stay clickable */
+body.hide-labels .timeline-entry .entry-dot,
+body.hide-labels .timeline-entry .entry-bar {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Show on hover/lock */
+body.hide-labels .timeline-entry.hovered,
+body.hide-labels .timeline-entry.locked {
+    pointer-events: auto;
+}
+
+body.hide-labels .timeline-entry.hovered .entry-card,
+body.hide-labels .timeline-entry.locked .entry-card {
+    background: var(--bg-card) !important;
+    border-color: var(--entry-color, var(--gold-dim)) !important;
+}
+
+body.hide-labels .timeline-entry.locked .entry-card {
+    background: #1a1a1d !important;
+    box-shadow: 0 0 30px var(--entry-glow, rgba(201, 162, 39, 0.3)) !important;
+}
+
+body.hide-labels .timeline-entry.hovered .entry-connector,
+body.hide-labels .timeline-entry.locked .entry-connector {
+    opacity: 1;
+}
+
+body.hide-labels .timeline-entry.hovered .entry-card .event-header,
+body.hide-labels .timeline-entry.hovered .entry-card .event-title,
+body.hide-labels .timeline-entry.hovered .entry-card .event-year-text,
+body.hide-labels .timeline-entry.hovered .entry-card .range-dates,
+body.hide-labels .timeline-entry.hovered .entry-card .event-desc,
+body.hide-labels .timeline-entry.hovered .entry-card .event-footer,
+body.hide-labels .timeline-entry.locked .entry-card .event-header,
+body.hide-labels .timeline-entry.locked .entry-card .event-title,
+body.hide-labels .timeline-entry.locked .entry-card .event-year-text,
+body.hide-labels .timeline-entry.locked .entry-card .range-dates,
+body.hide-labels .timeline-entry.locked .entry-card .event-desc,
+body.hide-labels .timeline-entry.locked .entry-card .event-footer {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* ============ FOOTER ============ */
@@ -1165,9 +1524,39 @@ footer p {
     .event.left .content .range-bar-indicator {
         right: -36px;
     }
-    
+
     .event.right .content .range-bar-indicator {
         left: -36px;
     }
+
+    /* Smaller cards when ranges are shown to give more room */
+    body.show-ranges .event,
+    body.show-ages .event {
+        width: 120px;
+    }
+
+    /* Expanded cards sizing on mobile */
+    .event.hovered .content,
+    .event.locked .content {
+        min-width: 140px;
+        width: auto;
+        max-width: calc(50vw - 40px);
+    }
+
+    /* Expanded card description sizing */
+    .event.hovered .event-desc,
+    .event.locked .event-desc {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+
+    /* Centered range bar for mobile - used when card is nudged */
+    .range-bar-indicator.centered {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
+
 }
 
