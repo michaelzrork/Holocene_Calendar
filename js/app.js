@@ -29,6 +29,45 @@ const CHANNEL_CONFIG = {
     maxChannels: 15,
 };
 
+// ============ CACHED CSS VALUES (for performance) ============
+// Cache expensive getComputedStyle calls - initialized once on load
+let CACHED_CSS = null;
+function getCachedCSS() {
+    if (!CACHED_CSS) {
+        const rootStyles = getComputedStyle(document.documentElement);
+        CACHED_CSS = {
+            dotInnerSize: parseFloat(rootStyles.getPropertyValue('--dot-inner-size')) || 10,
+            dotBorder: parseFloat(rootStyles.getPropertyValue('--dot-border')) || 2,
+            dotOutline: parseFloat(rootStyles.getPropertyValue('--dot-outline')) || 1,
+        };
+        // Pre-calculate derived values
+        CACHED_CSS.dotTotalDiameter = CACHED_CSS.dotInnerSize + (CACHED_CSS.dotBorder * 2) + (CACHED_CSS.dotOutline * 2);
+        CACHED_CSS.dotOffset = CACHED_CSS.dotTotalDiameter / 2;
+    }
+    return CACHED_CSS;
+}
+
+// ============ PERFORMANCE UTILITIES ============
+/**
+ * Throttle function - limits how often a function can be called
+ * Uses requestAnimationFrame for smooth visual updates
+ */
+function throttleRAF(fn) {
+    let scheduled = false;
+    let lastArgs = null;
+
+    return function(...args) {
+        lastArgs = args;
+        if (!scheduled) {
+            scheduled = true;
+            requestAnimationFrame(() => {
+                fn.apply(this, lastArgs);
+                scheduled = false;
+            });
+        }
+    };
+}
+
 /**
  * Get channel configuration based on viewport width.
  * On mobile, uses reduced channels to prevent cards from being pushed off-screen.
@@ -132,17 +171,13 @@ class TimelineEntry {
 
     /**
      * Assign a channel for this range event (call before render)
+     * Always assigns channel if spreadRanges is enabled, regardless of visibility.
+     * CSS handles resetting positions when ranges are hidden.
      */
     assignChannel() {
         if (!this.showRangeBar) return;
 
-        const showRangesToggle = document.getElementById('showRangesToggle');
-        const showAgesToggle = document.getElementById('showAgesToggle');
-        const rangesVisible = showRangesToggle?.checked || false;
-        const agesVisible = showAgesToggle?.checked || false;
-        const isVisibleRange = this.isAge ? agesVisible : rangesVisible;
-
-        if (STATE.spreadRanges && isVisibleRange) {
+        if (STATE.spreadRanges) {
             const config = getMobileChannelConfig();
             this.channel = findAvailableChannel(this.side, this.data.year, this.data.endYear);
             this.channelOffset = Math.min(
@@ -213,23 +248,15 @@ class TimelineEntry {
         this.bar = document.createElement('div');
         this.bar.className = 'entry-bar';
 
-        // Read dot dimensions from CSS variables (defined in :root)
-        const rootStyles = getComputedStyle(document.documentElement);
-        const dotInnerSize = parseFloat(rootStyles.getPropertyValue('--dot-inner-size')) || 10;
-        const dotBorder = parseFloat(rootStyles.getPropertyValue('--dot-border')) || 2;
-        const dotOutline = parseFloat(rootStyles.getPropertyValue('--dot-outline')) || 1;
-
-        // Calculate total diameter and offset
-        const dotTotalDiameter = dotInnerSize + (dotBorder * 2) + (dotOutline * 2);
-        const dotOffset = dotTotalDiameter / 2;
-
-        const adjustedBarHeight = this.barHeight + (dotOffset * 2);
+        // Use cached CSS values (avoid getComputedStyle per-element)
+        const css = getCachedCSS();
+        const adjustedBarHeight = this.barHeight + (css.dotOffset * 2);
 
         // Set bar height (with dot offset added)
         this.bar.style.setProperty('--bar-height', `${adjustedBarHeight}px`);
 
         // Position bar to start above the dot center
-        this.bar.style.top = `${-dotOffset}px`;
+        this.bar.style.top = `${-css.dotOffset}px`;
 
         // Bar colors
         const barBgColor = this.color.bg.replace('0.3', '0.6');
@@ -327,8 +354,11 @@ class TimelineEntry {
             e.stopImmediatePropagation();
 
             // In hide-labels mode and card is not locked/hovered, ignore card clicks
+            // Check DOM class directly since handleEventClick updates classList, not instance property
             const hideLabelsMode = document.body.classList.contains('hide-labels');
-            if (hideLabelsMode && !this.isLocked && !this.isHovered) {
+            const isLocked = this.container.classList.contains('locked');
+            const isHovered = this.container.classList.contains('hovered');
+            if (hideLabelsMode && !isLocked && !isHovered) {
                 return;
             }
 
@@ -1067,8 +1097,7 @@ function setupRangeToggle() {
         } else {
             document.body.classList.remove('show-ranges');
         }
-        // Re-render to update channel assignments and z-indexes
-        renderTimeline();
+        // No re-render needed - CSS handles bar visibility via .show-ranges class
     });
 }
 
@@ -1092,8 +1121,7 @@ function setupAgeToggle() {
         } else {
             document.body.classList.remove('show-ages');
         }
-        // Re-render to update channel assignments and z-indexes
-        renderTimeline();
+        // No re-render needed - CSS handles bar visibility via .show-ages class
     });
 }
 
@@ -2108,76 +2136,85 @@ function setupClickAwayUnlock() {
  * Setup smart hover - when mouse moves over stacked events, creates a sweep-through
  * effect in both directions. Moving down reveals newer cards (later in DOM),
  * moving up reveals older cards (earlier in DOM).
- * 
+ *
  * When an event is locked, hovering still works on OTHER events for comparison.
  * The locked event stays visible while you can preview others.
  */
 function setupSmartHover() {
     const track = document.getElementById('timelineTrack');
     if (!track) return;
-    
+
     let lastY = null;
-    
+
     document.addEventListener('mousemove', (e) => {
         // Determine direction of mouse movement
         const movingDown = lastY !== null && e.clientY > lastY;
         const movingUp = lastY !== null && e.clientY < lastY;
         lastY = e.clientY;
-        
+
         // Check if we're in hide-labels mode
         const hideLabelsMode = document.body.classList.contains('hide-labels');
-        
-        // Get all event elements in the track (support both old and new architecture)
+
+        // Get all event elements in the track (support both architectures)
         const allEvents = track.querySelectorAll('.event, .timeline-entry');
-        
+
         // Find which events contain the mouse point
         const eventsUnderCursor = [];
-        
-        allEvents.forEach(eventEl => {
-            let isUnder = false;
 
-            // Support both old (.event-dot, .range-bar-indicator) and new (.entry-dot, .entry-bar, .entry-card) architectures
-            const dot = eventEl.querySelector('.event-dot, .entry-dot');
-            const rangeBar = eventEl.querySelector('.range-bar-indicator, .entry-bar');
-            const card = eventEl.querySelector('.content, .entry-card');
+        for (let i = 0; i < allEvents.length; i++) {
+            const eventEl = allEvents[i];
+            // Use cached element references from TimelineEntry instance (avoids querySelector)
+            const entry = eventEl._timelineEntry;
+            const card = entry ? entry.card : eventEl;
+            const cardRect = card.getBoundingClientRect();
+
+            // Quick bounds check first - skip if mouse nowhere near this card vertically
+            if (e.clientY < cardRect.top - 50 || e.clientY > cardRect.bottom + 50) {
+                continue;
+            }
+
+            let isUnder = false;
 
             if (hideLabelsMode) {
                 // In hide-labels mode, only check dot and visible range bar
+                const dot = entry ? entry.dot : null;
                 if (dot) {
                     const dotRect = dot.getBoundingClientRect();
-                    // Expand dot hit area a bit
                     if (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
                         e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5) {
                         isUnder = true;
                     }
                 }
 
-                if (!isUnder && rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
-                    const barRect = rangeBar.getBoundingClientRect();
-                    if (e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                if (!isUnder) {
+                    const rangeBar = entry ? entry.bar : null;
+                    if (rangeBar) {
+                        const barRect = rangeBar.getBoundingClientRect();
+                        if (barRect.height > 0 &&
+                            e.clientX >= barRect.left && e.clientX <= barRect.right &&
+                            e.clientY >= barRect.top && e.clientY <= barRect.bottom) {
+                            isUnder = true;
+                        }
+                    }
+                }
+            } else {
+                // Normal mode: check card bounds
+                isUnder = (e.clientX >= cardRect.left && e.clientX <= cardRect.right &&
+                           e.clientY >= cardRect.top && e.clientY <= cardRect.bottom);
+
+                // Also check range bar if it exists
+                if (!isUnder && entry && entry.bar) {
+                    const barRect = entry.bar.getBoundingClientRect();
+                    if (barRect.height > 0 &&
+                        e.clientX >= barRect.left && e.clientX <= barRect.right &&
                         e.clientY >= barRect.top && e.clientY <= barRect.bottom) {
                         isUnder = true;
                     }
                 }
-            } else {
-                // Normal mode: check card, dot, and range bar
-                if (card) {
-                    const cardRect = card.getBoundingClientRect();
-                    isUnder = (e.clientX >= cardRect.left && e.clientX <= cardRect.right &&
-                               e.clientY >= cardRect.top && e.clientY <= cardRect.bottom);
-                }
-
-                // Also check range bar if it exists AND is visible
-                if (!isUnder && rangeBar && window.getComputedStyle(rangeBar).opacity > 0) {
-                    const barRect = rangeBar.getBoundingClientRect();
-                    isUnder = (e.clientX >= barRect.left && e.clientX <= barRect.right &&
-                               e.clientY >= barRect.top && e.clientY <= barRect.bottom);
-                }
 
                 // Also check the dot
-                if (!isUnder && dot) {
-                    const dotRect = dot.getBoundingClientRect();
-                    // Expand dot hit area a bit
+                if (!isUnder && entry && entry.dot) {
+                    const dotRect = entry.dot.getBoundingClientRect();
                     isUnder = (e.clientX >= dotRect.left - 5 && e.clientX <= dotRect.right + 5 &&
                                e.clientY >= dotRect.top - 5 && e.clientY <= dotRect.bottom + 5);
                 }
@@ -2186,8 +2223,8 @@ function setupSmartHover() {
             if (isUnder) {
                 eventsUnderCursor.push(eventEl);
             }
-        });
-        
+        }
+
         // Filter out the locked event from hover candidates
         // (locked event stays locked, we hover OTHER events)
         let hoverCandidates = eventsUnderCursor.filter(el => el !== STATE.lockedEvent);
@@ -2195,9 +2232,10 @@ function setupSmartHover() {
         // If there's a locked event, only allow hovering cards where the mouse
         // is OUTSIDE the locked card's visual bounds (i.e., hovering the peeking edge)
         if (STATE.lockedEvent && hoverCandidates.length > 0) {
-            // For new architecture, container has height: 0, so get the card's rect
-            const lockedCard = STATE.lockedEvent.querySelector('.entry-card, .content');
-            const lockedRect = lockedCard ? lockedCard.getBoundingClientRect() : STATE.lockedEvent.getBoundingClientRect();
+            // Use cached reference to avoid querySelector
+            const lockedEntry = STATE.lockedEvent._timelineEntry;
+            const lockedCard = lockedEntry ? lockedEntry.card : STATE.lockedEvent;
+            const lockedRect = lockedCard.getBoundingClientRect();
             const mouseInLockedBounds = (
                 e.clientX >= lockedRect.left && e.clientX <= lockedRect.right &&
                 e.clientY >= lockedRect.top && e.clientY <= lockedRect.bottom
@@ -2217,17 +2255,17 @@ function setupSmartHover() {
             }
             return;
         }
-        
+
         // Determine which event to show based on direction
         let topmostEvent = null;
-        
+
         if (hoverCandidates.length === 1) {
             // Only one event, show it
             topmostEvent = hoverCandidates[0];
         } else {
             // Multiple events - pick based on movement direction
             const currentIdx = STATE.hoveredEvent ? hoverCandidates.indexOf(STATE.hoveredEvent) : -1;
-            
+
             if (currentIdx === -1) {
                 // Not currently hovering any in this stack - show topmost (last in DOM)
                 topmostEvent = hoverCandidates[hoverCandidates.length - 1];
@@ -2244,26 +2282,26 @@ function setupSmartHover() {
                 topmostEvent = STATE.hoveredEvent;
             }
         }
-        
+
         // If same as current hover, do nothing
         if (topmostEvent === STATE.hoveredEvent) return;
-        
+
         // Remove hover from previous (but not if it's the locked event)
         if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
             STATE.hoveredEvent.classList.remove('hovered');
             STATE.hoveredEvent.style.zIndex = '';
         }
-        
+
         // Add hover to new
         if (topmostEvent) {
             topmostEvent.classList.add('hovered');
             // Hovered events go ABOVE locked (z-index 500) so previews appear on top
             topmostEvent.style.zIndex = 600;
         }
-        
+
         STATE.hoveredEvent = topmostEvent;
     });
-    
+
     // Clear hover when mouse leaves the document
     document.addEventListener('mouseleave', () => {
         if (STATE.hoveredEvent && STATE.hoveredEvent !== STATE.lockedEvent) {
@@ -2867,10 +2905,10 @@ async function init() {
     setupClickAwayUnlock();
     setupSmartHover();
     
-    // Setup scroll tracking
+    // Setup scroll tracking (throttled for performance)
     updateYearDisplay();
-    window.addEventListener('scroll', updateYearDisplay);
-    window.addEventListener('resize', updateYearDisplay);
+    window.addEventListener('scroll', throttleRAF(updateYearDisplay));
+    window.addEventListener('resize', throttleRAF(updateYearDisplay));
 
     // Re-render timeline when crossing mobile/desktop threshold
     let lastViewportCategory = window.innerWidth < 600 ? 'mobile' : 'desktop';

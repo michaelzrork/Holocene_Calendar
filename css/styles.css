@@ -1159,6 +1159,41 @@ body.show-ages .timeline-entry.has-range.is-age .entry-bar {
     pointer-events: auto;
 }
 
+/* When range bars are NOT visible, reset spread positioning to center
+   This ensures cards/connectors align with the center dot when bars are hidden */
+
+/* Non-age ranges: reset when show-ranges is OFF */
+body:not(.show-ranges) .timeline-entry.has-range:not(.is-age) .entry-bar {
+    left: 50% !important;
+}
+body:not(.show-ranges) .timeline-entry.has-range:not(.is-age).left .entry-connector {
+    right: 50% !important;
+    width: 60px !important;
+}
+body:not(.show-ranges) .timeline-entry.has-range:not(.is-age).right .entry-connector {
+    left: 50% !important;
+    width: 60px !important;
+}
+body:not(.show-ranges) .timeline-entry.has-range:not(.is-age) {
+    --connector-width: 60px !important;
+}
+
+/* Age ranges: reset when show-ages is OFF */
+body:not(.show-ages) .timeline-entry.has-range.is-age .entry-bar {
+    left: 50% !important;
+}
+body:not(.show-ages) .timeline-entry.has-range.is-age.left .entry-connector {
+    right: 50% !important;
+    width: 60px !important;
+}
+body:not(.show-ages) .timeline-entry.has-range.is-age.right .entry-connector {
+    left: 50% !important;
+    width: 60px !important;
+}
+body:not(.show-ages) .timeline-entry.has-range.is-age {
+    --connector-width: 60px !important;
+}
+
 /* Entry Connector - Bridges card edge to timeline center */
 .entry-connector {
     position: absolute;
@@ -1291,6 +1326,26 @@ body.show-ages .timeline-entry.has-range.is-age .entry-bar {
 
     .entry-card .event-title {
         font-size: 0.8rem;
+    }
+
+    /* Mobile: Reset spread positioning when ranges are hidden */
+    body:not(.show-ranges) .timeline-entry.has-range:not(.is-age).left .entry-connector {
+        width: 35px !important;
+    }
+    body:not(.show-ranges) .timeline-entry.has-range:not(.is-age).right .entry-connector {
+        width: 35px !important;
+    }
+    body:not(.show-ranges) .timeline-entry.has-range:not(.is-age) {
+        --connector-width: 35px !important;
+    }
+    body:not(.show-ages) .timeline-entry.has-range.is-age.left .entry-connector {
+        width: 35px !important;
+    }
+    body:not(.show-ages) .timeline-entry.has-range.is-age.right .entry-connector {
+        width: 35px !important;
+    }
+    body:not(.show-ages) .timeline-entry.has-range.is-age {
+        --connector-width: 35px !important;
     }
 
     /* Card position uses --connector-width from container (set by JS) */
