@@ -1461,7 +1461,12 @@ footer {
     left: 0;
     right: 0;
     text-align: center;
-    padding: 15px;
+    /* The sides are kept clear for the "by Hoopy" signature on the right (and
+       the same on the left, so the credit line stays centered on the page).
+       The safe-area terms are 0 today, since the viewport meta has no
+       viewport-fit=cover, and keep the bar clear of a notch or home indicator
+       if it ever gets one. */
+    padding: 15px max(96px, calc(env(safe-area-inset-right) + 81px)) max(15px, env(safe-area-inset-bottom)) max(96px, calc(env(safe-area-inset-left) + 81px));
     background: var(--bg-card);
     border-top: 1px solid var(--border-gray);
     z-index: 1000;
@@ -1473,6 +1478,52 @@ footer p {
     font-size: 0.60rem;
     color: var(--bone-dim);
     letter-spacing: 1px;
+}
+
+/* Hoopy's signature, drawn as it is in the byhoopy.com footer: Sora 800,
+   a white "by" and an orange "Hoopy". It sits in the footer bar's right end,
+   so it never covers the timeline, the jump buttons (bottom left) or the
+   settings panel, which stops above the bar. */
+@font-face {
+    font-family: "Sora";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../fonts/sora-latin-800-normal.woff2") format("woff2");
+}
+
+.hoopy-sig {
+    position: absolute;
+    top: 50%;
+    right: max(15px, env(safe-area-inset-right));
+    transform: translateY(-50%);
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-family: "Sora", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    color: #e8e8f0;
+    text-decoration: none;
+    white-space: nowrap;
+    opacity: 0.85;
+    transition: opacity 0.15s ease;
+}
+
+.hoopy-sig b {
+    font-weight: 800;
+    color: #ff6b1a;
+}
+
+.hoopy-sig:hover,
+.hoopy-sig:focus-visible {
+    opacity: 1;
+}
+
+.hoopy-sig:focus-visible {
+    outline: 2px solid #ff6b1a;
+    outline-offset: 2px;
 }
 
 /* When sidebar is open, footer shifts left (sidebar is on right) */
@@ -1527,6 +1578,18 @@ footer p {
         right: 0;
     }
     
+    /* A phone has no room to keep both sides clear, so the credit line gives
+       up only the right side to the signature. */
+    footer {
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(92px, calc(env(safe-area-inset-right) + 80px));
+    }
+
+    .hoopy-sig {
+        right: max(12px, env(safe-area-inset-right));
+        font-size: 13px;
+    }
+
     /* Smaller nav buttons */
     .nav-btn {
         width: 40px;
