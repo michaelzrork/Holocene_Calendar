@@ -10,6 +10,35 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <script data-goatcounter="https://holocenecalendar.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+    <script>
+    /* Google Analytics (G-H80MDBQB0N). Counts only on holocenecalendar.byhoopy.com,
+       never in an automated browser (navigator.webdriver), and never in a browser
+       that opted out: open any page with ?notrack=1 once per device (?notrack=0
+       undoes it). Stored in localStorage, so it holds on any network. */
+    (function () {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        var off = false, note = '';
+        try {
+            var q = new URLSearchParams(location.search), v = q.get('notrack');
+            if (v === '1') { localStorage.setItem('hoopy_notrack', '1'); note = "This browser won't be counted in analytics."; }
+            if (v === '0') { localStorage.removeItem('hoopy_notrack'); note = 'This browser is counted again.'; }
+            if (v !== null) { q.delete('notrack'); var qs = q.toString(); history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash); }
+            off = localStorage.getItem('hoopy_notrack') === '1';
+        } catch (e) {}
+        if (note) document.addEventListener('DOMContentLoaded', function () {
+            var t = document.createElement('div'); t.className = 'notrack-toast';
+            t.setAttribute('role', 'status'); t.textContent = note;
+            t.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;background:#111;color:#eee;border:1px solid #444;padding:10px 16px;border-radius:6px;font:14px/1.4 system-ui,sans-serif;max-width:calc(100vw - 32px)';
+            document.body.appendChild(t); setTimeout(function () { t.remove(); }, 3200);
+        });
+        if (off || navigator.webdriver || location.hostname !== 'holocenecalendar.byhoopy.com') return;
+        var s = document.createElement('script'); s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-H80MDBQB0N';
+        document.head.appendChild(s);
+        gtag('js', new Date()); gtag('config', 'G-H80MDBQB0N');
+    })();
+    </script>
 </head>
 <body>
     <div class="scroll-progress" id="scrollProgress"></div>
